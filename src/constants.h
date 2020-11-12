@@ -1998,6 +1998,11 @@ enum class PROGRAM_OPTION: int {
     INITIAL_MASS_1,
     INITIAL_MASS_2,
 
+    // RTW hack
+    MASS_SN,
+    MASS_SN_1,
+    MASS_SN_2,
+
     INITIAL_MASS_FUNCTION,
     INITIAL_MASS_FUNCTION_MAX,
     INITIAL_MASS_FUNCTION_MIN,
@@ -2185,6 +2190,11 @@ const COMPASUnorderedMap<PROGRAM_OPTION, std::string> PROGRAM_OPTION_LABEL = {
     { PROGRAM_OPTION::INITIAL_MASS,                                     "INITIAL_MASS" },
     { PROGRAM_OPTION::INITIAL_MASS_1,                                   "INITIAL_MASS_1" },
     { PROGRAM_OPTION::INITIAL_MASS_2,                                   "INITIAL_MASS_2" },
+
+    // RTW hack
+    { PROGRAM_OPTION::MASS_SN,                                     "MASS_SN" },
+    { PROGRAM_OPTION::MASS_SN_1,                                   "MASS_SN_1" },
+    { PROGRAM_OPTION::MASS_SN_2,                                   "MASS_SN_2" },
 
     { PROGRAM_OPTION::INITIAL_MASS_FUNCTION,                            "INITIAL_MASS_FUNCTION" },
     { PROGRAM_OPTION::INITIAL_MASS_FUNCTION_MAX,                        "INITIAL_MASS_FUNCTION_MAX" },
@@ -2652,6 +2662,11 @@ const std::map<PROGRAM_OPTION, PROPERTY_DETAILS> PROGRAM_OPTION_DETAIL = {
     { PROGRAM_OPTION::INITIAL_MASS,                                         { TYPENAME::DOUBLE,         "Initial_Mass",                 "Msol",             14, 6 }},
     { PROGRAM_OPTION::INITIAL_MASS_1,                                       { TYPENAME::DOUBLE,         "Initial_Mass_1",               "Msol",             14, 6 }},
     { PROGRAM_OPTION::INITIAL_MASS_2,                                       { TYPENAME::DOUBLE,         "Initial_Mass_2",               "Msol",             14, 6 }},
+
+    // RTW hack
+    { PROGRAM_OPTION::MASS_SN,                                         { TYPENAME::DOUBLE,         "Mass_SN",                 "Msol",             14, 6 }},
+    { PROGRAM_OPTION::MASS_SN_1,                                       { TYPENAME::DOUBLE,         "Mass_SN_1",               "Msol",             14, 6 }},
+    { PROGRAM_OPTION::MASS_SN_2,                                       { TYPENAME::DOUBLE,         "Mass_SN_2",               "Msol",             14, 6 }},
 
     { PROGRAM_OPTION::INITIAL_MASS_FUNCTION,                                { TYPENAME::INT,            "Initial_Mass_Function",        "-",                 4, 1 }},
     { PROGRAM_OPTION::INITIAL_MASS_FUNCTION_MAX,                            { TYPENAME::DOUBLE,         "Initial_Mass_Func_Max",        "Msol",             14, 6 }},

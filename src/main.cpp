@@ -236,10 +236,15 @@ std::tuple<int, int> EvolveSingleStars() {
                 kickParameters.magnitudeRandom          = OPTIONS->KickMagnitudeRandom();
                 kickParameters.magnitudeSpecified       = OPTIONS->OptionSpecified("kick-magnitude") == 1;
                 kickParameters.magnitude                = OPTIONS->KickMagnitude();
+
+                // RTW hack
+                double MassSN    = OPTIONS->OptionSpecified("mass-sn") == 1        // If Option exists,                                                       
+                                        ? OPTIONS->MassSN()                        // use it, otherwise                                                       
+                                        : 6.0;                                     // set to generic default - this should probably never be used
                        
                 // create the star
                 delete star; star = nullptr;                                                                        // so we don't leak...
-                star = new Star(randomSeed, initialMass, metallicity, kickParameters);                              // create star according to the user-specified options
+                star = new Star(randomSeed, initialMass, MassSN, metallicity, kickParameters);                              // create star according to the user-specified options
 
                 EVOLUTION_STATUS thisStatus = star->Evolve(index);                                                  // evolve the star
 

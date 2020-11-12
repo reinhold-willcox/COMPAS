@@ -22,6 +22,7 @@ public:
     BaseStar();
     BaseStar(const unsigned long int p_RandomSeed, 
              const double            p_MZAMS, 
+             const double            p_MassSN, 
              const double            p_Metallicity, 
              const KickParameters    p_KickParameters);
 
@@ -84,6 +85,7 @@ public:
             double              Mdot() const                                                    { return m_Mdot; }
             double              Metallicity() const                                             { return m_Metallicity; }
             double              MZAMS() const                                                   { return m_MZAMS; }
+            double              MassSN() const                                                  { return m_MassSN; }
             double              Omega() const                                                   { return m_Omega; }
             double              OmegaCHE() const                                                { return m_OmegaCHE; }
             double              OmegaBreak() const                                              { return CalculateOmegaBreak(); }
@@ -249,6 +251,7 @@ protected:
     // Zero Age Main Sequence
     double                  m_LZAMS;                                    // ZAMS Luminosity
     double                  m_MZAMS;                                    // ZAMS Mass
+    double                  m_MassSN;                                   // SN remnant Mass
     double                  m_OmegaZAMS;                                // ZAMS Angular Frequency
     double                  m_OmegaCHE;                                 // Minimum angular frequency at which CHE will occur (calculated at ZAMS)
     double                  m_RZAMS;                                    // ZAMS Radius

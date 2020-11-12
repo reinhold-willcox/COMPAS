@@ -1850,6 +1850,47 @@ STELLAR_TYPE GiantBranch::ResolveSupernova() {
         // will be printed in Star::EvolveOneTimestep() after timestep is accepted (i.e. we don't revert state)
         // need to record the stellar type to which the star will switch if we don't revert state
 
+
+        // RTW Tweak! - Apply injected values 
+        // If the CO core is very massive, no model will predict it to be a BH, let it have full fallback and no kick (> 15 Msun) 
+        // If not, the remnant might become a BH, NS, or ecsnNS, which all have different possible outcomes. 
+        // Randomly choose here which path to take, then if it's a BH, give it full fallback, no kick (so no partial fallback, small kick BHs) 
+        // If it's a NS, use the injected grid values for both mrem and kick 
+        // If it's a ecsnNS, set the remnant mass to 1.26 and scale down the kick by 20 (So that dist is triangle(0, 100)) 
+        // TODO: Setup the hard-coded constants in constants.h, ... maybe... 
+        // 
+        // Probability distributions for ECSN, and CCSN to NS vs BH 
+        // 
+        // Prob(BH) rises from 0 at mCO=2 to 1 at mCO=16:   pBH = (mCO - 2)/14 
+        // (2 taken from Ilya, 16 taken from Schneider) 
+        // 
+        // Prob(ECSN) drops from 1 at mHe=2.2 to 0 at mHe=3.5, unless mCO>1.45, then it drops to 0 
+        // (2.2 (~2.25) taken from Belczynski 2008, and 3.5, 1.45 (~1.43) taken from Tauris+ 2015) 
+        // Else, it might go CCSN or ECSN, so then we look at He Core Mass, and constrain between 2.2 and 3.0 Msun 
+        // 
+         
+        double mCO = m_SupernovaDetails.COCoreMassAtCOFormation; 
+        double mHe = m_SupernovaDetails.HeCoreMassAtCOFormation; 
+ 
+        double pBH   = (mCO - 2)/14; 
+        double pECSN = (-mHe/1.3 + 1) * (mCO < 1.45)? 1 : 0; 
+         
+        double rndNum = RAND->Random(0,1); 
+         
+        if (utils::Compare(RAND->Random(0,1), pBH) < 0) {            // this is a BH 
+            m_Mass = m_SupernovaDetails.HeCoreMassAtCOFormation;        // Complete fallback, mass of object is full He core mass TODO double check - MM uses He core 
+            m_SupernovaDetails.kickMagnitude = 0; 
+        } 
+        else if (utils::Compare(RAND->Random(0,1), pECSN) < 0) {     // this is an ecsnNS
+            m_Mass = 1.26 ;                                             // Mass of NS from ECSN - well known 
+            m_SupernovaDetails.kickMagnitude /= 20;                     // Scale down kick by factor of 20 - ECSN shouldn't give kicks higher than 100 
+        } 
+        else {                                                          // this is ccsnNS - use kick from grid, default 
+            m_Mass = m_MassSN; 
+        } 
+
+        /////////////////////////////////////////////////////////
+
         if (OPTIONS->EvolutionMode() == EVOLUTION_MODE::SSE) {                                      // only if SSE (BSE does its own SN printing)
             StashSupernovaDetails(stellarType);
         }

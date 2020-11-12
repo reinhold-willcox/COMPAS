@@ -28,6 +28,7 @@ BaseStar::BaseStar() {
 
 BaseStar::BaseStar(const unsigned long int p_RandomSeed, 
                    const double            p_MZAMS,
+                   const double            p_MassSN,
                    const double            p_Metallicity, 
                    const KickParameters    p_KickParameters) {
 
@@ -46,6 +47,7 @@ BaseStar::BaseStar(const unsigned long int p_RandomSeed,
     // (kick parameters initialised below - see m_SupernovaDetails)
     m_RandomSeed          = p_RandomSeed;
     m_MZAMS               = p_MZAMS;
+    m_MassSN              = p_MassSN;
     m_Metallicity         = p_Metallicity;
 
     // Initialise metallicity dependent values

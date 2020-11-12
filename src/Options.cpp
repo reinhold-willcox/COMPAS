@@ -163,6 +163,11 @@ void Options::OptionValues::Initialise() {
     m_InitialMass1                                                  = 5.0;
     m_InitialMass2                                                  = 5.0;
 
+    // RTW hack
+    m_MassSN                                                       = 3.14; // should never happen, but I can recognize this
+    m_MassSN1                                                       = 3.14; // should never happen, but I can recognize this
+    m_MassSN2                                                       = 3.14; // should never happen, but I can recognize this
+
     m_InitialMassFunction.type                                      = INITIAL_MASS_FUNCTION::KROUPA;
     m_InitialMassFunction.typeString                                = INITIAL_MASS_FUNCTION_LABEL.at(m_InitialMassFunction.type);
     m_InitialMassFunctionMin                                        = 8.0;
@@ -939,6 +944,22 @@ bool Options::AddOptions(OptionValues *p_Options, po::options_description *p_Opt
             "initial-mass-power",                                          
             po::value<double>(&p_Options->m_InitialMassFunctionPower)->default_value(p_Options->m_InitialMassFunctionPower),                                                                      
             ("Single power law power to generate primary mass using given IMF (default = " + std::to_string(p_Options->m_InitialMassFunctionPower) + ")").c_str()
+        )
+        // RTW hack
+        (
+            "mass-sn",                                            
+            po::value<double>(&p_Options->m_MassSN)->default_value(p_Options->m_MassSN),                                                                          
+            ("Injected remnant mass (in Msol) for the star (BSE) (default = " + std::to_string(p_Options->m_MassSN1) + ")").c_str()
+        )
+        (
+            "mass-sn-1",                                            
+            po::value<double>(&p_Options->m_MassSN1)->default_value(p_Options->m_MassSN1),                                                                          
+            ("Injected remnant mass (in Msol) for the primary star (BSE) (default = " + std::to_string(p_Options->m_MassSN1) + ")").c_str()
+        )
+        (
+            "mass-sn-2",                                            
+            po::value<double>(&p_Options->m_MassSN2)->default_value(p_Options->m_MassSN2),                                                                          
+            ("Injected remnant mass (in Msol) for the secondary star (BSE) (default = " + std::to_string(p_Options->m_MassSN2) + ")").c_str()
         )
 
         // Floor
@@ -3402,6 +3423,11 @@ COMPAS_VARIABLE Options::OptionValue(const T_ANY_PROPERTY p_Property) const {
         case PROGRAM_OPTION::INITIAL_MASS                                   : value = InitialMass();                                                        break;
         case PROGRAM_OPTION::INITIAL_MASS_1                                 : value = InitialMass1();                                                       break;
         case PROGRAM_OPTION::INITIAL_MASS_2                                 : value = InitialMass2();                                                       break;
+                                                                            
+        // RTW hack
+        case PROGRAM_OPTION::MASS_SN                                        : value = MassSN();                                                            break;
+        case PROGRAM_OPTION::MASS_SN_1                                      : value = MassSN1();                                                            break;
+        case PROGRAM_OPTION::MASS_SN_2                                      : value = MassSN2();                                                            break;
 
         case PROGRAM_OPTION::INITIAL_MASS_FUNCTION                          : value = static_cast<int>(InitialMassFunction());                              break;
         case PROGRAM_OPTION::INITIAL_MASS_FUNCTION_MAX                      : value = InitialMassFunctionMax();                                             break;

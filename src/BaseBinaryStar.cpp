@@ -86,6 +86,16 @@ BaseBinaryStar::BaseBinaryStar(const AIS &p_AIS, const long int p_Id) {
     kickParameters2.meanAnomalySpecified     = OPTIONS->OptionSpecified("kick-mean-anomaly-2") == 1;
     kickParameters2.meanAnomaly              = OPTIONS->SN_MeanAnomaly2();
 
+
+    // RTW hack
+    double MassSN1    = OPTIONS->OptionSpecified("mass-sn-1") == 1        // If Option exists,                                                       
+                            ? OPTIONS->MassSN1()                          // use it, otherwise                                                       
+                            : 6.0;                                        // set to generic default - this should probably never be used
+    double MassSN2    = OPTIONS->OptionSpecified("mass-sn-2") == 1        // If Option exists,                                                       
+                            ? OPTIONS->MassSN2()                          // use it, otherwise                                                       
+                            : 6.0;                                        // set to generic default - this should probably never be used
+
+
     do {
 
         if(OPTIONS->AIS_RefinementPhase()) {                                                                                            // AIS refinement phase?
@@ -148,8 +158,8 @@ BaseBinaryStar::BaseBinaryStar(const AIS &p_AIS, const long int p_Id) {
 
         // binary star contains two instances of star to hold masses, radii and luminosities.
         // star 1 initially more massive
-        m_Star1 = new BinaryConstituentStar(m_RandomSeed, mass1, metallicity, kickParameters1);
-        m_Star2 = new BinaryConstituentStar(m_RandomSeed, mass2, metallicity, kickParameters2);
+        m_Star1 = new BinaryConstituentStar(m_RandomSeed, mass1, MassSN1, metallicity, kickParameters1);
+        m_Star2 = new BinaryConstituentStar(m_RandomSeed, mass2, MassSN2, metallicity, kickParameters2);
 
         double rocheLobeTracker1 = (m_Star1->Radius() * RSOL_TO_AU) / (m_SemiMajorAxis * (1.0 - m_Eccentricity) * CalculateRocheLobeRadius_Static(mass1, mass2));
         double rocheLobeTracker2 = (m_Star2->Radius() * RSOL_TO_AU) / (m_SemiMajorAxis * (1.0 - m_Eccentricity) * CalculateRocheLobeRadius_Static(mass2, mass1));
@@ -173,9 +183,9 @@ BaseBinaryStar::BaseBinaryStar(const AIS &p_AIS, const long int p_Id) {
 
             // create new stars with equal masses - all other ZAMS values recalculated
             delete m_Star1;
-            m_Star1 = new BinaryConstituentStar(m_RandomSeed, mass1, metallicity, kickParameters1);
+            m_Star1 = new BinaryConstituentStar(m_RandomSeed, mass1, MassSN1, metallicity, kickParameters1);
             delete m_Star2;
-            m_Star2 = new BinaryConstituentStar(m_RandomSeed, mass2, metallicity, kickParameters2);
+            m_Star2 = new BinaryConstituentStar(m_RandomSeed, mass2, MassSN2, metallicity, kickParameters2);
         
             rocheLobeTracker1 = (m_Star1->Radius() * RSOL_TO_AU) / (m_SemiMajorAxis * CalculateRocheLobeRadius_Static(mass1, mass2));   //eccentricity already zero
             rocheLobeTracker2 = (m_Star2->Radius() * RSOL_TO_AU) / (m_SemiMajorAxis * CalculateRocheLobeRadius_Static(mass2, mass1));

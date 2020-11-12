@@ -239,6 +239,10 @@ private:
         "semi-major-axis", "a",
         "orbital-period",
 
+        // Reinhold
+        "mass-sn-1",  
+        "mass-sn-2",  
+
         // Floor
         /*
         "ais-dcotype",
@@ -594,6 +598,11 @@ public:
             double                                              m_InitialMass;                                                  // Initial mass of single star (SSE)
             double                                              m_InitialMass1;                                                 // Initial mass of primary (BSE)
             double                                              m_InitialMass2;                                                 // Initial mass of secondary (BSE)
+
+            // RTW hack
+            double                                              m_MassSN;
+            double                                              m_MassSN1;
+            double                                              m_MassSN2;
 
             ENUM_OPT<INITIAL_MASS_FUNCTION>                     m_InitialMassFunction;                                          // Which initial mass function
             double                                              m_InitialMassFunctionMin;                                       // Minimum mass to generate in Msol
@@ -1081,6 +1090,11 @@ public:
     double                                      InitialMass() const                                                     { return OPT_VALUE("initial-mass", m_InitialMass, true); }
     double                                      InitialMass1() const                                                    { return OPT_VALUE("initial-mass-1", m_InitialMass1, true); }
     double                                      InitialMass2() const                                                    { return OPT_VALUE("initial-mass-2", m_InitialMass2, true); }
+
+    // RTW hack
+    double                                      MassSN() const                                                         { return OPT_VALUE("mass-sn", m_MassSN, true); }
+    double                                      MassSN1() const                                                         { return OPT_VALUE("mass-sn-1", m_MassSN1, true); }
+    double                                      MassSN2() const                                                         { return OPT_VALUE("mass-sn-2", m_MassSN2, true); }
 
     INITIAL_MASS_FUNCTION                       InitialMassFunction() const                                             { return OPT_VALUE("initial-mass-function", m_InitialMassFunction.type, true); }
     double                                      InitialMassFunctionMax() const                                          { return OPT_VALUE("initial-mass-max", m_InitialMassFunctionMax, true); }

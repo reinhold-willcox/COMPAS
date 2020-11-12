@@ -15,13 +15,14 @@ Star::Star() : m_Star(new BaseStar()) {
 // Regular constructor - with parameters for RandomSeed, MZAMS, Metallicity, and KickParameters
 Star::Star(const unsigned long int p_RandomSeed,
            const double            p_MZAMS,
+           const double            p_MassSN,
            const double            p_Metallicity, 
            const KickParameters    p_KickParameters) {
 
     m_ObjectId   = globalObjectId++;                                                                                // set object id
     m_ObjectType = OBJECT_TYPE::STAR;                                                                               // set object type
 
-    m_Star = new BaseStar(p_RandomSeed, p_MZAMS, p_Metallicity, p_KickParameters);                                  // create underlying BaseStar object
+    m_Star = new BaseStar(p_RandomSeed, p_MZAMS, p_MassSN, p_Metallicity, p_KickParameters);                                  // create underlying BaseStar object
 
     // star begins life as a main sequence star, unless it is
     // spinning fast enough for it to be chemically homogeneous
