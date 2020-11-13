@@ -1873,21 +1873,36 @@ STELLAR_TYPE GiantBranch::ResolveSupernova() {
         double mHe = m_SupernovaDetails.HeCoreMassAtCOFormation; 
  
         double pBH   = (mCO - 2)/14; 
-        double pECSN = (-mHe/1.3 + 1) * (mCO < 1.45)? 1 : 0; 
+        double pECSN = (-mHe/1.3 + 1) * ((mCO < 1.45)? 1 : 0);
          
         double rndNum = RAND->Random(0,1); 
          
-        if (utils::Compare(RAND->Random(0,1), pBH) < 0) {            // this is a BH 
+        //std::cout << "SN occured!" << std::endl;
+        //std::cout << "  mHe: " << mHe << std::endl;
+        //std::cout << "  mCO: " << mCO << std::endl;
+        //std::cout << "  pBH: " << pBH << std::endl;
+        //std::cout << "  pEC: " << pECSN << std::endl;
+
+        if (utils::Compare(rndNum, pBH) < 0) {            // this is a BH 
             m_Mass = m_SupernovaDetails.HeCoreMassAtCOFormation;        // Complete fallback, mass of object is full He core mass TODO double check - MM uses He core 
             m_SupernovaDetails.kickMagnitude = 0; 
+            stellarType = STELLAR_TYPE::BLACK_HOLE; 
+            //std::cout << "  Type: BH" << std::endl;
         } 
-        else if (utils::Compare(RAND->Random(0,1), pECSN) < 0) {     // this is an ecsnNS
+        else if (utils::Compare(rndNum, pECSN) < 0) {     // this is an ecsnNS
             m_Mass = 1.26 ;                                             // Mass of NS from ECSN - well known 
             m_SupernovaDetails.kickMagnitude /= 20;                     // Scale down kick by factor of 20 - ECSN shouldn't give kicks higher than 100 
+            stellarType = STELLAR_TYPE::NEUTRON_STAR; 
+            //std::cout << "  Type: EC" << std::endl;
         } 
         else {                                                          // this is ccsnNS - use kick from grid, default 
             m_Mass = m_MassSN; 
+            stellarType = STELLAR_TYPE::NEUTRON_STAR; 
+            //std::cout << "  Type: NS" << std::endl;
         } 
+
+        //std::cout << "  Mass: " << m_Mass << std::endl;
+        //std::cout << "  Kick: " << m_SupernovaDetails.kickMagnitude << std::endl;
 
         /////////////////////////////////////////////////////////
 
