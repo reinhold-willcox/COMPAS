@@ -895,7 +895,7 @@ double GiantBranch::CalculateCoreMassAt2ndDredgeUp_Static(const double p_McBAGB)
  */
 double GiantBranch::CalculateMassLossRateHurley() {
 
-    double dms = (utils::Compare(m_Luminosity, 4.0E3) > 0) ? CalculateMassLossRateNieuwenhuijzenDeJager() : 0.0;
+    double dms = CalculateMassLossRateNieuwenhuijzenDeJager();
     double dml = CalculateMassLossRateKudritzkiReimers();
 
     dms = std::max(dml, dms);
@@ -903,12 +903,6 @@ double GiantBranch::CalculateMassLossRateHurley() {
     if (utils::Compare(m_Mu, 1.0) < 0) {
         dml = CalculateMassLossRateWolfRayetLike(m_Mu);
         dms = std::max(dml, dms);
-    }
-
-    double tmp = m_Radius * sqrt(m_Luminosity) * 1.0E-5;
-    if ((utils::Compare(m_Luminosity, 6.0E5) > 0) && (utils::Compare(tmp, 1.0) > 0)) {
-        dml = CalculateMassLossRateLBV();
-        dms = dms + dml;
     }
 
     return dms;
@@ -1074,6 +1068,11 @@ double GiantBranch::CalculateRemnantMassBySchneider2020(const double p_COCoreMas
                                                        STELLAR_TYPE::THERMALLY_PULSING_ASYMPTOTIC_GIANT_BRANCH, })) { // CASE C Mass Transfer - from EAGB or TPAGB 
             schneiderMassTransferCase = MT_CASE::C;
         }
+
+        // subtle corner case - mostly isolated star lost its envelope through winds before first MT on HeHG
+        else if ((mtHist.size() == 1) && (utils::IsOneOf(mostRecentDonorType, { STELLAR_TYPE::NAKED_HELIUM_STAR_HERTZSPRUNG_GAP })))  {       // CASE C Mass Transfer from HeHG star 
+            schneiderMassTransferCase = MT_CASE::C;
+        }
     }
 
 
@@ -1135,7 +1134,7 @@ double GiantBranch::CalculateRemnantMassBySchneider2020(const double p_COCoreMas
             logRemnantMass = 0.096910013; // gives MassRemnant = 1.25  
     }
 
-    return exp(logRemnantMass);
+    return std::pow(10.0, logRemnantMass);
 
 }
 

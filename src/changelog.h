@@ -582,12 +582,36 @@
 //                                      - Removed m_LBVfactor variable from BaseStar - use OPTIONS->LuminousBlueVariableFactor()
 //                                      - Removed m_WolfRayetFactor variable from BaseBinaryStar - never used in BSE code
 //                                      - Removed m_LBVfactor variable from BaseStar - use OPTIONS->WolfRayetFactor()
-// 02.17.01     RTW - Nov 10, 2020   - Enhancement:
+// 02.17.01     RTW - Nov 10, 2020  - Enhancement:
 //                                      - Added in Schneider 2020 remnant mass prescriptions (standard and alternative)
 //                                      - Added parameter MassTransferDonorHistory, as required for above prescription, which tracks the MT donor type (from which the MT Case can be established)
-// 02.17.02     RTW - Nov 13, 2020   - Enhancement:
+// 02.17.02     RTW - Nov 13, 2020  - Enhancement:
 //                                      - Cleaned up the demo plotting routine so that the plot produced is the plot we use in the methods paper
+// 02.17.03     JR - Nov 13, 2020   - Enhancements, code cleanup
+//                                      - Added metallicity-distribution option: available distributions are ZSOLAR and LOGUNIFORM (see documentation)
+//                                          - Added metallicity-min and metallicity-max options (for metallicity-distribution option)
+//                                          - Metallicity is sampled if not explicitly specified via the --metallicity option - this was existing functionality, but
+//                                            no distribution was implemented: sampling always returned ZSOLAR.  This change adds the LOGUNIFORM distribution, and 'formalises' the ZSOLAR 'distribution'.
+//                                      - Added MASS to default SSE_SYSTEM_PARAMETERS_REC
+//                                      - Removed AIS code
+//                                      - Removed variable 'alpha' from BinaryCEDetails struct - use OPTIONS->CommonEnvelopeAlpha()
+//                                          - Removed BINARY_PROPERTY::COMMON_ENVELOPE_ALPHA - use PROGRAM_OPTION::COMMON_ENVELOPE_ALPHA
+//                                      - Issue #443: removed eccentricity distribution options FIXED, IMPORTANCE & THERMALISE (THERMALISE = THERMAL, which remains) 
+// 02.17.04     JR - Nov 14, 2020   - Defect repairs
+//                                      - Added CalculateRadiusOnPhase() and CalculateLuminosityOnPhase() to class BH (increases DNS yield)
+//                                      - Added metallicity to sampling conditions in BaseBinaryStar constructor (should have been done when LOGUNIFORM metallicity distribution added)
+// 02.17.05     TW - Nov 16, 2020   - Defect repairs
+//                                      - Issue #444
+//                                          - Fixed typo in synchronisation timescale
+// 02.17.06     RTW - Nov 17, 2020  - Bug fix:
+//                                      - Fixed Schneider remnant mass inversion from logRemnantMass^10 to 10^logRemnantMass, added some comments in the same section
+// 02.17.07     TW - Nov 17, 2020   - Enhancements, code cleanup
+//                                      - Issue #431
+//                                          - Added option to change LBV wind prescription: choices are NONE, HURLEY_ADD, HURLEY and BELCYZNSKI
+//                                      - Replaced numbers with constants for luminosity and temperature limits in mass loss
+//                                      - Consolidated checks of luminosity for NJ winds within function
+//                                      - NOTE: the above makes sure luminosity is checked before applying NJ winds for MS stars, this was not previously the case but I think it should be
 
-const std::string VERSION_STRING = "02.17.02";
+const std::string VERSION_STRING = "02.17.07";
 
 # endif // __changelog_h__

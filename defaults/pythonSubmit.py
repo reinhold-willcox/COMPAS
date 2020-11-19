@@ -109,7 +109,7 @@ class pythonProgramOptions:
     evolve_unbound_systems = False
     quiet = False
 
-    metallicity = 0.0142                                        # Solar metallicity Asplund+2010
+    metallicity = 0.0142                                        # metallicity for both SSE and BSE - Solar metallicity Asplund+2010
 
     allow_rlof_at_birth = True                                  # allow binaries that have one or both stars in RLOF at birth to evolve?
     allow_touching_at_birth = False                             # record binaries that have stars touching at birth in output files?
@@ -135,6 +135,7 @@ class pythonProgramOptions:
     envelope_state_prescription = 'LEGACY'
 
     mass_loss_prescription = 'VINK'
+    luminous_blue_variable_prescription = 'BELCZYNSKI'
     luminous_blue_variable_multiplier = 1.5
     wolf_rayet_multiplier = 1.0
 
@@ -176,6 +177,10 @@ class pythonProgramOptions:
     eccentricity_distribution = 'ZERO'
     eccentricity_min = 0.0
     eccentricity_max = 1.0
+
+    metallicity_distribution = 'ZSOLAR'
+    metallicity_min = 0.0001
+    metallicity_max = 0.03
 
     pulsar_birth_magnetic_field_distribution = 'ZERO'
     pulsar_birth_magnetic_field_min = 11.0                      # [log10(B/G)]
@@ -364,6 +369,8 @@ class pythonProgramOptions:
             self.minimum_secondary_mass,
             self.eccentricity_min,
             self.eccentricity_max,
+            self.metallicity_min,
+            self.metallicity_max,
             self.pulsar_birth_magnetic_field_min,
             self.pulsar_birth_magnetic_field_max,
             self.pulsar_birth_spin_period_min,
@@ -446,6 +453,8 @@ class pythonProgramOptions:
             '--minimum-secondary-mass',
             '--eccentricity-min',
             '--eccentricity-max',
+            '--metallicity-min',
+            '--metallicity-max',
             '--pulsar-birth-magnetic-field-distribution-min',
             '--pulsar-birth-magnetic-field-distribution-max',
             '--pulsar-birth-spin-period-distribution-min',
@@ -502,6 +511,7 @@ class pythonProgramOptions:
             self.mode,
             self.case_BB_stability_prescription,
             self.chemically_homogeneous_evolution,
+            self.luminous_blue_variable_prescription,
             self.mass_loss_prescription,
             self.mass_transfer_angular_momentum_loss_prescription,
             self.mass_transfer_accretion_efficiency_prescription,
@@ -510,6 +520,7 @@ class pythonProgramOptions:
             self.semi_major_axis_distribution,
             self.mass_ratio_distribution,
             self.eccentricity_distribution,
+            self.metallicity_distribution,
             self.rotational_velocity_distribution,
             self.remnant_mass_prescription,
             self.fryer_supernova_engine,
@@ -548,6 +559,7 @@ class pythonProgramOptions:
             '--mode',
             '--case-BB-stability-prescription',
             '--chemically-homogeneous-evolution',
+            '--luminous-blue-variable-prescription',
             '--mass-loss-prescription',
             '--mass-transfer-angular-momentum-loss-prescription',
             '--mass-transfer-accretion-efficiency-prescription',
@@ -556,6 +568,7 @@ class pythonProgramOptions:
             '--semi-major-axis-distribution',
             '--mass-ratio-distribution',
             '--eccentricity-distribution',
+            '--metallicity-distribution',
             '--rotational-velocity-distribution',
             '--remnant-mass-prescription',
             '--fryer-supernova-engine',
