@@ -1866,8 +1866,8 @@ STELLAR_TYPE GiantBranch::ResolveSupernova() {
         double mCO = m_SupernovaDetails.COCoreMassAtCOFormation; 
         double mHe = m_SupernovaDetails.HeCoreMassAtCOFormation; 
  
-        double pBH   = (mCO - 2)/14; 
-        double pECSN = (-mHe/1.3 + 1) * ((mCO < 1.45)? 1 : 0);
+        double pBH   = (mCO - 2)/14;   // BH   possible after mCO hits 2 Msun
+        double pECSN = (1 - mHe/1.5);  // ECSN possible until mHe hits 1.5 Msun 
          
         double rndNum = RAND->Random(0,1); 
          
