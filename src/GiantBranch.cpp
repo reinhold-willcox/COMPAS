@@ -1887,7 +1887,7 @@ STELLAR_TYPE GiantBranch::ResolveSupernova() {
         } 
         else if (utils::Compare(rndNum, pECSN) < 0) {     // this is an ecsnNS
             m_Mass = 1.26 ;                                             // Mass of NS from ECSN - well known 
-            m_SupernovaDetails.kickMagnitude /= 20;                     // Scale down kick by factor of 20 - ECSN shouldn't give kicks higher than 100 
+            m_SupernovaDetails.kickMagnitude = m_SupernovaDetails.drawnKickMagnitude/20;                     // Scale down kick by factor of 20 - ECSN shouldn't give kicks higher than 100 
             stellarType = STELLAR_TYPE::NEUTRON_STAR; 
             //std::cout << "  Type: EC" << std::endl;
             SetSNCurrentEvent(SN_EVENT::ECSN);                                              // electron capture SN happening now
@@ -1895,6 +1895,7 @@ STELLAR_TYPE GiantBranch::ResolveSupernova() {
         } 
         else {                                                          // this is ccsnNS - use kick from grid, default 
             m_Mass = m_MassSN; 
+            m_SupernovaDetails.kickMagnitude = m_SupernovaDetails.drawnKickMagnitude;                     // Scale down kick by factor of 20 - ECSN shouldn't give kicks higher than 100 
             stellarType = STELLAR_TYPE::NEUTRON_STAR; 
             //std::cout << "  Type: NS" << std::endl;
             SetSNCurrentEvent(SN_EVENT::CCSN);                                                                      // flag core-collapse SN happening now
