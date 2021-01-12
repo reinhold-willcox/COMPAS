@@ -142,6 +142,7 @@ class pythonProgramOptions:
     luminous_blue_variable_multiplier = 1.5
     overall_wind_mass_loss_multiplier = 1.0
     wolf_rayet_multiplier = 1.0
+    cool_wind_mass_loss_multiplier = 1.0
     check_photon_tiring_limit = False
 
     circularise_binary_during_mass_transfer = False
@@ -262,7 +263,11 @@ class pythonProgramOptions:
     debug_classes       = []
 
     logfile_name_prefix = None
-    logfile_delimiter   = 'COMMA'
+    logfile_type        = 'HDF5'
+
+    hdf5_chunk_size     = 100000
+    hdf5_buffer_size    = 1
+
 
     # set the logfile names here
     #
@@ -364,6 +369,7 @@ class pythonProgramOptions:
             self.luminous_blue_variable_multiplier,
             self.overall_wind_mass_loss_multiplier,
             self.wolf_rayet_multiplier,
+            self.cool_wind_mass_loss_multiplier,
             self.mass_transfer_fa,
             self.mass_transfer_jloss,
             self.maximum_evolution_time,
@@ -428,7 +434,9 @@ class pythonProgramOptions:
             self.muller_mandel_kick_multiplier_BH,
             self.muller_mandel_kick_multiplier_NS,
             self.log_level,
-            self.debug_level
+            self.debug_level,
+            self.hdf5_chunk_size,
+            self.hdf5_buffer_size
         ]
 
         return numericalChoices
@@ -451,6 +459,7 @@ class pythonProgramOptions:
             '--luminous-blue-variable-multiplier',
             '--overall-wind-mass-loss-multiplier',
             '--wolf-rayet-multiplier',
+            '--cool-wind-mass-loss-multiplier',
             '--mass-transfer-fa',
             '--mass-transfer-jloss',
             '--maximum-evolution-time',
@@ -515,7 +524,9 @@ class pythonProgramOptions:
             '--muller-mandel-kick-multiplier-BH',
             '--muller-mandel-kick-multiplier-NS',
             '--log-level',
-            '--debug-level'
+            '--debug-level',
+            '--hdf5-chunk-size',
+            '--hdf5-buffer-size'
         ]
 
         return numericalCommands
@@ -554,7 +565,7 @@ class pythonProgramOptions:
             self.common_envelope_mass_accretion_prescription,
             self.envelope_state_prescription,
             self.logfile_name_prefix,
-            self.logfile_delimiter,
+            self.logfile_type,
             self.logfile_definitions,
             self.grid_filename,
             self.logfile_common_envelopes,
@@ -603,7 +614,7 @@ class pythonProgramOptions:
             '--common-envelope-mass-accretion-prescription',
             '--envelope-state-prescription',
             '--logfile-name-prefix',
-            '--logfile-delimiter',
+            '--logfile-type',
             '--logfile-definitions',
             '--grid',
             '--logfile-common-envelopes',

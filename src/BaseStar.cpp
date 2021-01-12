@@ -429,7 +429,7 @@ COMPAS_VARIABLE BaseStar::PropertyValue(const T_ANY_PROPERTY p_Property) const {
         default:                                                                                                                // unknown property type
             ok    = false;                                                                                                      // that's not ok...
             value = "UNKNOWN";                                                                                                  // default value
-            SHOW_WARN(ERROR::UNKNOWN_PROPERTY_TYPE  );                                                                          // show warning
+            SHOW_WARN(ERROR::UNKNOWN_PROPERTY_TYPE);                                                                            // show warning
     }
 
     return std::make_tuple(ok, value);
@@ -1684,7 +1684,7 @@ double BaseStar::CalculateMassLossRateVink() {
 
         double teff = m_Temperature * TSOL;                                                                         // change to Kelvin so it can be compared with values as stated in Vink prescription
         if (utils::Compare(teff, VINK_MASS_LOSS_MINIMUM_TEMP) < 0) {                                                // cool stars, add Hurley et al 2000 winds
-            otherWindsRate = CalculateMassLossRateHurley();
+            otherWindsRate = CalculateMassLossRateHurley() * OPTIONS->CoolWindMassLossMultiplier();                 // Apply cool wind mass loss multiplier
         }
         else  {                                                                                                     // hot stars, add Vink et al. 2001 winds (ignoring bistability jump)
             otherWindsRate = CalculateMassLossRateOB(teff);

@@ -47,6 +47,8 @@ Following is the list of program options that can be specified at the command li
 
 \programOption{common-envelope-slope-Kruckow}{}{Common Envelope slope for Kruckow lambda.}{\minus{0.8}}
 
+\programOption{cool-wind-mass-loss-multiplier}{}{Multiplicative constant for wind mass loss of cool stars, i.e. those with temperatures below the VINK\_MASS\_LOSS\_MINIMUM\_TEMP (default 12500K).  \\ Only applicable when mass-loss-prescription is set to VINK.}{1.0}
+
 \programOption{debug-classes}{}{Debug classes enabled.}{'{}'~(None)}
 
 \programOption{debug-level}{}{Determines which print statements are displayed for debugging.}{0}
@@ -78,6 +80,10 @@ Following is the list of program options that can be specified at the command li
 \programOption{fryer-supernova-engine}{}{Supernova engine type if using the fallback prescription from \citet{Fryer_2012}. \\ Options: \lcb\ DELAYED, RAPID\ \rcb}{DELAYED}
 
 \programOption{grid}{}{Grid filename.}{'{}'~(None)}
+
+\programOption{hdf5-buffer-size}{}{The \ac{HDF5} IO buffer size for writing to \ac{HDF5} logfiles (number of \ac{HDF5} chunks).}{1}
+
+\programOption{hdf5-chunk-size}{}{The \ac{HDF5} dataset chunk size to be used when creating \ac{HDF5} logfiles (number of logfile entries).}{100000}
 
 \programOption{initial-mass}{}{Initial mass for a single star when evolving in SSE mode~(\Msun).}{Sampled from IMF}
 
@@ -139,8 +145,6 @@ Following is the list of program options that can be specified at the command li
 
 \programOption{logfile-definitions}{}{Filename for logfile record definitions file.}{'{}'~(None)}
 
-\programOption{logfile-delimiter}{}{Field delimiter for logfile records.}{TAB}
-
 \programOption{logfile-detailed-output}{}{Filename for the Detailed Output logfile.}{'SSE\_Detailed\_Output' for SSE mode; 'BSE\_Detailed\_Output' for BSE mode}
 
 \programOption{logfile-double-compact-objects}{}{Filename for the Double Compact Objects logfile (BSE mode).}{'BSE\_Double\_Compact\_Objects'}
@@ -156,6 +160,8 @@ Following is the list of program options that can be specified at the command li
 \programOption{logfile-switch-log}{}{Filename for the Switch Log logfile.}{'SSE\_Switch\_Log' for SSE mode; 'BSE\_Switch\_Log' for BSE mode}
 
 \programOption{logfile-system-parameters}{}{Filename for the System Parameters logfile (BSE mode).}{'BSE\_System\_Parameters'}
+
+\programOption{logfile-type}{}{The type of logfile to be produced by COMPAS.}{'HDF5'}
 
 \programOption{log-level}{}{Determines which print statements are included in the logfile.}{0}
 
@@ -233,7 +239,7 @@ In both cases the number of objects evolved will be the number specified by the 
 
 \programOption{output-path}{o}{Path to which output is saved (i.e. directory in which the output container is created).}{Current working directory~(CWD)}
 
-\programOption{overall-wind-mass-loss-multiplier}{}{Multiplicitive constant for overall wind mass loss. \\Note that this multiplication factor is applied after the luminous-blue-variable-multiplier and the wolf-rayet-multiplier.}{1.0}
+\programOption{overall-wind-mass-loss-multiplier}{}{Multiplicative constant for overall wind mass loss. \\Note that this multiplication factor is applied after the luminous-blue-variable-, the wolf-rayet- and the cool-wind-mass-loss-multiplier.}{1.0}
 
 \programOption{pair-instability-supernovae}{}{Enable pair instability supernovae (PISN).}{FALSE}
 
