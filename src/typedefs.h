@@ -272,5 +272,11 @@ typedef struct StellarCEDetails {                      // Common Envelope detail
     double                 lambda;
 } StellarCEDetailsT; // was CommonEnvelopeDetailsT;
 
+typedef struct MTEvent {                                    // Recording of MT event, for use in the Mass_Transfer_History param
+   STELLAR_TYPE stype1;     
+   STELLAR_TYPE stype2;    
+   int          whichDonor; // 1 if primary is donor, 2 if secondary, 0 if CE
+}
+
 
 #endif // __typedefs_h__
