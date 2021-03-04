@@ -1828,7 +1828,9 @@ void BaseBinaryStar::CalculateMassTransfer(const double p_Dt) {
     m_Accretor->BecomeSecondary();                                                                                              // tell the accretor it is not the primary
 
     // Add event to MT history of the donor
-    m_Donor->UpdateMassTransferDonorHistory();
+    // RTW - there's definitely a better way to do this... maybe make a function for the whole binary
+    m_Donor->UpdateMassTransferDonorHistory( m_Star1->StellarType(), m_Star2->StellarType(), m_Donor->IsPrimary()?1:2);
+    m_Accretor->UpdateMassTransferDonorHistory( m_Star1->StellarType(), m_Star2->StellarType(), m_Donor->IsPrimary()?1:2); 
 
     double aInitial = m_SemiMajorAxis;                                                                                          // semi-major axis in default units, AU, current timestep
     double aFinal;                                                                                                              // semi-major axis in default units, AU, after next timestep

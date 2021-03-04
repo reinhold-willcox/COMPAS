@@ -207,7 +207,7 @@ BaseStar::BaseStar(const unsigned long int p_RandomSeed,
     m_PulsarDetails.spinDownRate               = DEFAULT_INITIAL_DOUBLE_VALUE;
 
     // Mass Transfer Donor Type History
-    m_MassTransferDonorHistory                 = STYPE_VECTOR();
+    m_MassTransferDonorHistory                 = MTEVENT_VECTOR();
 
 }
 
@@ -3037,7 +3037,7 @@ void BaseStar::AgeOneTimestepPreamble(const double p_DeltaTime) {
  * @return                              string of dash-separated stellar type numbers
  */
 std::string BaseStar::MassTransferDonorHistoryString() const {
-    STYPE_VECTOR mtHistVec = m_MassTransferDonorHistory;      
+    MTEVENT_VECTOR mtHistVec = m_MassTransferDonorHistory;      
     std::string mtHistStr  = "";
 
     if (mtHistVec.empty()) {    // This star was never a donor for MT
@@ -3046,7 +3046,16 @@ std::string BaseStar::MassTransferDonorHistoryString() const {
     else {                      // This star was a donor, return the stellar type string
 
         for (size_t ii = 0; ii < mtHistVec.size(); ii++) {
-            mtHistStr += std::to_string(static_cast<int>(mtHistVec[ii])) + "-"; // Create string of stellar type followed by dash
+
+            std::string directionStringMap[] = {"=", ">", "<"};  // Create a mapping between CEs-0 = , PrimDonor-1 > , SecDonor-2 <
+
+            MTEventT singleMtEvent = mtHistVec[ii];
+            
+            mtHistStr += 
+                std::to_string(static_cast<int>(singleMtEvent.stype1)) +
+                directionStringMap[singleMtEvent.whichDonor] +
+                std::to_string(static_cast<int>(singleMtEvent.stype2))
+                "-"; // Create string of stellar type followed by dash
         }
 
         mtHistStr.pop_back();   // Remove final dash
@@ -3060,17 +3069,24 @@ std::string BaseStar::MassTransferDonorHistoryString() const {
 /*
  * Add new MT event to event history - only for donor stars
  *
- * void BaseStar::UpdateMassTransferDonorHistory()
+ * void BaseStar::UpdateMassTransferDonorHistory(STELLAR_TYPE p_primaryType, STELLAR_TYPE p_secondaryType, int p_whichDonor) {
  *
  */
-void BaseStar::UpdateMassTransferDonorHistory() {
+// RTW TODO: Fix the other Update Mass Transfer Donor History calls
+void BaseStar::UpdateMassTransferDonorHistory(const STELLAR_TYPE p_primaryType, const STELLAR_TYPE p_secondaryType, const int p_whichDonor) {
+
+    MTEventT newEvent;
+    newEvent.stype1 = p_primaryType;
+    newEvent.stype2 = p_secondaryType;
+    newEvent.whichDonor = p_whichDonor;
 
     // If MassTransferDonorHistory vector is empty or if there is a new episode, add current type to the vector
     if (m_MassTransferDonorHistory.empty()) {
-        m_MassTransferDonorHistory.push_back(m_StellarType);
+        m_MassTransferDonorHistory.push_back(newEvent);
     }
-    else if (!utils::IsOneOf(m_StellarType, { m_MassTransferDonorHistory.back() })) { // The star has not yet MT'd as its current type, so new event
-        m_MassTransferDonorHistory.push_back(m_StellarType);
+    // RTW TODO: make this utils function!
+    else if (!utils::IsSameMtEvent(newEvent, { m_MassTransferDonorHistory.back() })) { // The star has not yet MT'd as its current type, so new event
+        m_MassTransferDonorHistory.push_back(newEvent);
     }
 }
 
