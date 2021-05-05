@@ -142,49 +142,64 @@ private:
     // easier, cleaner, and gives us a bit more control.
 
     std::vector<std::string> m_GridLineExcluded = {
-        "help", "h",
-        "version", "v",
 
-        "quiet", 
-        "log-level", 
-        "log-classes",
+        // trying to keep entries alphabetical so easier to find specific entries
+
+        "add-options-to-sysparms",
+
         "debug-level",
         "debug_classes",
         "debug-to-file",
         "detailed-output",
+
         "enable-warnings",
         "errors-to-file",
-        "population-data-printing",
-        "print-bool-as-string",
-        "rlof-printing",
-        "switch-log",
+
         "grid",
-        "mode",
-        "number-of-systems",
-        "maximum-evolution-time",
-        "maximum-number-timestep-iterations",
-        "timestep-multiplier",      
-        "hdf5-chunk-size",
+
         "hdf5-buffer-size",
+        "hdf5-chunk-size",
+        "help", "h",
+
+        "log-level", 
+        "log-classes",
 
         // Serena
         //"logfile-be-binaries",
 
-        "logfile-rlof-parameters",
         "logfile-common-envelopes",
+        "logfile-definitions",
         "logfile-detailed-output",
         "logfile-double-compact-objects",
-        "logfile-pulsar-evolution",
-        "logfile-supernovae",
-        "logfile-system-parameters",
-        "logfile-switch-log",
-
-        "logfile-definitions",
         "logfile-name-prefix",
+        "logfile-pulsar-evolution",
+        "logfile-rlof-parameters",
+        "logfile-supernovae",
+        "logfile-switch-log",
+        "logfile-system-parameters",
         "logfile-type",
 
+        "maximum-evolution-time",
+        "maximum-number-timestep-iterations",
+        "mode",
+
+        "number-of-systems",
+
         "output-container", "c",
-        "outputPath", "o"
+        "outputPath", "o",
+
+        "population-data-printing",
+        "print-bool-as-string",
+
+        "quiet", 
+
+        "rlof-printing",
+
+        "switch-log",
+
+        "timestep-multiplier",
+
+        "version", "v"
     };
 
     
@@ -221,16 +236,20 @@ private:
     // inconsistent options.
 
     std::vector<std::string> m_SSEOnly = {
+
+        // trying to keep enties alphabetical so easier to find specific entries
+
         "initial-mass",
+
         "kick-magnitude",
-        "kick-magnitude-random"
+        "kick-magnitude-random",
+
+        "rotational-frequency"
     };
 
     std::vector<std::string> m_BSEOnly = {
-        "initial-mass-1",
-        "initial-mass-2",
-        "semi-major-axis", "a",
-        "orbital-period",
+
+        // trying to keep entries alphabetical so easier to find specific entries
 
         "allow-rlof-at-birth",
         "allow-touching-at-birth",
@@ -239,16 +258,18 @@ private:
         // Serena
         //"be-binaries",
 
+        "case-BB-stability-prescription",
         "circularise-binary-during-mass-transfer",
         "common-envelope-allow-main-sequence-survive",
-
         "common-envelope-alpha", 
         "common-envelope-alpha-thermal",
         "common-envelope-lambda",
         "common-envelope-lambda-multiplier",
+        "common-envelope-lambda-prescription",
         "common-envelope-mass-accretion-constant",
         "common-envelope-mass-accretion-max",
         "common-envelope-mass-accretion-min",
+        "common-envelope-mass-accretion-prescription",
         "common-envelope-recombination-energy-density",
         "common-envelope-slope-kruckow",
 
@@ -272,6 +293,16 @@ private:
         "critical-mass-ratio-white-dwarf-non-degenerate-accretor",
         */
 
+        "eccentricity", "e",
+        "eccentricity-distribution",
+        "eccentricity-max",
+        "eccentricity-min",
+        "evolve-pulsars",
+        "evolve-unbound-systems",
+
+        "initial-mass-1",
+        "initial-mass-2",
+
         "kick-magnitude-1",
         "kick-magnitude-2",
         "kick-magnitude-random-1",
@@ -283,15 +314,25 @@ private:
         "kick-theta-1",
         "kick-theta-2",
 
+        "logfile-common-envelopes",
+        "logfile-double-compact-objects",
+        "logfile-pulsar-evolution",
+        "logfile-rlof-parameters",
+        "logfile-system-parameters",
+
         "mass-ratio", "q",
         "mass-ratio-max",
         "mass-ratio-min",
-
+        "mass-ratio-distribution",
+        "mass-transfer",
         "mass-transfer-fa",
         "mass-transfer-jloss",
-        "mass-transfer-thermal-limit-c",
+        "mass-transfer-accretion-efficiency-prescription",
+        "mass-transfer-angular-momentum-loss-prescription",
+        "mass-transfer-rejuvenation-prescription",
+        "mass-transfer-thermal-limit-accretor",
+        "mass-transfer-thermal-limit-C",
         "maximum-mass-donor-nandez-ivanova",
-
         "minimum-secondary-mass",
 
         "orbital-period",
@@ -299,40 +340,14 @@ private:
         "orbital-period-max",
         "orbital-period-min",
 
+        "rlof-printing",
+        "rotational-frequency-1",
+        "rotational-frequency-2",
+
         "semi-major-axis", "a",
         "semi-major-axis-dsitribution",
         "semi-major-axis-max",
-        "semi-major-axis-min",
-
-        "case-bb-stability-prescription",
-
-        "common-envelope-lambda-prescription",
-        "common-envelope-mass-accretion-prescription",
-
-        "eccentricity", "e",
-        "eccentricity-distribution",
-        "eccentricity-max",
-        "eccentricity-min",
-
-        "mass-ratio-distribution",
-
-        "mass-transfer-accretion-efficiency-prescription",
-        "mass-transfer-angular-momentum-loss-prescription",
-        "mass-transfer-rejuvenation-prescription",
-        "mass-transfer-thermal-limit-accretor",
-
-        "evolve-pulsars",
-        "evolve-unbound-systems",
-
-        "mass-transfer",
-
-        "rlof-printing",
-
-        "logfile-rlof-parameters",
-        "logfile-common-envelopes",
-        "logfile-double-compact-objects",
-        "logfile-pulsar-evolution",
-        "logfile-system-parameters",
+        "semi-major-axis-min"
     };
 
     
@@ -348,8 +363,10 @@ private:
   
 
     std::vector<std::string> m_RangeExcluded = {
-        "help", "h",
-        "version", "v",
+
+        // trying to keep entries alphabetical so easier to find specific entries
+
+        "add-options-to-sysparms",
 
         "allow-rlof-at-birth",
         "allow-touching-at-birth",
@@ -358,147 +375,156 @@ private:
         // Serena
         //"be-binaries",
 
-        "check-photon-tiring-limit",
-        "circularise-binary-during-mass-transfer",
-        "common-envelope-allow-main-sequence-survive",
-
-        "evolve-pulsars",
-        "evolve-unbound-systems",
-
-        "mass-transfer",
-
-        "pair-instability-supernovae",
-        "pulsational-pair-instability",
-
-        "revised-energy-formalism-nandez-ivanova",
-
-        "use-mass-loss",
-
         "black-hole-kicks",
 
-        "case-bb-stability-prescription",
+        "case-BB-stability-prescription",
+        "check-photon-tiring-limit",
         "chemically-homogeneous-evolution",
+        "circularise-binary-during-mass-transfer",
+        "common-envelope-allow-main-sequence-survive",
         "common-envelope-lambda-prescription",
         "common-envelope-mass-accretion-prescription",
 
+        "debug_classes",
+        "debug-level",
+        "debug-to-file",
+        "detailed-output",
+
         "eccentricity-distribution",
+        "enable-warnings",
         "envelope-state-prescription",
+        "errors-to-file",
+        "evolve-pulsars",
+        "evolve-unbound-systems",
 
         "fryer-supernova-engine",
+
+        "grid",
+
+        "hdf5-buffer-size",
+        "hdf5-chunk-size",
+        "help", "h",
 
         "initial-mass-function", "i",
 
         "kick-direction",
         "kick-magnitude-distribution", 
 
+        "log-level", 
+        "log-classes",
+
+        // Serena
+        //"logfile-be-binaries",
+
+        "logfile-common-envelopes",
+        "logfile-definitions",
+        "logfile-detailed-output",
+        "logfile-double-compact-objects",
+        "logfile-name-prefix",
+        "logfile-pulsar-evolution",
+        "logfile-rlof-parameters",
+        "logfile-supernovae",
+        "logfile-switch-log",
+        "logfile-system-parameters",
+        "logfile-type",
         "luminous-blue-variable-prescription",
 
         "mass-loss-prescription",
         "mass-ratio-distribution",
-
+        "mass-transfer",
         "mass-transfer-accretion-efficiency-prescription",
         "mass-transfer-angular-momentum-loss-prescription",
         "mass-transfer-rejuvenation-prescription",
         "mass-transfer-thermal-limit-accretor",
-
         "metallicity-distribution",
+        "mode",
 
-        "neutrino-mass-loss-bh-formation",
+        "neutrino-mass-loss-BH-formation",
         "neutron-star-equation-of-state",
 
         "orbital-period-distribution",
+        "output-container", "c",
+        "outputPath", "o",
 
+        "pair-instability-supernovae",
+        "population-data-printing",
+        "print-bool-as-string",
         "pulsar-birth-magnetic-field-distribution",
         "pulsar-birth-spin-period-distribution",
+        "pulsational-pair-instability",
         "pulsational-pair-instability-prescription",
+
+        "quiet", 
 
         "random-seed",
         "remnant-mass-prescription",
+        "revised-energy-formalism-nandez-ivanova",
+        "rlof-printing",
         "rotational-velocity-distribution",
 
         "semi-major-axis-distribution",
         "stellar-zeta-prescription",
-        
-        "quiet", 
-        "log-level", 
-        "log-classes",
-        "debug-level",
-        "debug_classes",
-        "debug-to-file",
-        "detailed-output",
-        "enable-warnings",
-        "errors-to-file",
-        "population-data-printing",
-        "print-bool-as-string",
-        "rlof-printing",
         "switch-log",
-        "grid",
-        "mode",
-        "hdf5-chunk-size",
-        "hdf5-buffer-size",
 
-        // Serena
-        //"logfile-be-binaries",
+        "use-mass-loss",
 
-        "logfile-rlof-parameters",
-        "logfile-common-envelopes",
-        "logfile-detailed-output",
-        "logfile-double-compact-objects",
-        "logfile-pulsar-evolution",
-        "logfile-supernovae",
-        "logfile-system-parameters",
-        "logfile-switch-log",
-
-        "logfile-definitions",
-        "logfile-name-prefix",
-        "logfile-type",
-
-        "output-container", "c",
-        "outputPath", "o"
+        "version", "v"
     };
     
     std::vector<std::string> m_SetExcluded = {
-        "help", "h",
-        "version", "v",
 
-        "random-seed",
+        // trying to keep entries alphabetical so easier to find specific entries
 
-        "quiet",
-        "log-level", 
-        "log-classes",
-        "debug-level",
+        "add-options-to-sysparms",
+
         "debug_classes",
+        "debug-level",
         "debug-to-file",
         "detailed-output",
+
         "enable-warnings",
         "errors-to-file",
-        "population-data-printing",
-        "print-bool-as-string",
-        "rlof-printing",
-        "switch-log",
+
         "grid",
-        "mode",
-        "hdf5-chunk-size",
+
         "hdf5-buffer-size",
+        "hdf5-chunk-size",
+        "help", "h",
+
+        "log-classes",
+        "log-level", 
 
         // Serena
         //"logfile-be-binaries",
 
-        "logfile-rlof-parameters",
         "logfile-common-envelopes",
+        "logfile-definitions",
         "logfile-detailed-output",
         "logfile-double-compact-objects",
-        "logfile-pulsar-evolution",
-        "logfile-supernovae",
-        "logfile-system-parameters",
-        "logfile-switch-log",
-
-        "logfile-definitions",
         "logfile-name-prefix",
+        "logfile-pulsar-evolution",
+        "logfile-rlof-parameters",
+        "logfile-supernovae",
+        "logfile-switch-log",
+        "logfile-system-parameters",
         "logfile-type",
 
+        "mode",
+
         "output-container", "c",
-        "outputPath", "o"
+        "outputPath", "o",
+
+        "population-data-printing",
+        "print-bool-as-string",
+
+        "quiet",
+
+        "random-seed",
+        "rlof-printing",
+
+        "switch-log",
+
+        "version", "v"
     };
 
 
@@ -805,7 +831,9 @@ public:
 
             // Rotational Velocity distribution options
             ENUM_OPT<ROTATIONAL_VELOCITY_DISTRIBUTION>          m_RotationalVelocityDistribution;                               // Rotational velocity distribution
-
+            double                                              m_RotationalFrequency;                                          // Rotational frequency for single star (SSE)
+            double                                              m_RotationalFrequency1;                                         // Rotational frequency for primary (BSE)
+            double                                              m_RotationalFrequency2;                                         // Rotational frequency for secondary (BSE)
 
 	        // grids
 
@@ -835,6 +863,8 @@ public:
             string                                              m_LogfileBeBinaries;                                            // output file name: Be Binaries
             string                                              m_LogfilePulsarEvolution;                                       // output file name: pulsar evolution
             string                                              m_LogfileSwitchLog;                                             // output file name: switch log
+
+            ENUM_OPT<ADD_OPTIONS_TO_SYSPARMS>                   m_AddOptionsToSysParms;                                         // Whether/when to add program option columns to BSE/SSE sysparms file
 
             int                                                 m_HDF5BufferSize;                                               // HDF5 file IO buffer size (number of chunks)
             int                                                 m_HDF5ChunkSize;                                                // HDF5 file chunk size (number of dataset entries)
@@ -944,12 +974,12 @@ private:
 
     // member variables
 
-    std::string        m_CmdLineOptionsDetails;        // for Run_Details file
+    GridfileT           m_Gridfile = {"", ERROR::EMPTY_FILENAME};
 
-    GridfileT          m_Gridfile = {"", ERROR::EMPTY_FILENAME};
+    OptionsDescriptorT  m_CmdLine;
+    OptionsDescriptorT  m_GridLine;
 
-    OptionsDescriptorT m_CmdLine;
-    OptionsDescriptorT m_GridLine;
+    std::vector<std::tuple<std::string, std::string, std::string, std::string, TYPENAME>> m_CmdLineOptionsDetails;  // for Run_Details file
 
 
     // member functions
@@ -957,11 +987,14 @@ private:
     bool            AddOptions(OptionValues *p_Options, po::options_description *p_OptionsDescription);
     int             AdvanceOptionVariation(OptionsDescriptorT &p_OptionsDescriptor);
 
+    bool            IsSupportedNumericDataType(TYPENAME p_TypeName);
+
     ATTR            OptionAttributes(const po::variables_map p_VM, const po::variables_map::const_iterator p_IT);
-    string          OptionDetails(const OptionsDescriptorT &p_Options);
 
     PROGRAM_STATUS  ParseCommandLineOptions(int argc, char * argv[]);
     std::string     ParseOptionValues(int p_ArgCount, char *p_ArgStrings[], OptionsDescriptorT &p_OptionsDescriptor);
+
+    std::vector<std::tuple<std::string, std::string, std::string, std::string, TYPENAME>> OptionDetails(const OptionsDescriptorT &p_Options);
 
 
 public:
@@ -991,6 +1024,8 @@ public:
 
     // getters
 
+    ADD_OPTIONS_TO_SYSPARMS                     AddOptionsToSysParms() const                                            { return m_CmdLine.optionValues.m_AddOptionsToSysParms.type; }
+
     bool                                        AllowMainSequenceStarToSurviveCommonEnvelope() const                    { return OPT_VALUE("common-envelope-allow-main-sequence-survive", m_AllowMainSequenceStarToSurviveCommonEnvelope, true); }
     bool                                        AllowRLOFAtBirth() const                                                { return OPT_VALUE("allow-rlof-at-birth", m_AllowRLOFAtBirth, true); }
     bool                                        AllowTouchingAtBirth() const                                            { return OPT_VALUE("allow-touching-at-birth", m_AllowTouchingAtBirth, true); }
@@ -1001,13 +1036,15 @@ public:
 
     BLACK_HOLE_KICKS                            BlackHoleKicks() const                                                  { return OPT_VALUE("black-hole-kicks", m_BlackHoleKicks.type, true); }
     
-    CASE_BB_STABILITY_PRESCRIPTION              CaseBBStabilityPrescription() const                                     { return OPT_VALUE("case-bb-stability-prescription", m_CaseBBStabilityPrescription.type, true); }
+    CASE_BB_STABILITY_PRESCRIPTION              CaseBBStabilityPrescription() const                                     { return OPT_VALUE("case-BB-stability-prescription", m_CaseBBStabilityPrescription.type, true); }
     
     bool                                        CheckPhotonTiringLimit() const                                          { return OPT_VALUE("check-photon-tiring-limit", m_CheckPhotonTiringLimit, true); }
 
     CHE_MODE                                    CHEMode() const                                                         { return OPT_VALUE("chemically-homogeneous-evolution", m_CheMode.type, true); }
 
     bool                                        CirculariseBinaryDuringMassTransfer() const                             { return OPT_VALUE("circularise-binary-during-mass-transfer", m_CirculariseBinaryDuringMassTransfer, true); }
+
+    std::vector<std::tuple<std::string, std::string, std::string, std::string, TYPENAME>> CmdLineOptionsDetails() const { return m_CmdLineOptionsDetails; }
 
     bool                                        CommandLineGrid() const                                                 { return m_CmdLine.complexOptionValues.size() != 0; }
     
@@ -1068,10 +1105,10 @@ public:
 
     double                                      KickMagnitudeDistributionMaximum() const                                { return OPT_VALUE("kick-magnitude-max", m_KickMagnitudeDistributionMaximum, true); }
 
-    double                                      KickMagnitudeDistributionSigmaCCSN_BH() const                           { return OPT_VALUE("kick-magnitude-sigma-ccsn-bh", m_KickMagnitudeDistributionSigmaCCSN_BH, true); }
-    double                                      KickMagnitudeDistributionSigmaCCSN_NS() const                           { return OPT_VALUE("kick-magnitude-sigma-ccsn-ns", m_KickMagnitudeDistributionSigmaCCSN_NS, true); }
-    double                                      KickMagnitudeDistributionSigmaForECSN() const                           { return OPT_VALUE("kick-magnitude-sigma-ecsn", m_KickMagnitudeDistributionSigmaForECSN, true); }
-    double                                      KickMagnitudeDistributionSigmaForUSSN() const                           { return OPT_VALUE("kick-magnitude-sigma-ussn", m_KickMagnitudeDistributionSigmaForUSSN, true); }
+    double                                      KickMagnitudeDistributionSigmaCCSN_BH() const                           { return OPT_VALUE("kick-magnitude-sigma-CCSN-BH", m_KickMagnitudeDistributionSigmaCCSN_BH, true); }
+    double                                      KickMagnitudeDistributionSigmaCCSN_NS() const                           { return OPT_VALUE("kick-magnitude-sigma-CCSN-NS", m_KickMagnitudeDistributionSigmaCCSN_NS, true); }
+    double                                      KickMagnitudeDistributionSigmaForECSN() const                           { return OPT_VALUE("kick-magnitude-sigma-ECSN", m_KickMagnitudeDistributionSigmaForECSN, true); }
+    double                                      KickMagnitudeDistributionSigmaForUSSN() const                           { return OPT_VALUE("kick-magnitude-sigma-USSN", m_KickMagnitudeDistributionSigmaForUSSN, true); }
 
     double                                      KickMagnitude() const                                                   { return OPT_VALUE("kick-magnitude", m_KickMagnitude, true); }
     double                                      KickMagnitude1() const                                                  { return OPT_VALUE("kick-magnitude-1", m_KickMagnitude1, true); }
@@ -1080,13 +1117,6 @@ public:
     double                                      KickMagnitudeRandom() const                                             { return OPT_VALUE("kick-magnitude-random", m_KickMagnitudeRandom, false); }
     double                                      KickMagnitudeRandom1() const                                            { return OPT_VALUE("kick-magnitude-random-1", m_KickMagnitudeRandom1, false); }
     double                                      KickMagnitudeRandom2() const                                            { return OPT_VALUE("kick-magnitude-random-2", m_KickMagnitudeRandom2, false); }
-
-    double                                      SN_MeanAnomaly1() const                                                 { return OPT_VALUE("kick-mean-anomaly-1", m_KickMeanAnomaly1, false); }
-    double                                      SN_MeanAnomaly2() const                                                 { return OPT_VALUE("kick-mean-anomaly-2", m_KickMeanAnomaly2, false); }
-    double                                      SN_Phi1() const                                                         { return OPT_VALUE("kick-phi-1", m_KickPhi1, false); }
-    double                                      SN_Phi2() const                                                         { return OPT_VALUE("kick-phi-2", m_KickPhi2, false); }
-    double                                      SN_Theta1() const                                                       { return OPT_VALUE("kick-theta-1", m_KickTheta1, false); }
-    double                                      SN_Theta2() const                                                       { return OPT_VALUE("kick-theta-2", m_KickTheta2, false); }
 
     vector<string>                              LogClasses() const                                                      { return m_CmdLine.optionValues.m_LogClasses; }
     string                                      LogfileBeBinaries() const                                               { return m_CmdLine.optionValues.m_LogfileBeBinaries; }
@@ -1140,7 +1170,7 @@ public:
 
     MT_ACCRETION_EFFICIENCY_PRESCRIPTION        MassTransferAccretionEfficiencyPrescription() const                     { return OPT_VALUE("mass-transfer-accretion-efficiency-prescription", m_MassTransferAccretionEfficiencyPrescription.type, true); }
     MT_ANGULAR_MOMENTUM_LOSS_PRESCRIPTION       MassTransferAngularMomentumLossPrescription() const                     { return OPT_VALUE("mass-transfer-angular-momentum-loss-prescription", m_MassTransferAngularMomentumLossPrescription.type, true); }
-    double                                      MassTransferCParameter() const                                          { return OPT_VALUE("mass-transfer-thermal-limit-c", m_MassTransferCParameter, true); }
+    double                                      MassTransferCParameter() const                                          { return OPT_VALUE("mass-transfer-thermal-limit-C", m_MassTransferCParameter, true); }
 
     // AVG
     bool                                        MassTransferCriticalMassRatioMSLowMass() const                          { return m_CmdLine.optionValues.m_MassTransferCriticalMassRatioMSLowMass; }     // JR: no option implemented - always FALSE
@@ -1185,18 +1215,16 @@ public:
 
     double                                      MinimumMassSecondary() const                                            { return OPT_VALUE("minimum-secondary-mass", m_MinimumMassSecondary, true); }
 
-    double                                      MullerMandelKickMultiplierBH() const                                    { return OPT_VALUE("muller-mandel-kick-multiplier-bh", m_MullerMandelKickBH, true); }
-    double                                      MullerMandelKickMultiplierNS() const                                    { return OPT_VALUE("muller-mandel-kick-multiplier-ns", m_MullerMandelKickNS, true); }
+    double                                      MullerMandelKickMultiplierBH() const                                    { return OPT_VALUE("muller-mandel-kick-multiplier-BH", m_MullerMandelKickBH, true); }
+    double                                      MullerMandelKickMultiplierNS() const                                    { return OPT_VALUE("muller-mandel-kick-multiplier-NS", m_MullerMandelKickNS, true); }
 
-    NEUTRINO_MASS_LOSS_PRESCRIPTION             NeutrinoMassLossAssumptionBH() const                                    { return OPT_VALUE("neutrino-mass-loss-bh-formation", m_NeutrinoMassLossAssumptionBH.type, true); }
-    double                                      NeutrinoMassLossValueBH() const                                         { return OPT_VALUE("neutrino-mass-loss-bh-formation-value", m_NeutrinoMassLossValueBH, true); }
+    NEUTRINO_MASS_LOSS_PRESCRIPTION             NeutrinoMassLossAssumptionBH() const                                    { return OPT_VALUE("neutrino-mass-loss-BH-formation", m_NeutrinoMassLossAssumptionBH.type, true); }
+    double                                      NeutrinoMassLossValueBH() const                                         { return OPT_VALUE("neutrino-mass-loss-BH-formation-value", m_NeutrinoMassLossValueBH, true); }
 
     NS_EOS                                      NeutronStarEquationOfState() const                                      { return OPT_VALUE("neutron-star-equation-of-state", m_NeutronStarEquationOfState.type, true); }
 
     size_t                                      nObjectsToEvolve() const                                                { return m_CmdLine.optionValues.m_ObjectsToEvolve; }
     bool                                        OptimisticCHE() const                                                   { CHE_MODE che = OPT_VALUE("chemically-homogeneous-evolution", m_CheMode.type, true); return che == CHE_MODE::OPTIMISTIC; }
-
-    string                                      CmdLineOptionsDetails() const                                           { return m_CmdLineOptionsDetails; }
 
     double                                      OrbitalPeriod() const                                                   { return OPT_VALUE("orbital-period", m_OrbitalPeriod, true); }
     ORBITAL_PERIOD_DISTRIBUTION                 OrbitalPeriodDistribution() const                                       { return OPT_VALUE("orbital-period-distribution", m_OrbitalPeriodDistribution.type, true); }
@@ -1208,8 +1236,8 @@ public:
 
     double                                      OverallWindMassLossMultiplier() const                                   { return OPT_VALUE("overall-wind-mass-loss-multiplier", m_OverallWindMassLossMultiplier, true); }
 
-    double                                      PairInstabilityLowerLimit() const                                       { return OPT_VALUE("pisn-lower-limit", m_PairInstabilityLowerLimit, true); }
-    double                                      PairInstabilityUpperLimit() const                                       { return OPT_VALUE("pisn-upper-limit", m_PairInstabilityUpperLimit, true); }
+    double                                      PairInstabilityLowerLimit() const                                       { return OPT_VALUE("PISN-lower-limit", m_PairInstabilityLowerLimit, true); }
+    double                                      PairInstabilityUpperLimit() const                                       { return OPT_VALUE("PISN-upper-limit", m_PairInstabilityUpperLimit, true); }
 
     bool                                        PopulationDataPrinting() const                                          { return m_CmdLine.optionValues.m_PopulationDataPrinting; }
     bool                                        PrintBoolAsString() const                                               { return m_CmdLine.optionValues.m_PrintBoolAsString; }
@@ -1228,8 +1256,8 @@ public:
     double                                      PulsarMagneticFieldDecayTimescale() const                               { return OPT_VALUE("pulsar-magnetic-field-decay-timescale", m_PulsarMagneticFieldDecayTimescale, true); }
 
     PPI_PRESCRIPTION                            PulsationalPairInstabilityPrescription() const                          { return OPT_VALUE("pulsational-pair-instability-prescription", m_PulsationalPairInstabilityPrescription.type, true); }
-    double                                      PulsationalPairInstabilityLowerLimit() const                            { return OPT_VALUE("ppi-lower-limit", m_PulsationalPairInstabilityLowerLimit, true); }
-    double                                      PulsationalPairInstabilityUpperLimit() const                            { return OPT_VALUE("ppi-upper-limit", m_PulsationalPairInstabilityUpperLimit, true); }
+    double                                      PulsationalPairInstabilityLowerLimit() const                            { return OPT_VALUE("PPI-lower-limit", m_PulsationalPairInstabilityLowerLimit, true); }
+    double                                      PulsationalPairInstabilityUpperLimit() const                            { return OPT_VALUE("PPI-upper-limit", m_PulsationalPairInstabilityUpperLimit, true); }
 
     bool                                        Quiet() const                                                           { return m_CmdLine.optionValues.m_Quiet; }
 
@@ -1241,6 +1269,9 @@ public:
     bool                                        RLOFPrinting() const                                                    { return m_CmdLine.optionValues.m_RlofPrinting; }
 
     ROTATIONAL_VELOCITY_DISTRIBUTION            RotationalVelocityDistribution() const                                  { return OPT_VALUE("rotational-velocity-distribution", m_RotationalVelocityDistribution.type, true); }
+    double                                      RotationalFrequency() const                                             { return OPT_VALUE("rotational-frequency", m_RotationalFrequency, true); }
+    double                                      RotationalFrequency1() const                                            { return OPT_VALUE("rotational-frequency-1", m_RotationalFrequency1, true); }
+    double                                      RotationalFrequency2() const                                            { return OPT_VALUE("rotational-frequency-2", m_RotationalFrequency2, true); }
    
     double                                      SemiMajorAxis() const                                                   { return OPT_VALUE("semi-major-axis", m_SemiMajorAxis, true); }
     SEMI_MAJOR_AXIS_DISTRIBUTION                SemiMajorAxisDistribution() const                                       { return OPT_VALUE("semi-major-axis-distribution", m_SemiMajorAxisDistribution.type, true); }
@@ -1249,6 +1280,13 @@ public:
     double                                      SemiMajorAxisDistributionPower() const                                  { return m_CmdLine.optionValues.m_SemiMajorAxisDistributionPower; }     // JR: no option implemented - always -1.0
 
     void                                        ShowHelp()                                                              { PrintOptionHelp(!m_CmdLine.optionValues.m_ShortHelp); }
+
+    double                                      SN_MeanAnomaly1() const                                                 { return OPT_VALUE("kick-mean-anomaly-1", m_KickMeanAnomaly1, false); }
+    double                                      SN_MeanAnomaly2() const                                                 { return OPT_VALUE("kick-mean-anomaly-2", m_KickMeanAnomaly2, false); }
+    double                                      SN_Phi1() const                                                         { return OPT_VALUE("kick-phi-1", m_KickPhi1, false); }
+    double                                      SN_Phi2() const                                                         { return OPT_VALUE("kick-phi-2", m_KickPhi2, false); }
+    double                                      SN_Theta1() const                                                       { return OPT_VALUE("kick-theta-1", m_KickTheta1, false); }
+    double                                      SN_Theta2() const                                                       { return OPT_VALUE("kick-theta-2", m_KickTheta2, false); }
 
     bool                                        RequestedHelp() const                                                   { return m_CmdLine.optionValues.m_VM["help"].as<bool>(); }
     bool                                        RequestedVersion() const                                                { return m_CmdLine.optionValues.m_VM["version"].as<bool>(); }

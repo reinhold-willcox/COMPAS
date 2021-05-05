@@ -4,7 +4,7 @@
 /*                                                                                        */
 /* 1. Decide on a string for the option - this is the string the user will use on the     */
 /*    commandline or in the grid file (e.g. "random-seed")                                */
-/*    The convention I've settle on is hyphenated lower case - I don't mind what          */
+/*    The convention I've settled on is hyphenated lower case - I don't mind what         */
 /*    convention we settle on, as long as it's just one.                                  */
 /*                                                                                        */
 /* 2. Decide on a class member variable name for the option (e.g. m_RandomSeed).          */
@@ -62,7 +62,13 @@
 /*    Read the explanations for each of the vectors in Options.h to get a better idea of  */
 /*    what they are for and where the new option should go.                               */
 /*                                                                                        */
-/* 10. Add the new option to Options::OptionValue() - this enables selection of the       */
+/* 10. Add the new option to the following structres in constants.h:                      */
+/*                                                                                        */
+/*        - enum class PROGRAM_OPTION                                                     */
+/*        - const COMPASUnorderedMap<PROGRAM_OPTION, std::string> PROGRAM_OPTION_LABEL    */
+/*        - const std::map<PROGRAM_OPTION, PROPERTY_DETAILS> PROGRAM_OPTION_DETAIL        */
+/*                                                                                        */
+/* 11. Add the new option to Options::OptionValue() - this enables selection of the       */
 /*     option value for printing in the output (log) files.  Only required if the option  */
 /*     is required to be available for printing in the logfiles.                          */
 /*                                                                                        */
@@ -467,6 +473,10 @@ void Options::OptionValues::Initialise() {
     m_RotationalVelocityDistribution.type                           = ROTATIONAL_VELOCITY_DISTRIBUTION::ZERO;
     m_RotationalVelocityDistribution.typeString                     = ROTATIONAL_VELOCITY_DISTRIBUTION_LABEL.at(m_RotationalVelocityDistribution.type);
 
+    m_RotationalFrequency                                           = 0.0;
+    m_RotationalFrequency1                                          = 0.0;
+    m_RotationalFrequency2                                          = 0.0;
+
 
 	// grids
 
@@ -480,7 +490,6 @@ void Options::OptionValues::Initialise() {
 
     m_LogLevel                                                      = 0;
     m_LogClasses.clear();
-
 
     // Logfiles    
     m_LogfileDefinitionsFilename                                    = "";
@@ -497,6 +506,9 @@ void Options::OptionValues::Initialise() {
     m_LogfileSupernovae                                             = get<0>(LOGFILE_DESCRIPTOR.at(LOGFILE::BSE_SUPERNOVAE));       // assume BSE - get real answer when we know mode
     m_LogfileSwitchLog                                              = get<0>(LOGFILE_DESCRIPTOR.at(LOGFILE::BSE_SWITCH_LOG));       // assume BSE - get real answer when we know mode
     m_LogfileSystemParameters                                       = get<0>(LOGFILE_DESCRIPTOR.at(LOGFILE::BSE_SYSTEM_PARAMETERS));
+
+    m_AddOptionsToSysParms.type                                     = ADD_OPTIONS_TO_SYSPARMS::GRID;
+    m_AddOptionsToSysParms.typeString                               = ADD_OPTIONS_TO_SYSPARMS_LABEL.at(m_AddOptionsToSysParms.type);
     
     m_HDF5BufferSize                                                = HDF5_DEFAULT_IO_BUFFER_SIZE;
     m_HDF5ChunkSize                                                 = HDF5_DEFAULT_CHUNK_SIZE;
@@ -1151,7 +1163,6 @@ bool Options::AddOptions(OptionValues *p_Options, po::options_description *p_Opt
             ("Multiplicitive constant for overall wind mass loss (default = " + std::to_string(p_Options->m_OverallWindMassLossMultiplier)+ ")").c_str()
         )
 
-
         (
             "PISN-lower-limit",                                            
             po::value<double>(&p_Options->m_PairInstabilityLowerLimit)->default_value(p_Options->m_PairInstabilityLowerLimit),                                                                    
@@ -1209,6 +1220,24 @@ bool Options::AddOptions(OptionValues *p_Options, po::options_description *p_Opt
         )
 
         (
+            "rotational-frequency",                              
+            po::value<double>(&p_Options->m_RotationalFrequency)->default_value(p_Options->m_RotationalFrequency),                                                        
+            ("Initial rotational frequency for the star for SSE (Hz) (default = " + std::to_string(p_Options->m_RotationalFrequency) + ")").c_str()
+        )        
+
+        (
+            "rotational-frequency-1",                              
+            po::value<double>(&p_Options->m_RotationalFrequency1)->default_value(p_Options->m_RotationalFrequency1),                                                        
+            ("Initial rotational frequency for the primary star for BSE (Hz) (default = " + std::to_string(p_Options->m_RotationalFrequency1) + ")").c_str()
+        )        
+
+        (
+            "rotational-frequency-2",                              
+            po::value<double>(&p_Options->m_RotationalFrequency2)->default_value(p_Options->m_RotationalFrequency2),                                                        
+            ("Initial rotational frequency for the secondary star for BSE (Hz) (default = " + std::to_string(p_Options->m_RotationalFrequency2) + ")").c_str()
+        )        
+
+        (
             "semi-major-axis,a",                              
             po::value<double>(&p_Options->m_SemiMajorAxis)->default_value(p_Options->m_SemiMajorAxis),                                                        
             ("Initial semi-major axis, a (default = " + std::to_string(p_Options->m_SemiMajorAxis) + ")").c_str()
@@ -1254,6 +1283,12 @@ bool Options::AddOptions(OptionValues *p_Options, po::options_description *p_Opt
 
 
         // string options - alphabetically
+
+        (
+            "add-options-to-sysparms",                                            
+            po::value<std::string>(&p_Options->m_AddOptionsToSysParms.typeString)->default_value(p_Options->m_AddOptionsToSysParms.typeString),                                                                              
+            ("Add program options columns to BSE/SSE SysParms file (options: [ALWAYS, GRID, NEVER], default = " + p_Options->m_AddOptionsToSysParms.typeString + ")").c_str()
+        )
 
         (
             "black-hole-kicks",                                            
@@ -1473,7 +1508,7 @@ bool Options::AddOptions(OptionValues *p_Options, po::options_description *p_Opt
         (
             "pulsational-pair-instability-prescription",                   
             po::value<std::string>(&p_Options->m_PulsationalPairInstabilityPrescription.typeString)->default_value(p_Options->m_PulsationalPairInstabilityPrescription.typeString),                              
-            ("Pulsational Pair Instability prescription (options: [COMPAS, STARTRACK, MARCHANT], default = " + p_Options->m_PulsationalPairInstabilityPrescription.typeString + ")").c_str()
+            ("Pulsational Pair Instability prescription (options: [COMPAS, STARTRACK, MARCHANT, FARMER], default = " + p_Options->m_PulsationalPairInstabilityPrescription.typeString + ")").c_str()
         )
 
         (
@@ -1698,12 +1733,17 @@ std::string Options::OptionValues::CheckAndSetOptions() {
         m_FixedRandomSeed  = !DEFAULTED("random-seed");                                                                             // use random seed if it is provided by the user
         m_UseFixedUK       = !DEFAULTED("fix-dimensionless-kick-magnitude") && (m_FixedUK >= 0.0);                                  // determine if user supplied a valid kick magnitude
 
+        if (!DEFAULTED("add-options_to-sysparms")) {                                                                                // add program options to BSE/SSE sysparms
+            std::tie(found, m_AddOptionsToSysParms.type) = utils::GetMapKey(m_AddOptionsToSysParms.typeString, ADD_OPTIONS_TO_SYSPARMS_LABEL, m_AddOptionsToSysParms.type);
+            COMPLAIN_IF(!found, "Unknown Add Options to SysParms Option");
+        }
+
         if (!DEFAULTED("black-hole-kicks")) {                                                                                       // black hole kicks
             std::tie(found, m_BlackHoleKicks.type) = utils::GetMapKey(m_BlackHoleKicks.typeString, BLACK_HOLE_KICKS_LABEL, m_BlackHoleKicks.type);
             COMPLAIN_IF(!found, "Unknown Black Hole Kicks Option");
         }
 
-        if (!DEFAULTED("case-bb-stability-prescription")) {                                                                         //case BB/BC mass transfer stability prescription
+        if (!DEFAULTED("case-BB-stability-prescription")) {                                                                         //case BB/BC mass transfer stability prescription
             std::tie(found, m_CaseBBStabilityPrescription.type) = utils::GetMapKey(m_CaseBBStabilityPrescription.typeString, CASE_BB_STABILITY_PRESCRIPTION_LABEL, m_CaseBBStabilityPrescription.type);
             COMPLAIN_IF(!found, "Unknown Case BB/BC Mass Transfer Stability Prescription");
         }
@@ -1811,7 +1851,7 @@ std::string Options::OptionValues::CheckAndSetOptions() {
             COMPLAIN_IF(!found, "Unknown Mode");
         }
 
-        if (!DEFAULTED("neutrino-mass-loss-bh-formation")) {                                                                        // neutrino mass loss assumption
+        if (!DEFAULTED("neutrino-mass-loss-BH-formation")) {                                                                        // neutrino mass loss assumption
             std::tie(found, m_NeutrinoMassLossAssumptionBH.type) = utils::GetMapKey(m_NeutrinoMassLossAssumptionBH.typeString, NEUTRINO_MASS_LOSS_PRESCRIPTION_LABEL, m_NeutrinoMassLossAssumptionBH.type);
             COMPLAIN_IF(!found, "Unknown Neutrino Mass Loss Assumption");
         }
@@ -1938,6 +1978,10 @@ std::string Options::OptionValues::CheckAndSetOptions() {
 
         COMPLAIN_IF(!DEFAULTED("pulsar-magnetic-field-decay-timescale") && m_PulsarMagneticFieldDecayTimescale <= 0.0, "Pulsar magnetic field decay timescale (--pulsar-magnetic-field-decay-timescale) <= 0");
         COMPLAIN_IF(!DEFAULTED("pulsar-magnetic-field-decay-massscale") && m_PulsarMagneticFieldDecayMassscale <= 0.0, "Pulsar Magnetic field decay massscale (--pulsar-magnetic-field-decay-massscale) <= 0");
+
+        COMPLAIN_IF(!DEFAULTED("rotational-frequency")  && m_RotationalFrequency < 0.0, "Rotational frequency (--rotational-frequency) < 0");
+        COMPLAIN_IF(!DEFAULTED("rotational-frequency-1") && m_RotationalFrequency1 < 0.0, "Primary rotational frequency (--rotational-frequency-1) < 0");
+        COMPLAIN_IF(!DEFAULTED("rotational-frequency-2") && m_RotationalFrequency2 < 0.0, "Secondary rotational frequency (--rotational-frequency-2) < 0");
 
         COMPLAIN_IF(m_SemiMajorAxisDistributionMin < 0.0, "Minimum semi-major Axis (--semi-major-axis-min) < 0");
         COMPLAIN_IF(m_SemiMajorAxisDistributionMax < 0.0, "Maximum semi-major Axis (--semi-major-axis-max) < 0");
@@ -2128,7 +2172,7 @@ Options::ATTR Options::OptionAttributes(const po::variables_map p_VM, const po::
     else if (((boost::any)p_IT->second.value()).type() == typeid(unsigned long long int)) { dataType = TYPENAME::ULONGLONGINT; typeStr = "UNSIGNED_LONG_LONG_INT"; valueStr = std::to_string(p_VM[p_IT->first].as<unsigned long long int>()); }
 
     else if (((boost::any)p_IT->second.value()).type() == typeid(float                 )) { dataType = TYPENAME::FLOAT;        typeStr = "FLOAT";                  valueStr = std::to_string(p_VM[p_IT->first].as<float                 >()); }
-    else if (((boost::any)p_IT->second.value()).type() == typeid(double                )) { dataType = TYPENAME::FLOAT;        typeStr = "DOUBLE";                 valueStr = std::to_string(p_VM[p_IT->first].as<double                >()); }
+    else if (((boost::any)p_IT->second.value()).type() == typeid(double                )) { dataType = TYPENAME::DOUBLE;       typeStr = "DOUBLE";                 valueStr = std::to_string(p_VM[p_IT->first].as<double                >()); }
     else if (((boost::any)p_IT->second.value()).type() == typeid(long double           )) { dataType = TYPENAME::LONGDOUBLE;   typeStr = "LONG_DOUBLE";            valueStr = std::to_string(p_VM[p_IT->first].as<long double           >()); }
 
     else if (((boost::any)p_IT->second.value()).type() == typeid(char                  )) { dataType = TYPENAME::INT;          typeStr = "CHAR";                   valueStr = std::to_string(p_VM[p_IT->first].as<char                  >()); }
@@ -2154,7 +2198,16 @@ Options::ATTR Options::OptionAttributes(const po::variables_map p_VM, const po::
             else if (elems.size() == 2) elems.erase(elems.size() - 1);
             elems += " }";
 
-            dataType = TYPENAME::NONE;                                                  // not supported by COMPAS as an option data type            
+            // vector<string> is not supported as a data type by COMPAS, but...
+            // it is used.  Options debug-classes and log-classes are stored as
+            // vectors or strings.  This doesn't affect anything unless we want
+            // to print the values of the options (as we do sometimes), so the
+            // vector of strings is just formatted as a string here - with braces
+            // sourrounding comma-separated values.
+            //
+            // we return dateType = TYPENAME::STRING, but typeStr  = "VECTOR<STRING>"
+
+            dataType = TYPENAME::STRING;                                                // not supported by COMPAS as an option data type            
             typeStr  = "VECTOR<STRING>";                                                // ... but we know what type it is, and
             valueStr = elems;                                                           // ... we can still format the value
         }
@@ -2170,49 +2223,45 @@ Options::ATTR Options::OptionAttributes(const po::variables_map p_VM, const po::
 
 
 /*
- * Build the output string for the Run_Details file
- * The parameter passed is the opstions descriptor - the grid line options, or
+ * Get option details for the Run_Details file
+ * The parameter passed is the options descriptor - the grid line options, or
  * the commandline options.  Ordinarily we would build the Run_Details contents
  * from the commandline options, but the flexibility exists to use a set of
  * grid line options (maybe one day we will want to (optionally) produce a
  * per star/binary Run_Details file)
  * 
  * 
- * std::string OptionDetails(const OptionsDescriptorT &p_Options)
+ * std::vector<std::tuple<std::string, std::string, std::string, std::string, TYPENAME>> Options::OptionDetails(const OptionsDescriptorT &p_Options)
  * 
  * @param   [IN]    p_Options                   The options descriptor to use to build the output string
- * @return                                      String containing the Run_Details file contents
+ * @return                                      Vector containing the option details for Run_Details
  */
-std::string Options::OptionDetails(const OptionsDescriptorT &p_Options) {
-            
+std::vector<std::tuple<std::string, std::string, std::string, std::string, TYPENAME>> Options::OptionDetails(const OptionsDescriptorT &p_Options) {
+
+    std::vector<std::tuple<std::string, std::string, std::string, std::string, TYPENAME>> optionDetails = {};
+
     TYPENAME    dataType  = TYPENAME::NONE;
     std::string typeStr   = "";
     bool        defaulted = false;
     std::string valueStr  = "";
 
-    std::ostringstream ss;                                                                                                              // output string
+    for (po::variables_map::const_iterator it = p_Options.optionValues.m_VM.begin(); it != p_Options.optionValues.m_VM.end(); it++) {                                   // for all options in the variable map
 
-    ss << "COMMAND LINE OPTIONS\n-------------------\n\n";
+        std::tie(dataType, defaulted, typeStr, valueStr) = OptionAttributes(p_Options.optionValues.m_VM, it);                                                           // get option attributes
 
-    for (po::variables_map::const_iterator it = p_Options.optionValues.m_VM.begin(); it != p_Options.optionValues.m_VM.end(); it++) {   // for all options in the variable map
-  
-        ss << it->first << " = ";                                                                                                       // add option name to output string
-
-        std::tie(dataType, defaulted, typeStr, valueStr) = OptionAttributes(p_Options.optionValues.m_VM, it);                           // get option attributes
-
-        if (valueStr == "")                                                                                                             // empty option?
-            ss << "<EMPTY_OPTION>\n";                                                                                                   // yes - say so
-        else                                                                                                                            // no
-            ss << valueStr + ", " << (defaulted ? "DEFAULT_USED, " : "USER_SUPPLIED, ") << typeStr << "\n";                             // add option details to output string
+        if (valueStr == "")                                                                                                                                             // empty option?
+            optionDetails.push_back(std::make_tuple(it->first, "<EMPTY_OPTION>", "<EMPTY_OPTION>", "<EMPTY_OPTION>", TYPENAME::NONE));                                  // yes - say so
+        else                                                                                                                                                            // no
+            optionDetails.push_back(std::make_tuple(it->first, valueStr, (defaulted ? "DEFAULT_USED" : "USER_SUPPLIED"), typeStr, dataType));                           // add option details to return vector
     }
   
-    ss << "\n\nOTHER PARAMETERS\n----------------\n\n";
+    // add other (calculated) options
 
-    ss << "useFixedUK         = " << (p_Options.optionValues.m_UseFixedUK ? "TRUE" : "FALSE") << ", CALCULATED, BOOL\n";                // useFixedUK
-    ss << "output-path        = " <<  p_Options.optionValues.m_OutputPath.string() << ", CALCULATED, STRING\n";                         // outputPath (fully qualified)
-    ss << "fixedRandomSeed    = " << (p_Options.optionValues.m_FixedRandomSeed ? "TRUE" : "FALSE") << ", CALCULATED, BOOL\n";           // fixedRandomSeed
+    optionDetails.push_back(std::make_tuple("useFixedUK", (p_Options.optionValues.m_UseFixedUK ? "TRUE" : "FALSE"), "CALCULATED", "BOOL", TYPENAME::BOOL));             // useFixedUK
+    optionDetails.push_back(std::make_tuple("actual-output-path", p_Options.optionValues.m_OutputPath.string(), "CALCULATED", "STRING", TYPENAME::STRING));             // output-path
+    optionDetails.push_back(std::make_tuple("fixedRandomSeed", (p_Options.optionValues.m_FixedRandomSeed ? "TRUE" : "FALSE"), "CALCULATED", "BOOL", TYPENAME::BOOL));   // fixedRandomSeed
 
-    return ss.str();
+    return optionDetails;
 }
 
 
@@ -2250,6 +2299,39 @@ void Options::PrintOptionHelp(const bool p_Verbose) {
             std::cerr << "  " << opt.description() << std::endl;
         }
     }
+}
+
+
+/*
+ * Returns TRUE if parameter p_TypeName is a supported COMPAS numeric datatype
+ * for program options, otherwise FALSE
+ *
+ * The datatypes here should cover our options for now - but we might have to 
+ * refine them over time
+ * 
+ * 
+ * bool IsSupportedNumericDataType(TYPENAME p_TypeName)
+ * 
+ * @param   [IN]    p_TypeName                  COMPAS datatype name
+ * @return                                      True if p_TypeName is a supported numeric datatype, else false
+ */
+bool Options::IsSupportedNumericDataType(TYPENAME p_TypeName) {
+
+    bool supported = false;
+
+    switch(p_TypeName) {
+        case TYPENAME::INT:
+        case TYPENAME::LONGINT:
+        case TYPENAME::ULONGINT:
+        case TYPENAME::FLOAT:
+        case TYPENAME::DOUBLE:
+        case TYPENAME::LONGDOUBLE:
+            supported = true;
+            break;
+        default:
+            supported = false;
+    }
+    return supported;
 }
 
 
@@ -2543,10 +2625,7 @@ std::string Options::ParseOptionValues(int p_ArgCount, char *p_ArgStrings[], Opt
                     if (idx == (count - 1)) details.currPos = 0;                                                            // initial position for inner iterator
 
                     if (type == COMPLEX_TYPE::RANGE) {                                                                      // RANGE?
-                        // these should cover our options for now - but we might have to refine them over time
-                        if (dataType != TYPENAME::INT && dataType != TYPENAME::LONGINT && dataType != TYPENAME::ULONGINT && 
-                            dataType != TYPENAME::FLOAT && dataType != TYPENAME::LONGDOUBLE) {                              // yes - numeric?
-                            
+                        if (!IsSupportedNumericDataType(dataType)) {                                                        // yes - numeric? 
                             error  = true;                                                                                  // no - that's not ok
                             errStr = ERR_MSG(ERROR::ARGUMENT_RANGE_NOT_SUPPORTED) + std::string(" '") + optionName + std::string("'");
                         }
@@ -2649,6 +2728,35 @@ std::string Options::ParseOptionValues(int p_ArgCount, char *p_ArgStrings[], Opt
                                         details.rangeParms = {tmp, tmp, tmp};                                               // create the vector
 
                                         size_t lastChar;
+                                        details.rangeParms[0].dVal = std::stof(details.parameters[0], &lastChar);           // floating point start
+                                        COMPLAIN_IF(lastChar != details.parameters[0].size(), complaint1);                  // not a valid float
+                                        details.rangeParms[2].dVal = std::stof(details.parameters[2], &lastChar);           // floating point inc
+                                        COMPLAIN_IF(lastChar != details.parameters[2].size(), complaint1);                  // not a valid float
+
+                                        try {
+                                            size_t lastChar;
+                                            details.rangeParms[1].ulVal = std::stoul(details.parameters[1], &lastChar);     // unsigned long int count
+                                            COMPLAIN_IF(lastChar != details.parameters[1].size(), complaint2);              // not a valid unsigned long int
+
+                                            p_OptionsDescriptor.complexOptionValues[idx] = std::make_tuple(longOptionName, details); // reset values
+                                        }
+                                        catch (const std::out_of_range& e) {                                                // not a valid unsigned long int
+                                            errStr = complaint2;
+                                        }
+                                    }
+                                    catch (const std::out_of_range& e) {                                                    // not a valid floating point number
+                                        errStr = complaint1;
+                                    }
+                                } break;
+
+                                case TYPENAME::DOUBLE: {                                                                    // DOUBLE
+                                    std::string complaint1 = ERR_MSG(ERROR::ARGUMENT_RANGE_PARMS_EXPECTED_FP) + std::string(" '") + optionName + std::string("'");
+                                    std::string complaint2 = ERR_MSG(ERROR::ARGUMENT_RANGE_COUNT_EXPECTED_ULINT) + std::string(" '") + optionName + std::string("'");
+                                    try {
+                                        RangeParameterT tmp = {0.0};                                                        // dummy value
+                                        details.rangeParms = {tmp, tmp, tmp};                                               // create the vector
+
+                                        size_t lastChar;
                                         details.rangeParms[0].dVal = std::stod(details.parameters[0], &lastChar);           // floating point start
                                         COMPLAIN_IF(lastChar != details.parameters[0].size(), complaint1);                  // not a valid double
                                         details.rangeParms[2].dVal = std::stod(details.parameters[2], &lastChar);           // floating point inc
@@ -2708,9 +2816,7 @@ std::string Options::ParseOptionValues(int p_ArgCount, char *p_ArgStrings[], Opt
                         // check for numeric/bool data types only that all set parameters are numeric/bool
                         // can't check for string data types 
                         
-                        // these should cover our options for now - but we might have to refine them over time
-                        if (dataType == TYPENAME::INT || dataType == TYPENAME::LONGINT || dataType == TYPENAME::ULONGINT || 
-                            dataType == TYPENAME::FLOAT || dataType == TYPENAME::LONGDOUBLE) {                              // numeric?
+                        if (IsSupportedNumericDataType(dataType)) {                                                         // numeric?
                             
                             for (size_t ip = 0; ip < parms.size(); ip++) {                                                  // yes - for each set parameter specified
 
@@ -2718,6 +2824,7 @@ std::string Options::ParseOptionValues(int p_ArgCount, char *p_ArgStrings[], Opt
                                     (dataType == TYPENAME::LONGINT    && !utils::IsLONGINT(parms[ip]))     ||               // LONG INT?
                                     (dataType == TYPENAME::ULONGINT   && !utils::IsULONGINT(parms[ip]))    ||               // UNSIGNED LONG INT?
                                     (dataType == TYPENAME::FLOAT      && !utils::IsFLOAT(parms[ip]))       ||               // FLOAT?
+                                    (dataType == TYPENAME::DOUBLE     && !utils::IsDOUBLE(parms[ip]))      ||               // DOUBLE?
                                     (dataType == TYPENAME::LONGDOUBLE && !utils::IsLONGDOUBLE(parms[ip]))) {                // LONG DOUBLE?
                                     error  = true;                                                                          // no - that's not ok
                                     errStr = ERR_MSG(ERROR::ARGUMENT_SET_EXPECTED_NUMERIC) + std::string(" '") + optionName + std::string("'");
@@ -2981,6 +3088,12 @@ int Options::AdvanceOptionVariation(OptionsDescriptorT &p_OptionsDescriptor) {
                 }   break;
 
                 case TYPENAME::FLOAT: {                                 // FLOAT
+                    double thisVal = std::stof(optionValue);                    
+                    p_OptionsDescriptor.optionValues.ModifyVariableMap(p_OptionsDescriptor.optionValues.m_VM, optionName, thisVal);
+                    po::notify(p_OptionsDescriptor.optionValues.m_VM);
+                }   break;
+
+                case TYPENAME::DOUBLE: {                                // DOUBLE
                     double thisVal = std::stod(optionValue);                    
                     p_OptionsDescriptor.optionValues.ModifyVariableMap(p_OptionsDescriptor.optionValues.m_VM, optionName, thisVal);
                     po::notify(p_OptionsDescriptor.optionValues.m_VM);
@@ -3050,6 +3163,16 @@ int Options::AdvanceOptionVariation(OptionsDescriptorT &p_OptionsDescriptor) {
                 }   break;
 
                 case TYPENAME::FLOAT: {                                 // FLOAT
+
+                    double start   = details.rangeParms[0].dVal;
+                    double inc     = details.rangeParms[2].dVal;
+                    double thisVal = start + (details.currPos * inc);
+                    
+                    p_OptionsDescriptor.optionValues.ModifyVariableMap(p_OptionsDescriptor.optionValues.m_VM, optionName, thisVal);
+                    po::notify(p_OptionsDescriptor.optionValues.m_VM);
+                }   break;
+
+                case TYPENAME::DOUBLE: {                                // DOUBLE
 
                     double start   = details.rangeParms[0].dVal;
                     double inc     = details.rangeParms[2].dVal;
@@ -3381,6 +3504,8 @@ COMPAS_VARIABLE Options::OptionValue(const T_ANY_PROPERTY p_Property) const {
                                                                                                                         // get property value
     switch (property) {
 
+        case PROGRAM_OPTION::ADD_OPTIONS_TO_SYSPARMS                        : value = static_cast<int>(AddOptionsToSysParms());                             break;
+
         case PROGRAM_OPTION::ALLOW_MS_STAR_TO_SURVIVE_COMMON_ENVELOPE       : value = AllowMainSequenceStarToSurviveCommonEnvelope();                       break;
         case PROGRAM_OPTION::ALLOW_RLOF_AT_BIRTH                            : value = AllowRLOFAtBirth();                                                   break;
         case PROGRAM_OPTION::ALLOW_TOUCHING_AT_BIRTH                        : value = AllowTouchingAtBirth();                                               break;
@@ -3390,8 +3515,6 @@ COMPAS_VARIABLE Options::OptionValue(const T_ANY_PROPERTY p_Property) const {
         //case PROGRAM_OPTION::BE_BINARIES                                    : value = BeBinaries();                                                         break;
 
         case PROGRAM_OPTION::BLACK_HOLE_KICKS                               : value = static_cast<int>(BlackHoleKicks());                                   break;
-
-        case PROGRAM_OPTION::EVOLUTION_MODE                                 : value = static_cast<int>(EvolutionMode());                                    break;
     
         case PROGRAM_OPTION::CASE_BB_STABILITY_PRESCRIPTION                 : value = static_cast<int>(CaseBBStabilityPrescription());                      break;
     
@@ -3413,7 +3536,7 @@ COMPAS_VARIABLE Options::OptionValue(const T_ANY_PROPERTY p_Property) const {
         case PROGRAM_OPTION::COMMON_ENVELOPE_RECOMBINATION_ENERGY_DENSITY   : value = CommonEnvelopeRecombinationEnergyDensity();                           break;
         case PROGRAM_OPTION::COMMON_ENVELOPE_SLOPE_KRUCKOW                  : value = CommonEnvelopeSlopeKruckow();                                         break;
 
-        case PROGRAM_OPTION::COOL_WIND_MASS_LOSS_MULTIPLIER                 : value = CoolWindMassLossMultiplier();                                      break;
+        case PROGRAM_OPTION::COOL_WIND_MASS_LOSS_MULTIPLIER                 : value = CoolWindMassLossMultiplier();                                         break;
 
         case PROGRAM_OPTION::ECCENTRICITY                                   : value = Eccentricity();                                                       break;
         case PROGRAM_OPTION::ECCENTRICITY_DISTRIBUTION                      : value = static_cast<int>(EccentricityDistribution());                         break;
@@ -3421,6 +3544,7 @@ COMPAS_VARIABLE Options::OptionValue(const T_ANY_PROPERTY p_Property) const {
         case PROGRAM_OPTION::ECCENTRICITY_DISTRIBUTION_MIN                  : value = EccentricityDistributionMin();                                        break;
         case PROGRAM_OPTION::EDDINGTON_ACCRETION_FACTOR                     : value = EddingtonAccretionFactor();                                           break;
         case PROGRAM_OPTION::ENVELOPE_STATE_PRESCRIPTION                    : value = static_cast<int>(EnvelopeStatePrescription());                        break;
+        case PROGRAM_OPTION::EVOLUTION_MODE                                 : value = static_cast<int>(EvolutionMode());                                    break;
 
         case PROGRAM_OPTION::FRYER_SUPERNOVA_ENGINE                         : value = static_cast<int>(FryerSupernovaEngine());                             break;
 
@@ -3528,7 +3652,8 @@ COMPAS_VARIABLE Options::OptionValue(const T_ANY_PROPERTY p_Property) const {
 
         case PROGRAM_OPTION::NS_EOS                                         : value = static_cast<int>(NeutronStarEquationOfState());                       break;
 
-        case PROGRAM_OPTION::ORBITAL_PERIOD                                 : value = static_cast<int>(OrbitalPeriodDistribution());                        break;
+        case PROGRAM_OPTION::ORBITAL_PERIOD                                 : value = OrbitalPeriod();                                                      break;
+        case PROGRAM_OPTION::ORBITAL_PERIOD_DISTRIBUTION                    : value = static_cast<int>(OrbitalPeriodDistribution());                        break;
         case PROGRAM_OPTION::ORBITAL_PERIOD_DISTRIBUTION_MAX                : value = OrbitalPeriodDistributionMax();                                       break;
         case PROGRAM_OPTION::ORBITAL_PERIOD_DISTRIBUTION_MIN                : value = OrbitalPeriodDistributionMin();                                       break;
 
@@ -3560,6 +3685,10 @@ COMPAS_VARIABLE Options::OptionValue(const T_ANY_PROPERTY p_Property) const {
         case PROGRAM_OPTION::REMNANT_MASS_PRESCRIPTION                      : value = static_cast<int>(RemnantMassPrescription());                          break;
 
         case PROGRAM_OPTION::ROTATIONAL_VELOCITY_DISTRIBUTION               : value = static_cast<int>(RotationalVelocityDistribution());                   break;
+
+        case PROGRAM_OPTION::ROTATIONAL_FREQUENCY                           : value = RotationalFrequency();                                                break;
+        case PROGRAM_OPTION::ROTATIONAL_FREQUENCY_1                         : value = RotationalFrequency1();                                               break;
+        case PROGRAM_OPTION::ROTATIONAL_FREQUENCY_2                         : value = RotationalFrequency2();                                               break;
    
         case PROGRAM_OPTION::SEMI_MAJOR_AXIS                                : value = SemiMajorAxis();                                                      break;
         case PROGRAM_OPTION::SEMI_MAJOR_AXIS_DISTRIBUTION                   : value = static_cast<int>(SemiMajorAxisDistribution());                        break;
