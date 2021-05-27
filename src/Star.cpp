@@ -28,6 +28,10 @@ Star::Star(const unsigned long int p_RandomSeed,
     // star begins life as a main sequence star, unless it is
     // spinning fast enough for it to be chemically homogeneous
 
+    // RTW hack - initialize He ZAMS star
+    (void)SwitchTo(STELLAR_TYPE::NAKED_HELIUM_STAR_MS, true);                                                               // MS > 0.7 Msol
+    
+    /*
     if (OPTIONS->CHEMode() != CHE_MODE::NONE && utils::Compare(m_Star->Omega(), m_Star->OmegaCHE()) >= 0) {         // CHE?
         (void)SwitchTo(STELLAR_TYPE::CHEMICALLY_HOMOGENEOUS, true);                                                 // yes
     }
@@ -37,6 +41,7 @@ Star::Star(const unsigned long int p_RandomSeed,
     else {
         (void)SwitchTo(STELLAR_TYPE::MS_GT_07, true);                                                               // MS > 0.7 Msol
     }
+    */
 
     m_SaveStar = nullptr;
 }
