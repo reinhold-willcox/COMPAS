@@ -13,7 +13,7 @@ jobs:
             - name: pdflatex main
               uses: dante-ev/latex-action@latest
               with:
-                  working_directory: /docs/COMPAS_LaTex
+                  working_directory: /docs/COMPAS_LaTeX
                   root_file: main.tex
                   compiler: pdflatex
                   args: -interaction=nonstopmode -shell-escape
@@ -21,7 +21,7 @@ jobs:
             - name: bibtex main
               uses: dante-ev/latex-action@latest
               with:
-                  working_directory: /docs/COMPAS_LaTex
+                  working_directory: /docs/COMPAS_LaTeX
                   root_file: main.tex
                   compiler: bibtex 
                   args: 
@@ -29,7 +29,7 @@ jobs:
             - name: pdflatex main
               uses: dante-ev/latex-action@latest
               with:
-                  working_directory: /docs/COMPAS_LaTex
+                  working_directory: /docs/COMPAS_LaTeX
                   root_file: main.tex
                   compiler: pdflatex
                   args: -interaction=nonstopmode -shell-escape
