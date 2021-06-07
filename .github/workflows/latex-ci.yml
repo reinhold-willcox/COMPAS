@@ -22,7 +22,7 @@ jobs:
               uses: dante-ev/latex-action@latest
               with:
                   working_directory: docs/COMPAS_LaTeX
-                  root_file: main.tex
+                  root_file: bib.bib
                   compiler: bibtex 
                   args: 
 
