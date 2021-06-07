@@ -4,6 +4,11 @@ on:
         branches: [latex_compile_CI]
 
 jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            run: echo "Hello World!"
+
     build_latex:
         runs-on: ubuntu-latest
         steps:
