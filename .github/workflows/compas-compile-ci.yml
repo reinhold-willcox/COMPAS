@@ -1,9 +1,6 @@
-name: Compilation Tests 
+name: COMPAS compile test
 
-on:
-  pull_request:
-  #branches: [ dev ]
-  #push: # testing
+on: [pull_request]
 
 jobs:
   compas:
@@ -17,5 +14,3 @@ jobs:
 
       - name: Build Compas
         run: cd src && make -j $(nproc) -f Makefile
-
-  # TODO: add latex and postprocessing python scripts<Paste>
