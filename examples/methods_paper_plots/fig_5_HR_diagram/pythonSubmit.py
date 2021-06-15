@@ -27,7 +27,7 @@ class pythonProgramOptions:
     # in the bin directory (rather than the src directory)
     compas_executable_override = os.environ.get('COMPAS_EXECUTABLE_PATH')
     print('compas_executable_override', compas_executable_override)
-    
+
     if (compas_executable_override is None):
         git_directory = os.environ.get('COMPAS_ROOT_DIR')
         compas_executable = os.path.join(git_directory, 'src/COMPAS')
@@ -52,7 +52,6 @@ class pythonProgramOptions:
     # if COMPAS_LOGS_OUTPUT_DIR_PATH is not set (== None) the current working directory
     # is used as the value for the --output-path option
     compas_logs_output_override = os.environ.get('COMPAS_LOGS_OUTPUT_DIR_PATH')
-    
     if (compas_logs_output_override is None):
         output = os.getcwd()
         output_container = None                 # names the directory to be created and in which log files are created.  Default in COMPAS is "COMPAS_Output"
@@ -66,7 +65,7 @@ class pythonProgramOptions:
     # if COMPAS_INPUT_DIR_PATH is not set (== None) the current working directory
     # is prepended to input filenames
     compas_input_path_override = os.environ.get('COMPAS_INPUT_DIR_PATH')
-    
+
     #-- option to make a grid of hyperparameter values at which to produce populations.
     #-- If this is set to true, it will divide the number_of_binaries parameter equally
     #-- amoungst the grid points (as closely as possible). See the hyperparameterGrid method below
@@ -78,7 +77,7 @@ class pythonProgramOptions:
 
     mode = 'BSE'                                                # evolving single stars (SSE) or binaries (BSE)?
 
-    grid_filename = None                                        # grid file name (e.g. 'mygrid.txt')
+    grid_filename = "grid.txt"                                        # grid file name (e.g. 'mygrid.txt')
 
     if grid_filename != None:
         if compas_input_path_override == None:
@@ -107,12 +106,12 @@ class pythonProgramOptions:
 
     use_mass_loss = True
     mass_transfer = True
-    detailed_output = False                                     # WARNING: this creates a data heavy file
+    detailed_output = True                                     # WARNING: this creates a data heavy file
     RLOFPrinting = True
     evolve_unbound_systems = False
     quiet = False
 
-    metallicity = 0.0142                                        # metallicity for both SSE and BSE - Solar metallicity Asplund+2010
+    metallicity = None                                       # metallicity for both SSE and BSE - Solar metallicity Asplund+2010
 
     allow_rlof_at_birth = True                                  # allow binaries that have one or both stars in RLOF at birth to evolve?
     allow_touching_at_birth = False                             # record binaries that have stars touching at birth in output files?
@@ -138,14 +137,14 @@ class pythonProgramOptions:
     envelope_state_prescription = 'LEGACY'
 
     mass_loss_prescription = 'VINK'
-    luminous_blue_variable_prescription = 'BELCZYNSKI'
+    luminous_blue_variable_prescription = 'HURLEY_ADD'
     luminous_blue_variable_multiplier = 1.5
     overall_wind_mass_loss_multiplier = 1.0
     wolf_rayet_multiplier = 1.0
     cool_wind_mass_loss_multiplier = 1.0
     check_photon_tiring_limit = False
 
-    circularise_binary_during_mass_transfer = False
+    circularise_binary_during_mass_transfer = True
     angular_momentum_conservation_during_circularisation = False
     mass_transfer_angular_momentum_loss_prescription = 'ISOTROPIC'
     mass_transfer_accretion_efficiency_prescription = 'THERMAL'
@@ -162,7 +161,7 @@ class pythonProgramOptions:
 
     maximum_evolution_time = 13700.0                            # Maximum physical time a system can be evolved [Myrs]
     maximum_number_timesteps = 99999
-    timestep_multiplier = 1.0                                   # Optional multiplier relative to default time step duration
+    timestep_multiplier = 0.1                                   # Optional multiplier relative to default time step duration
 
     initial_mass_function = 'KROUPA'
     initial_mass_min = 5.0                                      # Use 1.0 for LRNe, 5.0 for DCOs  [Msol]
