@@ -40,6 +40,15 @@ DBL_DBL Remnants::CalculateMassAcceptanceRate(const double p_DonorMassRate, cons
     acceptanceRate   = std::min(thisMassRate, p_DonorMassRate);
     fractionAccreted = acceptanceRate / p_DonorMassRate;
 
+    std::cout << 
+        "Eddington accretion rate: " << 
+        thisMassRate << 
+        "\n donor mass loss rate: " <<
+        p_DonorMassRate <<
+        "\n  fractionAccreted: " << 
+        fractionAccreted <<  
+        std::endl;
+
     return std::make_tuple(acceptanceRate, fractionAccreted);
 }
 
