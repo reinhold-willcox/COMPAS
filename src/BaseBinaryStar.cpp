@@ -1826,7 +1826,9 @@ void BaseBinaryStar::CalculateMassTransfer(const double p_Dt) {
                 m_MassTransferTrackerHistory = m_Donor==m_Star1 ? MT_TRACKING::STABLE_FROM_1_TO_2 : MT_TRACKING::STABLE_FROM_2_TO_1; // record what happened - for later printing
                 double envMassDonor  = m_Donor->Mass() - m_Donor->CoreMass();
 
-                if (utils::Compare(m_Donor->CoreMass(), 0) > 0 && utils::Compare(envMassDonor, 0) > 0) {                        // donor has a core and an envelope
+                // RTW - following Zapartas, only remove the amount of envelope required to fit in the RL, not the entire envelope.
+                if (false) { //(utils::Compare(m_Donor->CoreMass(), 0) > 0 && utils::Compare(envMassDonor, 0) > 0) {                        // donor has a core and an envelope
+                //if (utils::Compare(m_Donor->CoreMass(), 0) > 0 && utils::Compare(envMassDonor, 0) > 0) {                        // donor has a core and an envelope
                     double mdEnvAccreted = envMassDonor * m_FractionAccreted;
                     
                     m_Donor->SetMassTransferDiff(-envMassDonor);
