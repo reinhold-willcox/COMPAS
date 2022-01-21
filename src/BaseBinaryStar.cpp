@@ -1794,6 +1794,8 @@ void BaseBinaryStar::CalculateMassTransfer(const double p_Dt) {
 	                 OPTIONS->MassTransferCriticalMassRatioHeliumGiant() || OPTIONS->MassTransferCriticalMassRatioHeliumMS()    ||
                      OPTIONS->MassTransferCriticalMassRatioHeliumHG()    || OPTIONS->MassTransferCriticalMassRatioWhiteDwarf();
 
+    // RTW - hacky way to force
+
     if (qCritFlag && m_Donor->IsMassRatioUnstable(m_Accretor->Mass(), m_Accretor->IsDegenerate()) ) {
         m_CEDetails.CEEnow = true;
     }

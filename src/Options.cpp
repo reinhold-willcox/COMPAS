@@ -379,7 +379,7 @@ void Options::OptionValues::Initialise() {
     // Mass transfer rejuvenation prescriptions
     m_MassTransferRejuvenationPrescription.type                     = MT_REJUVENATION_PRESCRIPTION::STARTRACK;
     m_MassTransferRejuvenationPrescription.typeString               = MT_REJUVENATION_PRESCRIPTION_LABEL.at(m_MassTransferRejuvenationPrescription.type);
-
+    
     // Mass transfer critical mass ratios
     m_MassTransferCriticalMassRatioMSLowMass                        = false;
     m_MassTransferCriticalMassRatioMSLowMassNonDegenerateAccretor   = 1.44;                                                 // Claeys+ 2014 = 1.44
@@ -698,6 +698,7 @@ bool Options::AddOptions(OptionValues *p_Options, po::options_description *p_Opt
             po::value<double>(&p_Options->m_CoolWindMassLossMultiplier)->default_value(p_Options->m_CoolWindMassLossMultiplier),                                                                  
             ("Multiplicative constant for wind mass loss of cool stars (default = " + std::to_string(p_Options->m_CoolWindMassLossMultiplier)+ ")").c_str()
         )
+        
         (
             "debug-to-file",                                               
             po::value<bool>(&p_Options->m_DebugToFile)->default_value(p_Options->m_DebugToFile)->implicit_value(true),                                                                            
@@ -778,6 +779,48 @@ bool Options::AddOptions(OptionValues *p_Options, po::options_description *p_Opt
             po::value<bool>(&p_Options->m_SwitchLog)->default_value(p_Options->m_SwitchLog)->implicit_value(true),                                                                          
             ("Print switch log to file (default = " + std::string(p_Options->m_SwitchLog ? "TRUE" : "FALSE") + ")").c_str()
         )
+        // RTW - put critical mass ratio bools here
+        (
+            "use-critical-mass-ratio-giant",
+            po::value<bool>(&p_Options->m_MassTransferCriticalMassRatioGiant)->default_value(p_Options->m_MassTransferCriticalMassRatioGiant),
+            ("Use critical mass ratio for MT from a giant star (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioGiant) + ")").c_str()
+        )
+        (
+            "use-critical-mass-ratio-helium-giant",
+            po::value<bool>(&p_Options->m_MassTransferCriticalMassRatioHeliumGiant)->default_value(p_Options->m_MassTransferCriticalMassRatioHeliumGiant),
+            ("Use critical mass ratio for MT from a helium giant star (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioHeliumGiant) + ")").c_str()
+        )
+        (
+            "use-critical-mass-ratio-helium-HG",
+            po::value<bool>(&p_Options->m_MassTransferCriticalMassRatioHeliumHG)->default_value(p_Options->m_MassTransferCriticalMassRatioHeliumHG),
+            ("Use critical mass ratio for MT from a helium HG star (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioHeliumHG) + ")").c_str()
+        )
+        (
+            "use-critical-mass-ratio-helium-MS",
+            po::value<bool>(&p_Options->m_MassTransferCriticalMassRatioHeliumMS)->default_value(p_Options->m_MassTransferCriticalMassRatioHeliumMS),
+            ("Use critical mass ratio for MT from a helium MS star (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioHeliumMS) + ")").c_str()
+        )
+        (
+            "use-critical-mass-ratio-HG",
+            po::value<bool>(&p_Options->m_MassTransferCriticalMassRatioHG)->default_value(p_Options->m_MassTransferCriticalMassRatioHG),
+            ("Use critical mass ratio for MT from a HG star (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioHG) + ")").c_str()
+        )
+        (
+            "use-critical-mass-ratio-MS-high-mass",
+            po::value<bool>(&p_Options->m_MassTransferCriticalMassRatioMSHighMass)->default_value(p_Options->m_MassTransferCriticalMassRatioMSHighMass),
+            ("Use critical mass ratio for MT from a MS star to a degenerate accretor (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioMSHighMass) + ")").c_str()
+        )
+        (
+            "use-critical-mass-ratio-MS-low-mass",
+            po::value<bool>(&p_Options->m_MassTransferCriticalMassRatioMSLowMass)->default_value(p_Options->m_MassTransferCriticalMassRatioMSLowMass),
+            ("Use critical mass ratio for MT from a MS star to a degenerate accretor (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioMSLowMass) + ")").c_str()
+        )
+        (
+            "use-critical-mass-ratio-white-dwarf",
+            po::value<bool>(&p_Options->m_MassTransferCriticalMassRatioWhiteDwarf)->default_value(p_Options->m_MassTransferCriticalMassRatioWhiteDwarf),
+            ("Use critical mass ratio for MT from a white dwarf (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioWhiteDwarf) + ")").c_str()
+        )
+
         (
             "use-mass-loss",                                               
             po::value<bool>(&p_Options->m_UseMassLoss)->default_value(p_Options->m_UseMassLoss)->implicit_value(true),                                                                            
@@ -890,7 +933,6 @@ bool Options::AddOptions(OptionValues *p_Options, po::options_description *p_Opt
         )
 
         // AVG - 17/03/2020 - Uncomment mass-ratio options when fully implemented
-        /*
         (
             "critical-mass-ratio-giant-degenerate-accretor",
             po::value<double>(&m_MassTransferCriticalMassRatioGiantDegenerateAccretor)->default_value(m_MassTransferCriticalMassRatioGiantDegenerateAccretor),
@@ -971,7 +1013,6 @@ bool Options::AddOptions(OptionValues *p_Options, po::options_description *p_Opt
             po::value<double>(&m_MassTransferCriticalMassRatioWhiteDwarfNonDegenerateAccretor)->default_value(m_MassTransferCriticalMassRatioWhiteDwarfNonDegenerateAccretor),
             ("Critical mass ratio for MT from a white dwarf (default = " + std::to_string(m_MassTransferCriticalMassRatioWhiteDwarfNonDegenerateAccretor) + ") Specify both white dwarf flags to use. 0 is always stable, <0 is disabled").c_str()
         )
-        */
 
         (
             "eccentricity,e",                                            
@@ -4092,8 +4133,6 @@ COMPAS_VARIABLE Options::OptionValue(const T_ANY_PROPERTY p_Property) const {
         case PROGRAM_OPTION::MT_ANG_MOM_LOSS_PRESCRIPTION                   : value = static_cast<int>(MassTransferAngularMomentumLossPrescription());      break;
         case PROGRAM_OPTION::MT_THERMAL_LIMIT_C                             : value = MassTransferCParameter();                                             break;
 
-        // AVG
-        /*
         case PROGRAM_OPTION::MT_CRIT_MR_MS_LOW_MASS                         : value = MassTransferCriticalMassRatioMSLowMass();                             break;
         case PROGRAM_OPTION::MT_CRIT_MR_MS_LOW_MASS_DEGENERATE_ACCRETOR     : value = MassTransferCriticalMassRatioMSLowMassDegenerateAccretor();           break;
         case PROGRAM_OPTION::MT_CRIT_MR_MS_LOW_MASS_NON_DEGENERATE_ACCRETOR : value = MassTransferCriticalMassRatioMSLowMassNonDegenerateAccretor();        break;
@@ -4118,7 +4157,6 @@ COMPAS_VARIABLE Options::OptionValue(const T_ANY_PROPERTY p_Property) const {
         case PROGRAM_OPTION::MT_CRIT_MR_WD                                  : value = MassTransferCriticalMassRatioWhiteDwarf();                            break;
         case PROGRAM_OPTION::MT_CRIT_MR_WD_DEGENERATE_ACCRETOR              : value = MassTransferCriticalMassRatioWhiteDwarfDegenerateAccretor();          break;
         case PROGRAM_OPTION::MT_CRIT_MR_WD_NONDEGENERATE_ACCRETOR           : value = MassTransferCriticalMassRatioWhiteDwarfNonDegenerateAccretor();       break;
-        */
 
         case PROGRAM_OPTION::MT_FRACTION_ACCRETED                           : value = MassTransferFractionAccreted();                                       break;
         case PROGRAM_OPTION::MT_JLOSS                                       : value = MassTransferJloss();                                                  break;
