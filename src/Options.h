@@ -313,28 +313,28 @@ private:
 
         "critical-mass-ratio-giant-degenerate-accretor",
         "critical-mass-ratio-giant-non-degenerate-accretor",
-        "critical-mass-ratio-giant",
+        "use-critical-mass-ratio-giant",
         "critical-mass-ratio-helium-giant-degenerate-accretor",
         "critical-mass-ratio-helium-giant-non-degenerate-accretor",
-        "critical-mass-ratio-helium-giant",
+        "use-critical-mass-ratio-helium-giant",
         "critical-mass-ratio-helium-hg-degenerate-accretor",
         "critical-mass-ratio-helium-hg-non-degenerate-accretor",
-        "critical-mass-ratio-helium-hg",
+        "use-critical-mass-ratio-helium-hg",
         "critical-mass-ratio-helium-ms-degenerate-accretor",
         "critical-mass-ratio-helium-ms-non-degenerate-accretor",
-        "critical-mass-ratio-helium-ms",
+        "use-critical-mass-ratio-helium-ms",
         "critical-mass-ratio-hg-degenerate-accretor",
         "critical-mass-ratio-hg-non-degenerate-accretor",
-        "critical-mass-ratio-hg",
+        "use-critical-mass-ratio-hg",
         "critical-mass-ratio-ms-high-mass-degenerate-accretor",
         "critical-mass-ratio-ms-high-mass-non-degenerate-accretor",
-        "critical-mass-ratio-ms-high-mass",
+        "use-critical-mass-ratio-ms-high-mass",
         "critical-mass-ratio-ms-low-mass-degenerate-accretor",
         "critical-mass-ratio-ms-low-mass-non-degenerate-accretor",
-        "critical-mass-ratio-ms-low-mass",
+        "use-critical-mass-ratio-ms-low-mass",
         "critical-mass-ratio-white-dwarf-degenerate-accretor",
         "critical-mass-ratio-white-dwarf-non-degenerate-accretor",
-        "critical-mass-ratio-white-dwarf",
+        "use-critical-mass-ratio-white-dwarf",
 
         "eccentricity", "e",
         "eccentricity-distribution",
@@ -1255,28 +1255,28 @@ public:
     double                                      MassTransferCParameter() const                                          { return OPT_VALUE("mass-transfer-thermal-limit-C", m_MassTransferCParameter, true); }
 
     // AVG
-    bool                                        MassTransferCriticalMassRatioMSLowMass() const                          { return m_CmdLine.optionValues.m_MassTransferCriticalMassRatioMSLowMass; }     // JR: no option implemented - always FALSE
+    bool                                        MassTransferCriticalMassRatioMSLowMass() const                          { return OPT_VALUE("use-critical-mass-ratio-MS-low-mass", m_MassTransferCriticalMassRatioMSLowMass, true); }
     double                                      MassTransferCriticalMassRatioMSLowMassDegenerateAccretor() const        { return OPT_VALUE("critical-mass-ratio-ms-low-mass-degenerate-accretor", m_MassTransferCriticalMassRatioMSLowMassDegenerateAccretor, true); }
     double                                      MassTransferCriticalMassRatioMSLowMassNonDegenerateAccretor() const     { return OPT_VALUE("critical-mass-ratio-ms-low-mass-non-degenerate-accretor", m_MassTransferCriticalMassRatioMSLowMassNonDegenerateAccretor, true); }
-    bool                                        MassTransferCriticalMassRatioMSHighMass() const                         { return m_CmdLine.optionValues.m_MassTransferCriticalMassRatioMSHighMass; }    // JR: no option implemented - always FALSE
+    bool                                        MassTransferCriticalMassRatioMSHighMass() const                         { return OPT_VALUE("use-critical-mass-ratio-MS-high-mass", m_MassTransferCriticalMassRatioMSHighMass, true); }
     double                                      MassTransferCriticalMassRatioMSHighMassDegenerateAccretor() const       { return OPT_VALUE("critical-mass-ratio-ms-high-mass-degenerate-accretor", m_MassTransferCriticalMassRatioMSHighMassDegenerateAccretor, true); }
     double                                      MassTransferCriticalMassRatioMSHighMassNonDegenerateAccretor() const    { return OPT_VALUE("critical-mass-ratio-ms-high-mass-non-degenerate-accretor", m_MassTransferCriticalMassRatioMSHighMassNonDegenerateAccretor, true); }
-    bool                                        MassTransferCriticalMassRatioGiant() const                              { return m_CmdLine.optionValues.m_MassTransferCriticalMassRatioGiant; }         // JR: no option implemented - always FALSE
+    bool                                        MassTransferCriticalMassRatioGiant() const                              { return OPT_VALUE("use-critical-mass-ratio-giant", m_MassTransferCriticalMassRatioGiant, true); }
     double                                      MassTransferCriticalMassRatioGiantDegenerateAccretor() const            { return OPT_VALUE("critical-mass-ratio-giant-degenerate-accretor", m_MassTransferCriticalMassRatioGiantDegenerateAccretor, true); }
     double                                      MassTransferCriticalMassRatioGiantNonDegenerateAccretor() const         { return OPT_VALUE("critical-mass-ratio-giant-non-degenerate-accretor", m_MassTransferCriticalMassRatioGiantNonDegenerateAccretor, true); }
-    bool                                        MassTransferCriticalMassRatioHG() const                                 { return m_CmdLine.optionValues.m_MassTransferCriticalMassRatioHG; }            // JR: no option implemented - always FALSE
+    bool                                        MassTransferCriticalMassRatioHG() const                                 { return OPT_VALUE("use-critical-mass-ratio-HG", m_MassTransferCriticalMassRatioHG, true); }
     double                                      MassTransferCriticalMassRatioHGDegenerateAccretor() const               { return OPT_VALUE("critical-mass-ratio-hg-degenerate-accretor", m_MassTransferCriticalMassRatioHGDegenerateAccretor, true); }
     double                                      MassTransferCriticalMassRatioHGNonDegenerateAccretor() const            { return OPT_VALUE("critical-mass-ratio-hg-non-degenerate-accretor", m_MassTransferCriticalMassRatioHGNonDegenerateAccretor, true); }
-    bool                                        MassTransferCriticalMassRatioHeliumGiant() const                        { return m_CmdLine.optionValues.m_MassTransferCriticalMassRatioHeliumGiant; }   // JR: no option implemented - always FALSE
+    bool                                        MassTransferCriticalMassRatioHeliumGiant() const                        { return OPT_VALUE("use-critical-mass-ratio-helium-giant", m_MassTransferCriticalMassRatioHeliumGiant, true); }
     double                                      MassTransferCriticalMassRatioHeliumGiantDegenerateAccretor() const      { return OPT_VALUE("critical-mass-ratio-helium-giant-degenerate-accretor", m_MassTransferCriticalMassRatioHeliumGiantDegenerateAccretor, true); }
     double                                      MassTransferCriticalMassRatioHeliumGiantNonDegenerateAccretor() const   { return OPT_VALUE("critical-mass-ratio-helium-giant-non-degenerate-accretor", m_MassTransferCriticalMassRatioHeliumGiantNonDegenerateAccretor, true); }
-    bool                                        MassTransferCriticalMassRatioHeliumHG() const                           { return m_CmdLine.optionValues.m_MassTransferCriticalMassRatioHeliumHG; }      // JR: no option implemented - always FALSE
+    bool                                        MassTransferCriticalMassRatioHeliumHG() const                           { return OPT_VALUE("use-critical-mass-ratio-helium-HG", m_MassTransferCriticalMassRatioHeliumHG, true); }
     double                                      MassTransferCriticalMassRatioHeliumHGDegenerateAccretor() const         { return OPT_VALUE("critical-mass-ratio-helium-hg-degenerate-accretor", m_MassTransferCriticalMassRatioHeliumHGDegenerateAccretor, true); }
     double                                      MassTransferCriticalMassRatioHeliumHGNonDegenerateAccretor() const      { return OPT_VALUE("critical-mass-ratio-helium-hg-non-degenerate-accretor", m_MassTransferCriticalMassRatioHeliumHGNonDegenerateAccretor, true); }
-    bool                                        MassTransferCriticalMassRatioHeliumMS() const                           { return m_CmdLine.optionValues.m_MassTransferCriticalMassRatioHeliumMS; }      // JR: no option implemented - always FALSE
+    bool                                        MassTransferCriticalMassRatioHeliumMS() const                           { return OPT_VALUE("use-critical-mass-ratio-helium-MS", m_MassTransferCriticalMassRatioHeliumMS, true); }
     double                                      MassTransferCriticalMassRatioHeliumMSDegenerateAccretor() const         { return OPT_VALUE("critical-mass-ratio-helium-ms-degenerate-accretor", m_MassTransferCriticalMassRatioHeliumMSDegenerateAccretor, true); }
     double                                      MassTransferCriticalMassRatioHeliumMSNonDegenerateAccretor() const      { return OPT_VALUE("critical-mass-ratio-helium-ms-non-degenerate-accretor", m_MassTransferCriticalMassRatioHeliumMSNonDegenerateAccretor, true); }
-    bool                                        MassTransferCriticalMassRatioWhiteDwarf() const                         { return m_CmdLine.optionValues.m_MassTransferCriticalMassRatioWhiteDwarf; }    // JR: no option implemented - always FALSE
+    bool                                        MassTransferCriticalMassRatioWhiteDwarf() const                         { return OPT_VALUE("use-critical-mass-ratio-white-dwarf", m_MassTransferCriticalMassRatioWhiteDwarf, true); }
     double                                      MassTransferCriticalMassRatioWhiteDwarfDegenerateAccretor() const       { return OPT_VALUE("critical-mass-ratio-white-dwarf-degenerate-accretor", m_MassTransferCriticalMassRatioWhiteDwarfDegenerateAccretor, true); }
     double                                      MassTransferCriticalMassRatioWhiteDwarfNonDegenerateAccretor() const    { return OPT_VALUE("critical-mass-ratio-white-dwarf-non-degenerate-accretor", m_MassTransferCriticalMassRatioWhiteDwarfNonDegenerateAccretor, true); }
 

@@ -386,16 +386,16 @@ void Options::OptionValues::Initialise() {
     m_MassTransferCriticalMassRatioMSLowMassDegenerateAccretor      = 1.0;                                                  // Claeys+ 2014 = 1.0
 
     m_MassTransferCriticalMassRatioMSHighMass                       = false;
-    m_MassTransferCriticalMassRatioMSHighMassNonDegenerateAccretor  = 0.625;                                                // Claeys+ 2014 = 0.625
-    m_MassTransferCriticalMassRatioMSHighMassDegenerateAccretor     = 0.0;
+    m_MassTransferCriticalMassRatioMSHighMassNonDegenerateAccretor  = 0.65; //0.625;                                                // Claeys+ 2014 = 0.625
+    m_MassTransferCriticalMassRatioMSHighMassDegenerateAccretor     = 0.65; //0.0;
 
     m_MassTransferCriticalMassRatioHG                               = false;
-    m_MassTransferCriticalMassRatioHGNonDegenerateAccretor          = 0.40;                                                 // Claeys+ 2014 = 0.25
-    m_MassTransferCriticalMassRatioHGDegenerateAccretor             = 0.21;                                                 // Claeys+ 2014 = 0.21
+    m_MassTransferCriticalMassRatioHGNonDegenerateAccretor          = 0.4; //0.40;                                                 // Claeys+ 2014 = 0.25
+    m_MassTransferCriticalMassRatioHGDegenerateAccretor             = 0.4; //0.21;                                                 // Claeys+ 2014 = 0.21
 
     m_MassTransferCriticalMassRatioGiant                            = false;
-    m_MassTransferCriticalMassRatioGiantNonDegenerateAccretor       = 0.0;
-    m_MassTransferCriticalMassRatioGiantDegenerateAccretor          = 0.87;                                                 // Claeys+ 2014 = 0.81
+    m_MassTransferCriticalMassRatioGiantNonDegenerateAccretor       = -1.0; //0.0;
+    m_MassTransferCriticalMassRatioGiantDegenerateAccretor          = -1.0; //0.87;                                                 // Claeys+ 2014 = 0.81
 
     m_MassTransferCriticalMassRatioHeliumMS                         = false;
     m_MassTransferCriticalMassRatioHeliumMSNonDegenerateAccretor    = 0.625;
@@ -782,43 +782,43 @@ bool Options::AddOptions(OptionValues *p_Options, po::options_description *p_Opt
         // RTW - put critical mass ratio bools here
         (
             "use-critical-mass-ratio-giant",
-            po::value<bool>(&p_Options->m_MassTransferCriticalMassRatioGiant)->default_value(p_Options->m_MassTransferCriticalMassRatioGiant),
-            ("Use critical mass ratio for MT from a giant star (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioGiant) + ")").c_str()
+            po::value<bool>(&p_Options->m_MassTransferCriticalMassRatioGiant)->default_value(p_Options->m_MassTransferCriticalMassRatioGiant)->implicit_value(true),
+            ("Use critical mass ratio for MT from a giant star (default = " + std::string(p_Options->m_MassTransferCriticalMassRatioGiant ? "TRUE" : "FALSE") + ")").c_str()
         )
         (
             "use-critical-mass-ratio-helium-giant",
-            po::value<bool>(&p_Options->m_MassTransferCriticalMassRatioHeliumGiant)->default_value(p_Options->m_MassTransferCriticalMassRatioHeliumGiant),
-            ("Use critical mass ratio for MT from a helium giant star (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioHeliumGiant) + ")").c_str()
+            po::value<bool>(&p_Options->m_MassTransferCriticalMassRatioHeliumGiant)->default_value(p_Options->m_MassTransferCriticalMassRatioHeliumGiant)->implicit_value(true),
+            ("Use critical mass ratio for MT from a helium giant star (default = " + std::string(p_Options->m_MassTransferCriticalMassRatioHeliumGiant ? "TRUE" : "FALSE") + ")").c_str()
         )
         (
             "use-critical-mass-ratio-helium-HG",
-            po::value<bool>(&p_Options->m_MassTransferCriticalMassRatioHeliumHG)->default_value(p_Options->m_MassTransferCriticalMassRatioHeliumHG),
-            ("Use critical mass ratio for MT from a helium HG star (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioHeliumHG) + ")").c_str()
+            po::value<bool>(&p_Options->m_MassTransferCriticalMassRatioHeliumHG)->default_value(p_Options->m_MassTransferCriticalMassRatioHeliumHG)->implicit_value(true),
+            ("Use critical mass ratio for MT from a helium HG star (default = " + std::string(p_Options->m_MassTransferCriticalMassRatioHeliumHG ? "TRUE" : "FALSE") + ")").c_str()
         )
         (
             "use-critical-mass-ratio-helium-MS",
-            po::value<bool>(&p_Options->m_MassTransferCriticalMassRatioHeliumMS)->default_value(p_Options->m_MassTransferCriticalMassRatioHeliumMS),
-            ("Use critical mass ratio for MT from a helium MS star (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioHeliumMS) + ")").c_str()
+            po::value<bool>(&p_Options->m_MassTransferCriticalMassRatioHeliumMS)->default_value(p_Options->m_MassTransferCriticalMassRatioHeliumMS)->implicit_value(true),
+            ("Use critical mass ratio for MT from a helium MS star (default = " + std::string(p_Options->m_MassTransferCriticalMassRatioHeliumMS ? "TRUE" : "FALSE") + ")").c_str()
         )
         (
             "use-critical-mass-ratio-HG",
-            po::value<bool>(&p_Options->m_MassTransferCriticalMassRatioHG)->default_value(p_Options->m_MassTransferCriticalMassRatioHG),
-            ("Use critical mass ratio for MT from a HG star (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioHG) + ")").c_str()
+            po::value<bool>(&p_Options->m_MassTransferCriticalMassRatioHG)->default_value(p_Options->m_MassTransferCriticalMassRatioHG)->implicit_value(true),
+            ("Use critical mass ratio for MT from a HG star (default = " + std::string(p_Options->m_MassTransferCriticalMassRatioHG ? "TRUE" : "FALSE") + ")").c_str()
         )
         (
             "use-critical-mass-ratio-MS-high-mass",
-            po::value<bool>(&p_Options->m_MassTransferCriticalMassRatioMSHighMass)->default_value(p_Options->m_MassTransferCriticalMassRatioMSHighMass),
-            ("Use critical mass ratio for MT from a MS star to a degenerate accretor (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioMSHighMass) + ")").c_str()
+            po::value<bool>(&p_Options->m_MassTransferCriticalMassRatioMSHighMass)->default_value(p_Options->m_MassTransferCriticalMassRatioMSHighMass)->implicit_value(true),
+            ("Use critical mass ratio for MT from a MS star to a degenerate accretor (default = " + std::string(p_Options->m_MassTransferCriticalMassRatioMSHighMass ? "TRUE" : "FALSE") + ")").c_str()
         )
         (
             "use-critical-mass-ratio-MS-low-mass",
-            po::value<bool>(&p_Options->m_MassTransferCriticalMassRatioMSLowMass)->default_value(p_Options->m_MassTransferCriticalMassRatioMSLowMass),
-            ("Use critical mass ratio for MT from a MS star to a degenerate accretor (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioMSLowMass) + ")").c_str()
+            po::value<bool>(&p_Options->m_MassTransferCriticalMassRatioMSLowMass)->default_value(p_Options->m_MassTransferCriticalMassRatioMSLowMass)->implicit_value(true),
+            ("Use critical mass ratio for MT from a MS star to a degenerate accretor (default = " + std::string(p_Options->m_MassTransferCriticalMassRatioMSLowMass ? "TRUE" : "FALSE") + ")").c_str()
         )
         (
             "use-critical-mass-ratio-white-dwarf",
-            po::value<bool>(&p_Options->m_MassTransferCriticalMassRatioWhiteDwarf)->default_value(p_Options->m_MassTransferCriticalMassRatioWhiteDwarf),
-            ("Use critical mass ratio for MT from a white dwarf (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioWhiteDwarf) + ")").c_str()
+            po::value<bool>(&p_Options->m_MassTransferCriticalMassRatioWhiteDwarf)->default_value(p_Options->m_MassTransferCriticalMassRatioWhiteDwarf)->implicit_value(true),
+            ("Use critical mass ratio for MT from a white dwarf (default = " + std::string(p_Options->m_MassTransferCriticalMassRatioWhiteDwarf ? "TRUE" : "FALSE") + ")").c_str()
         )
 
         (
@@ -935,83 +935,83 @@ bool Options::AddOptions(OptionValues *p_Options, po::options_description *p_Opt
         // AVG - 17/03/2020 - Uncomment mass-ratio options when fully implemented
         (
             "critical-mass-ratio-giant-degenerate-accretor",
-            po::value<double>(&m_MassTransferCriticalMassRatioGiantDegenerateAccretor)->default_value(m_MassTransferCriticalMassRatioGiantDegenerateAccretor),
-            ("Critical mass ratio for MT from a giant star (default = " + std::to_string(m_MassTransferCriticalMassRatioGiantDegenerateAccretor) + ") Specify both giant flags to use. 0 is always stable, <0 is disabled").c_str()
+            po::value<double>(&p_Options->m_MassTransferCriticalMassRatioGiantDegenerateAccretor)->default_value(p_Options->m_MassTransferCriticalMassRatioGiantDegenerateAccretor),
+            ("Critical mass ratio for MT from a giant star (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioGiantDegenerateAccretor) + ") Specify both giant flags to use. 0 is always stable, <0 is disabled").c_str()
         )
         (
             "critical-mass-ratio-giant-non-degenerate-accretor",
-            po::value<double>(&m_MassTransferCriticalMassRatioGiantNonDegenerateAccretor)->default_value(m_MassTransferCriticalMassRatioGiantNonDegenerateAccretor),
-            ("Critical mass ratio for MT from a giant star (default = " + std::to_string(m_MassTransferCriticalMassRatioGiantNonDegenerateAccretor) + ") Specify both giant flags to use. 0 is always stable, <0 is disabled").c_str()
+            po::value<double>(&p_Options->m_MassTransferCriticalMassRatioGiantNonDegenerateAccretor)->default_value(p_Options->m_MassTransferCriticalMassRatioGiantNonDegenerateAccretor),
+            ("Critical mass ratio for MT from a giant star (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioGiantNonDegenerateAccretor) + ") Specify both giant flags to use. 0 is always stable, <0 is disabled").c_str()
         )
         (
             "critical-mass-ratio-helium-giant-degenerate-accretor",
-            po::value<double>(&m_MassTransferCriticalMassRatioHeliumGiantDegenerateAccretor)->default_value(m_MassTransferCriticalMassRatioHeliumGiantDegenerateAccretor),
-            ("Critical mass ratio for MT from a helium giant star (default = " + std::to_string(m_MassTransferCriticalMassRatioHeliumGiantDegenerateAccretor) + ") Specify both helium giant flags to use. 0 is always stable, <0 is disabled").c_str()
+            po::value<double>(&p_Options->m_MassTransferCriticalMassRatioHeliumGiantDegenerateAccretor)->default_value(p_Options->m_MassTransferCriticalMassRatioHeliumGiantDegenerateAccretor),
+            ("Critical mass ratio for MT from a helium giant star (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioHeliumGiantDegenerateAccretor) + ") Specify both helium giant flags to use. 0 is always stable, <0 is disabled").c_str()
         )
         (
             "critical-mass-ratio-helium-giant-non-degenerate-accretor",
-            po::value<double>(&m_MassTransferCriticalMassRatioHeliumGiantNonDegenerateAccretor)->default_value(m_MassTransferCriticalMassRatioHeliumGiantNonDegenerateAccretor),
-            ("Critical mass ratio for MT from a helium giant star (default = " + std::to_string(m_MassTransferCriticalMassRatioHeliumGiantNonDegenerateAccretor) + ") Specify both helium giant flags to use. 0 is always stable, <0 is disabled").c_str()
+            po::value<double>(&p_Options->m_MassTransferCriticalMassRatioHeliumGiantNonDegenerateAccretor)->default_value(p_Options->m_MassTransferCriticalMassRatioHeliumGiantNonDegenerateAccretor),
+            ("Critical mass ratio for MT from a helium giant star (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioHeliumGiantNonDegenerateAccretor) + ") Specify both helium giant flags to use. 0 is always stable, <0 is disabled").c_str()
         )
         (
             "critical-mass-ratio-helium-HG-degenerate-accretor",
-            po::value<double>(&m_MassTransferCriticalMassRatioHeliumHGDegenerateAccretor)->default_value(m_MassTransferCriticalMassRatioHeliumHGDegenerateAccretor),
-            ("Critical mass ratio for MT from a helium HG star (default = " + std::to_string(m_MassTransferCriticalMassRatioHeliumHGDegenerateAccretor) + ") Specify both helium HG flags to use. 0 is always stable, <0 is disabled").c_str()
+            po::value<double>(&p_Options->m_MassTransferCriticalMassRatioHeliumHGDegenerateAccretor)->default_value(p_Options->m_MassTransferCriticalMassRatioHeliumHGDegenerateAccretor),
+            ("Critical mass ratio for MT from a helium HG star (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioHeliumHGDegenerateAccretor) + ") Specify both helium HG flags to use. 0 is always stable, <0 is disabled").c_str()
         )
         (
             "critical-mass-ratio-helium-HG-non-degenerate-accretor",
-            po::value<double>(&m_MassTransferCriticalMassRatioHeliumHGNonDegenerateAccretor)->default_value(m_MassTransferCriticalMassRatioHeliumHGNonDegenerateAccretor),
-            ("Critical mass ratio for MT from a helium HG star (default = " + std::to_string(m_MassTransferCriticalMassRatioHeliumHGNonDegenerateAccretor) + ") Specify both helium HG flags to use. 0 is always stable, <0 is disabled").c_str()
+            po::value<double>(&p_Options->m_MassTransferCriticalMassRatioHeliumHGNonDegenerateAccretor)->default_value(p_Options->m_MassTransferCriticalMassRatioHeliumHGNonDegenerateAccretor),
+            ("Critical mass ratio for MT from a helium HG star (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioHeliumHGNonDegenerateAccretor) + ") Specify both helium HG flags to use. 0 is always stable, <0 is disabled").c_str()
         )
         (
             "critical-mass-ratio-helium-MS-degenerate-accretor",
-            po::value<double>(&m_MassTransferCriticalMassRatioHeliumMSDegenerateAccretor)->default_value(m_MassTransferCriticalMassRatioHeliumMSDegenerateAccretor),
-            ("Critical mass ratio for MT from a helium MS star (default = " + std::to_string(m_MassTransferCriticalMassRatioHeliumMSDegenerateAccretor) + ") Specify both helium MS flags to use. 0 is always stable, <0 is disabled").c_str()
+            po::value<double>(&p_Options->m_MassTransferCriticalMassRatioHeliumMSDegenerateAccretor)->default_value(p_Options->m_MassTransferCriticalMassRatioHeliumMSDegenerateAccretor),
+            ("Critical mass ratio for MT from a helium MS star (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioHeliumMSDegenerateAccretor) + ") Specify both helium MS flags to use. 0 is always stable, <0 is disabled").c_str()
         )
         (
             "critical-mass-ratio-helium-MS-non-degenerate-accretor",
-            po::value<double>(&m_MassTransferCriticalMassRatioHeliumMSNonDegenerateAccretor)->default_value(m_MassTransferCriticalMassRatioHeliumMSNonDegenerateAccretor),
-            ("Critical mass ratio for MT from a helium MS star (default = " + std::to_string(m_MassTransferCriticalMassRatioHeliumMSNonDegenerateAccretor) + ") Specify both helium MS flags to use. 0 is always stable, <0 is disabled").c_str()
+            po::value<double>(&p_Options->m_MassTransferCriticalMassRatioHeliumMSNonDegenerateAccretor)->default_value(p_Options->m_MassTransferCriticalMassRatioHeliumMSNonDegenerateAccretor),
+            ("Critical mass ratio for MT from a helium MS star (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioHeliumMSNonDegenerateAccretor) + ") Specify both helium MS flags to use. 0 is always stable, <0 is disabled").c_str()
         )
         (
             "critical-mass-ratio-HG-degenerate-accretor",
-            po::value<double>(&m_MassTransferCriticalMassRatioHGDegenerateAccretor)->default_value(m_MassTransferCriticalMassRatioHGDegenerateAccretor),
-            ("Critical mass ratio for MT from a HG star (default = " + std::to_string(m_MassTransferCriticalMassRatioHGDegenerateAccretor) + ") Specify both HG flags to use. 0 is always stable, <0 is disabled").c_str()
+            po::value<double>(&p_Options->m_MassTransferCriticalMassRatioHGDegenerateAccretor)->default_value(p_Options->m_MassTransferCriticalMassRatioHGDegenerateAccretor),
+            ("Critical mass ratio for MT from a HG star (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioHGDegenerateAccretor) + ") Specify both HG flags to use. 0 is always stable, <0 is disabled").c_str()
         )
         (
             "critical-mass-ratio-HG-non-degenerate-accretor",
-            po::value<double>(&m_MassTransferCriticalMassRatioHGNonDegenerateAccretor)->default_value(m_MassTransferCriticalMassRatioHGNonDegenerateAccretor),
-            ("Critical mass ratio for MT from a HG star (default = " + std::to_string(m_MassTransferCriticalMassRatioHGNonDegenerateAccretor) + ") Specify both HG flags to use. 0 is always stable, <0 is disabled").c_str()
+            po::value<double>(&p_Options->m_MassTransferCriticalMassRatioHGNonDegenerateAccretor)->default_value(p_Options->m_MassTransferCriticalMassRatioHGNonDegenerateAccretor),
+            ("Critical mass ratio for MT from a HG star (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioHGNonDegenerateAccretor) + ") Specify both HG flags to use. 0 is always stable, <0 is disabled").c_str()
         )
         (
             "critical-mass-ratio-MS-high-mass-degenerate-accretor",
-            po::value<double>(&m_MassTransferCriticalMassRatioMSHighMassDegenerateAccretor)->default_value(m_MassTransferCriticalMassRatioMSHighMassDegenerateAccretor),
-            ("Critical mass ratio for MT from a MS star to a degenerate accretor (default = " + std::to_string(m_MassTransferCriticalMassRatioMSHighMassDegenerateAccretor) + " Specify both MS high mass flags to use. 0 is always stable, <0 is disabled").c_str()
+            po::value<double>(&p_Options->m_MassTransferCriticalMassRatioMSHighMassDegenerateAccretor)->default_value(p_Options->m_MassTransferCriticalMassRatioMSHighMassDegenerateAccretor),
+            ("Critical mass ratio for MT from a MS star to a degenerate accretor (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioMSHighMassDegenerateAccretor) + " Specify both MS high mass flags to use. 0 is always stable, <0 is disabled").c_str()
         )
         (
             "critical-mass-ratio-MS-high-mass-non-degenerate-accretor",
-            po::value<double>(&m_MassTransferCriticalMassRatioMSHighMassNonDegenerateAccretor)->default_value(m_MassTransferCriticalMassRatioMSHighMassNonDegenerateAccretor),
-            ("Critical mass ratio for MT from a MS star (default = " + std::to_string(m_MassTransferCriticalMassRatioMSHighMassNonDegenerateAccretor) + ") Specify both MS high mass flags to use. 0 is always stable, <0 is disabled").c_str()
+            po::value<double>(&p_Options->m_MassTransferCriticalMassRatioMSHighMassNonDegenerateAccretor)->default_value(p_Options->m_MassTransferCriticalMassRatioMSHighMassNonDegenerateAccretor),
+            ("Critical mass ratio for MT from a MS star (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioMSHighMassNonDegenerateAccretor) + ") Specify both MS high mass flags to use. 0 is always stable, <0 is disabled").c_str()
         )
         (
             "critical-mass-ratio-MS-low-mass-degenerate-accretor",
-            po::value<double>(&m_MassTransferCriticalMassRatioMSLowMassDegenerateAccretor)->default_value(m_MassTransferCriticalMassRatioMSLowMassDegenerateAccretor),
-            ("Critical mass ratio for MT from a MS star to a degenerate accretor (default = " + std::to_string(m_MassTransferCriticalMassRatioMSLowMassDegenerateAccretor) + " Specify both MS low mass flags to use. 0 is always stable, <0 is disabled").c_str()
+            po::value<double>(&p_Options->m_MassTransferCriticalMassRatioMSLowMassDegenerateAccretor)->default_value(p_Options->m_MassTransferCriticalMassRatioMSLowMassDegenerateAccretor),
+            ("Critical mass ratio for MT from a MS star to a degenerate accretor (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioMSLowMassDegenerateAccretor) + " Specify both MS low mass flags to use. 0 is always stable, <0 is disabled").c_str()
         )
         (
             "critical-mass-ratio-MS-low-mass-non-degenerate-accretor",
-            po::value<double>(&m_MassTransferCriticalMassRatioMSLowMassNonDegenerateAccretor)->default_value(m_MassTransferCriticalMassRatioMSLowMassNonDegenerateAccretor),
-            ("Critical mass ratio for MT from a MS star (default = " + std::to_string(m_MassTransferCriticalMassRatioMSLowMassNonDegenerateAccretor) + ") Specify both MS low mass flags to use. 0 is always stable, <0 is disabled").c_str()
+            po::value<double>(&p_Options->m_MassTransferCriticalMassRatioMSLowMassNonDegenerateAccretor)->default_value(p_Options->m_MassTransferCriticalMassRatioMSLowMassNonDegenerateAccretor),
+            ("Critical mass ratio for MT from a MS star (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioMSLowMassNonDegenerateAccretor) + ") Specify both MS low mass flags to use. 0 is always stable, <0 is disabled").c_str()
         )
         (
             "critical-mass-ratio-white-dwarf-degenerate-accretor",
-            po::value<double>(&m_MassTransferCriticalMassRatioWhiteDwarfDegenerateAccretor)->default_value(m_MassTransferCriticalMassRatioWhiteDwarfDegenerateAccretor),
-            ("Critical mass ratio for MT from a white dwarf (default = " + std::to_string(m_MassTransferCriticalMassRatioWhiteDwarfDegenerateAccretor) + ") Specify both white dwarf flags to use. 0 is always stable, <0 is disabled").c_str()
+            po::value<double>(&p_Options->m_MassTransferCriticalMassRatioWhiteDwarfDegenerateAccretor)->default_value(p_Options->m_MassTransferCriticalMassRatioWhiteDwarfDegenerateAccretor),
+            ("Critical mass ratio for MT from a white dwarf (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioWhiteDwarfDegenerateAccretor) + ") Specify both white dwarf flags to use. 0 is always stable, <0 is disabled").c_str()
         )
         (
             "critical-mass-ratio-white-dwarf-non-degenerate-accretor",
-            po::value<double>(&m_MassTransferCriticalMassRatioWhiteDwarfNonDegenerateAccretor)->default_value(m_MassTransferCriticalMassRatioWhiteDwarfNonDegenerateAccretor),
-            ("Critical mass ratio for MT from a white dwarf (default = " + std::to_string(m_MassTransferCriticalMassRatioWhiteDwarfNonDegenerateAccretor) + ") Specify both white dwarf flags to use. 0 is always stable, <0 is disabled").c_str()
+            po::value<double>(&p_Options->m_MassTransferCriticalMassRatioWhiteDwarfNonDegenerateAccretor)->default_value(p_Options->m_MassTransferCriticalMassRatioWhiteDwarfNonDegenerateAccretor),
+            ("Critical mass ratio for MT from a white dwarf (default = " + std::to_string(p_Options->m_MassTransferCriticalMassRatioWhiteDwarfNonDegenerateAccretor) + ") Specify both white dwarf flags to use. 0 is always stable, <0 is disabled").c_str()
         )
 
         (
