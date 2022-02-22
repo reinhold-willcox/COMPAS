@@ -906,21 +906,6 @@ void BaseBinaryStar::StashRLOFProperties(const MASS_TRANSFER_TIMING p_Which) {
                              m_RLOFDetails.propsPostMT ;
 
     // update properites for appropriate timestep
-<<<<<<< HEAD
-    rlofPropertiesToReset->id            = m_ObjectId;
-    rlofPropertiesToReset->mass1         = m_Star1->Mass();
-    rlofPropertiesToReset->mass2         = m_Star2->Mass();
-    rlofPropertiesToReset->radius1       = m_Star1->Radius();
-    rlofPropertiesToReset->radius2       = m_Star2->Radius();
-    rlofPropertiesToReset->stellarType1  = m_Star1->StellarType();
-    rlofPropertiesToReset->stellarType2  = m_Star2->StellarType();
-    rlofPropertiesToReset->eccentricity  = m_Eccentricity;
-    rlofPropertiesToReset->semiMajorAxis = m_SemiMajorAxis * AU_TO_RSOL;                                       // semi-major axis - change units to Rsol
-    rlofPropertiesToReset->time          = m_Time;
-    rlofPropertiesToReset->isRLOF1       = m_Star1->IsRLOF();
-    rlofPropertiesToReset->isRLOF2       = m_Star2->IsRLOF();
-    rlofPropertiesToReset->isCE          = m_CEDetails.CEEnow || StellarMerger();
-=======
     rlofPropertiesToReset->id                          = m_ObjectId;
     rlofPropertiesToReset->mass1                       = m_Star1->Mass();
     rlofPropertiesToReset->mass2                       = m_Star2->Mass();
@@ -936,7 +921,6 @@ void BaseBinaryStar::StashRLOFProperties(const MASS_TRANSFER_TIMING p_Which) {
     rlofPropertiesToReset->isRLOF1                     = m_Star1->IsRLOF();
     rlofPropertiesToReset->isRLOF2                     = m_Star2->IsRLOF();
     rlofPropertiesToReset->isCE                        = m_CEDetails.CEEnow;
->>>>>>> dev
 }
 
 
