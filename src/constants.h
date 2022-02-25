@@ -1907,6 +1907,7 @@ enum class BINARY_PROPERTY: int {
     SEMI_MAJOR_AXIS,
     SEMI_MAJOR_AXIS_RSOL,
     SIMULTANEOUS_RLOF,
+    SN_IPRIME,
     STABLE_RLOF_POST_COMMON_ENVELOPE,
     STELLAR_MERGER,
     STELLAR_MERGER_AT_BIRTH,
@@ -2033,6 +2034,7 @@ const COMPASUnorderedMap<BINARY_PROPERTY, std::string> BINARY_PROPERTY_LABEL = {
     { BINARY_PROPERTY::SEMI_MAJOR_AXIS,                                    "SEMI_MAJOR_AXIS" },
     { BINARY_PROPERTY::SEMI_MAJOR_AXIS_RSOL,                               "SEMI_MAJOR_AXIS_RSOL" },
     { BINARY_PROPERTY::SIMULTANEOUS_RLOF,                                  "SIMULTANEOUS_RLOF" },
+    { BINARY_PROPERTY::SN_IPRIME,                                          "SN_IPRIME" },
     { BINARY_PROPERTY::STABLE_RLOF_POST_COMMON_ENVELOPE,                   "STABLE_RLOF_POST_COMMON_ENVELOPE" },
     { BINARY_PROPERTY::STELLAR_MERGER,                                     "STELLAR_MERGER" },
     { BINARY_PROPERTY::STELLAR_MERGER_AT_BIRTH,                            "STELLAR_MERGER_AT_BIRTH" },
@@ -2743,6 +2745,7 @@ const std::map<BINARY_PROPERTY, PROPERTY_DETAILS> BINARY_PROPERTY_DETAIL = {
     { BINARY_PROPERTY::SEMI_MAJOR_AXIS,                                     { TYPENAME::DOUBLE,         "SemiMajorAxis",        "AU",               14, 6 }},
     { BINARY_PROPERTY::SEMI_MAJOR_AXIS_RSOL,                                { TYPENAME::DOUBLE,         "SemiMajorAxis",        "Rsol",             14, 6 }},
     { BINARY_PROPERTY::SIMULTANEOUS_RLOF,                                   { TYPENAME::BOOL,           "Simultaneous_RLOF",    "Event",             0, 0 }},
+    { BINARY_PROPERTY::SN_IPRIME,                                           { TYPENAME::DOUBLE,         "SN_IPrime",            "Angle",            14, 6 }},
     { BINARY_PROPERTY::STABLE_RLOF_POST_COMMON_ENVELOPE,                    { TYPENAME::BOOL,           "Stable_RLOF>CE",       "State",             0, 0 }},
     { BINARY_PROPERTY::STELLAR_MERGER,                                      { TYPENAME::BOOL,           "Merger",               "Event",             0, 0 }},
     { BINARY_PROPERTY::STELLAR_MERGER_AT_BIRTH,                             { TYPENAME::BOOL,           "Merger_At_Birth",      "Event",             0, 0 }},
@@ -3309,7 +3312,8 @@ const ANY_PROPERTY_VECTOR BSE_SUPERNOVAE_REC = {
     SUPERNOVA_PROPERTY::SPEED,
     COMPANION_PROPERTY::SPEED,
     BINARY_PROPERTY::SYSTEMIC_SPEED,
-    SUPERNOVA_PROPERTY::IS_HYDROGEN_POOR
+    SUPERNOVA_PROPERTY::IS_HYDROGEN_POOR,
+    BINARY_PROPERTY::SN_IPRIME,
 };
 
 

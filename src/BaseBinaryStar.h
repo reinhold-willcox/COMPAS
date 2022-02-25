@@ -243,6 +243,7 @@ public:
     double              SemiMajorAxis() const                       { return m_SemiMajorAxis; }
     double              SemiMajorAxisRsol() const                   { return m_SemiMajorAxis * AU_TO_RSOL; }
     bool                SimultaneousRLOF() const                    { return m_RLOFDetails.simultaneousRLOF; }
+    double              SN_IPrime() const                           { return m_IPrime; }
     bool                StableRLOFPostCEE() const                   { return m_RLOFDetails.stableRLOFPostCEE; }
     bool                StellarMerger() const                       { return m_Flags.stellarMerger; }
     bool                StellarMergerAtBirth() const                { return m_Flags.stellarMergerAtBirth; }
