@@ -1774,6 +1774,9 @@ STELLAR_TYPE GiantBranch::ResolvePulsationalPairInstabilitySN() {
                 m_Mass = m_COCoreMass;
             }
 
+            // RTW addition - apply neutrino mass loss
+            m_Mass = BH::CalculateNeutrinoMassLoss_Static(m_Mass);                                // convert to gravitational mass due to neutrino mass loss
+
             m_Mass = std::min(totalMassPrePPISN, m_Mass);                                               // Check if your remnant mass is bigger than your total mass    
 
             } break;
