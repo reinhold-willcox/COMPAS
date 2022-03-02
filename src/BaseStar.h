@@ -60,6 +60,9 @@ public:
             SN_EVENT            ExperiencedSN_Type() const                                      { return utils::SNEventType(m_SupernovaDetails.events.past); }
             bool                ExperiencedUSSN() const                                         { return (m_SupernovaDetails.events.past & SN_EVENT::USSN) == SN_EVENT::USSN; }
             double              HeCoreMass() const                                              { return m_HeCoreMass; }
+            double              InitialLuminosity() const                                       { return m_InitialLuminosity; }
+            double              InitialRadius() const                                           { return m_InitialRadius; }
+            double              InitialTemperature() const                                      { return m_InitialTemperature; }
             bool                IsCCSN() const                                                  { return (m_SupernovaDetails.events.current & SN_EVENT::CCSN) == SN_EVENT::CCSN; }
     virtual bool                IsDegenerate() const                                            { return false; }   // default is not degenerate - White Dwarfs, NS and BH are degenerate
             bool                IsECSN() const                                                  { return (m_SupernovaDetails.events.current & SN_EVENT::ECSN) == SN_EVENT::ECSN; }
@@ -193,6 +196,8 @@ public:
 
     virtual ENVELOPE        DetermineEnvelopeType() const                                                       { return ENVELOPE::REMNANT; }                                       // Default is REMNANT - but should never be called
 
+    virtual void            FastForward()                                                                       { return; }
+
             void            IncrementOmega(const double p_OmegaDelta)                                           { m_Omega += p_OmegaDelta; }                                        // Apply delta to current m_Omega
 
             void            ResolveAccretion(const double p_AccretionMass)                                      { m_Mass = std::max(0.0, m_Mass + p_AccretionMass); }               // Handles donation and accretion - won't let mass go negative
@@ -255,6 +260,9 @@ protected:
     double                  m_LZAMS0;                                   // Effective ZAMS Luminosity
     double                  m_RZAMS0;                                   // Effective ZAMS Radius
     double                  m_TZAMS0;                                   // Effective ZAMS Temperature
+    double                  m_InitialLuminosity;                        // Initial luminosity (Lsol)
+    double                  m_InitialRadius;                            // Initial radius (Rsol)
+    double                  m_InitialTemperature;                       // Initial temperature (Tsol)
 
     // Current timestep variables
     double                  m_Age;                                      // Current effective age (changes with mass loss/gain)(myrs)
