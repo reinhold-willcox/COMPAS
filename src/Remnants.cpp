@@ -92,4 +92,3 @@ double Remnants::ChooseTimestep(const double p_Time) const {
     double dte = dtk;
 
     return std::max(dte, NUCLEAR_MINIMUM_TIMESTEP);
-}

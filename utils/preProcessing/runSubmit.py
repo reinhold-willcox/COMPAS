@@ -115,6 +115,8 @@ class pythonProgramOptions:
         for boolKey, boolVal in self.booleanChoices.items():
             if boolVal is True:
                 self.command.update({boolKey: ''}) 
+            else:
+                self.command.update({boolKey: 'FALSE'}) 
                 
         for numKey, numVal in self.numericalChoices.items():
             if not numVal == None:

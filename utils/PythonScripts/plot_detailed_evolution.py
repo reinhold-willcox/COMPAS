@@ -20,7 +20,12 @@ compasRootDir = os.path.expandvars(os.environ['COMPAS_ROOT_DIR'])
 
 def main():
     ### Read file and create dataframe.
-    data_path = 'COMPAS_Output/Detailed_Output/BSE_Detailed_Output_0.h5'
+    try:
+        optional_input = sys.argv[1] 
+        if optional_input is not None:
+            data_path = optional_input
+    except IndexError: # default
+        data_path = 'COMPAS_Output/Detailed_Output/BSE_Detailed_Output_0.h5'
 
     Data = h5.File(data_path, 'r')
 
@@ -31,8 +36,8 @@ def main():
 
     ### Produce the two plots
     makeDetailedPlots(Data, events)
-    plotVanDenHeuval(events=events)
-    plt.savefig('vanDenHeuvalPlot.eps', bbox_inches='tight',pad_inches = 0, format='eps')
+    plotVanDenHeuvel(events=events)
+    plt.savefig('vanDenHeuvelPlot.eps', bbox_inches='tight',pad_inches = 0, format='eps')
     plt.show()
 
 
@@ -64,11 +69,11 @@ def makeDetailedPlots(Data=None, events=None):
 
 
     rcParams.update(fontparams) # Set configurations for uniform plot output
-    fig, axes = plt.subplots(nrows=len(listOfPlots), figsize=(10, 20)) # W, H
+    fig, axes = plt.subplots(nrows=2, ncols=2, figsize=(15, 8)) # W, H
 
     for ii, specificPlot in enumerate(listOfPlots): # exclude the last one
 
-        ax = axes[ii]
+        ax = axes.flatten()[ii]
 
         # TODO: Set the reverse log scale for time
 
@@ -82,26 +87,24 @@ def makeDetailedPlots(Data=None, events=None):
         # Add vertical lines for specific event times
         [ax.axvline(time, ymin=0.975, zorder=0) for time in event_times]
 
+        ### Top plots should have event letters spaced out, bottom plots should have Time label and tick labels
         # Add the event letters to the first plot
-        if ii == 0:
+        if ii in [0, 1]: # top plots
             spaced_out_event_times = space_out(event_times, min_separation=ax.get_xlim()[1]/75) # min_separation of xmax/50 was found to fit the letter sizes well
             for jj in range(num_events):
                 yOffsetFactor = 1.5 if (ax.get_yscale() == 'log') else 1.02
                 ax.text(x=spaced_out_event_times[jj], y=ax.get_ylim()[1]*yOffsetFactor, s=chr(ord('@')+1+jj)) # The unicode representation of the capital letters - works as long as there are less than 26 images to show
-        
-        if ii < len(listOfPlots):
             ax.axes.xaxis.set_ticklabels([])
-
+        else: # bottom plots
+            ax.set_xlabel('Time / Myr')
+        
         if handles is not None:
             ax.legend(handles=handles, labels=labels, loc='center left', bbox_to_anchor=(1.03,0.5), fancybox=True)
-
-        if (ii == len(listOfPlots)-1): # last of the regular plots
-            ax.set_xlabel('Time / Myr')
 
 
     #### Finalize the boundaries, save, and show
     fig.suptitle('Detailed evolution for seed = {}'.format(Data['SEED'][()][0]), fontsize=18) 
-    fig.tight_layout(h_pad=1, rect= (0., 0.08, 1., .98), pad=0.) # (left, bottom, right, top) 
+    fig.tight_layout(h_pad=1, w_pad=1, rect= (0.08, 0.08, .98, .98), pad=0.) # (left, bottom, right, top) 
     plt.savefig('detailedEvolutionPlot.eps', bbox_inches='tight',pad_inches = 0, format='eps')
 
 
@@ -213,9 +216,12 @@ def plotStellarTypeAttributesAndEccentricity(fig=None, ax=None, Data=None):
     return handles, labels
 
 
-def plotVanDenHeuval(events=None):
+def plotVanDenHeuvel(events=None):
+    # Only want events with an associated image
+    events = [event for event in events if (event.eventImage is not None)]
     num_events = len(events)
     fig, axs = plt.subplots(num_events, 1)
+    fig.set_figwidth(9)
     plt.rcParams["text.usetex"] = True  # Use latex
     
     for ii in range(num_events):
@@ -226,8 +232,12 @@ def plotVanDenHeuval(events=None):
         axs[ii].yaxis.set_label_position("right")
         plt.subplots_adjust(hspace=0)
 
-        pltString = "$t$ = {:.1f} Myr, $a = {:.1f}$ $R_\odot$ \n $M_1$ = {:.1f} $M_\odot$, $M_2$ = {:.1f} $M_\odot$ \n"+events[ii].eventString
-        pltString = pltString.format(events[ii].time,events[ii].a,events[ii].m1,events[ii].m2)
+        if ii==0:
+            pltString = "$t$ = {:.1f} Myr, $a$ = {:.1f} $R_\odot$ \n $M_1$ = {:.1f} $M_\odot$, $M_2$ = {:.1f} $M_\odot$ \n"+events[ii].eventString
+            pltString = pltString.format(events[ii].time, events[ii].a,events[ii].m1,events[ii].m2)
+        else:
+            pltString = "$t$ = {:.1f} Myr, $a$ = {:.1f} to {:.1f} $R_\odot$ \n $M_1$ = {:.1f} to {:.1f} $M_\odot$, $M_2$ = {:.1f} to {:.1f} $M_\odot$ \n"+events[ii].eventString
+            pltString = pltString.format(events[ii].time,events[ii].aprev, events[ii].a,events[ii].m1prev,events[ii].m1,events[ii].m2prev,events[ii].m2)
         
         pad = 5
         axs[ii].annotate(pltString, xy=(0,0.5), xytext=(-axs[ii].yaxis.labelpad + pad,0),xycoords=axs[ii].yaxis.label,fontsize=8,textcoords='offset points', ha='left', va='center')
@@ -302,15 +312,32 @@ class Event(object):
         ii = index
         self.time   = Data['Time'][ii] 
         self.m1     = Data['Mass(1)'][ii]
-        self.m2     = Data['Mass(2)'][ii] 
-        self.stype1 = Data['Stellar_Type(1)'][ii] 
+        self.m2     = Data['Mass(2)'][ii]
+        self.a      = Data['SemiMajorAxis'][ii]
+        if ii==0:
+            self.m1prev=0
+            self.m2prev=0
+            self.aprev=0
+        else:
+            self.m1prev = Data['Mass(1)'][ii-1]
+            self.m2prev = Data['Mass(2)'][ii-1]
+            self.aprev  = Data['SemiMajorAxis'][ii-1]
+        # Cheap kludge for SN separations - later, should clean up when detailed printing is called
+        if eventClass == 'SN':
+            try: # Bad form to do a try except, but this works for now
+                self.a = Data['SemiMajorAxis'][ii+1]
+                self.aprev = Data['SemiMajorAxis'][ii]
+            except:
+                self.a = Data['SemiMajorAxis'][ii]
+                self.aprev = Data['SemiMajorAxis'][ii-1]
+        self.stype1 = Data['Stellar_Type(1)'][ii]
         self.stype2 = Data['Stellar_Type(2)'][ii] 
         self.stypeName1 = stellarTypeMap[self.stype1]
         self.stypeName2 = stellarTypeMap[self.stype2]
-        self.a      = Data['SemiMajorAxis'][ii]
         self.e      = Data['Eccentricity'][ii]
         self.Z1     = Data['Metallicity@ZAMS(1)'][ii]
 
+        self.eventImage = None
         self.eventString = self.getEventDetails(**kwargs)
 
 
@@ -440,10 +467,10 @@ class Event(object):
     def getEventImage(self, image_num, rotate_image):
         """
         Map the eventClass and possibly eventSubClass, with information
-        on the stellar types, to get the van Den Heuval diagrams.
+        on the stellar types, to get the van den Heuvel diagrams.
         """
 
-        self.imgFile = compasRootDir + '/docs/media/vanDenHeuval_figures/{}.png'.format(image_num)
+        self.imgFile = compasRootDir + 'utils/media/vanDenHeuvel_figures/{}.png'.format(image_num)
         img = plt.imread(self.imgFile) # import image
         if rotate_image:
             img = img[:,::-1,:] # flip across y-axis
