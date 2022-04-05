@@ -872,6 +872,12 @@
 //                                      - Fixed mass change on forced envelope loss in response to issue # 743
 // 02.27.03     JR - Feb 8, 2022     - Defect repair:
 //                                      - Fix for issue # 745 - logfile definition records not updated correctly when using logfile-definitions file (see issue for details)
+<<<<<<< HEAD
+// 02.27.04     RTW - Jan 18, 2021   - Enhancements:
+//                                      - Added in option to set initial stellar type, allowing for any of { MS HeMS HeWD COWD ONeWD NS BH }
+
+const std::string VERSION_STRING = "02.27.04";
+=======
 // 02.27.04     RTW - Feb 15, 2022   - Defect repair:
 //                                      - Fix for issue # 761 - USSNe not occuring. See issue for details.
 // 02.27.05     IRS - Feb 17, 2022   - Enhancements:
@@ -883,5 +889,6 @@
  
 
 const std::string VERSION_STRING = "02.27.05";
+>>>>>>> dev
 
 # endif // __changelog_h__
