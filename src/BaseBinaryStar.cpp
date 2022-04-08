@@ -2256,8 +2256,11 @@ void BaseBinaryStar::EvaluateBinary(const double p_Dt) {
     }
     else {
         ResolveMassChanges();                                                                                           // apply mass loss and mass transfer as necessary
-        if (StellarMerger()) {                                                                      // CEE or merger?
-            ResolveCommonEnvelopeEvent();                                                                                   // resolve CEE - immediate event
+        //if (StellarMerger()) {                                                                      // CEE or merger?
+        //    ResolveCommonEnvelopeEvent();                                                                                   // resolve CEE - immediate event
+        //}
+        if (HasStarsTouching()) {                                                                                       // if stars emerged from mass transfer as touching, it's a merger
+            m_Flags.stellarMerger = true;
         }
     }
 
@@ -2344,6 +2347,8 @@ EVOLUTION_STATUS BaseBinaryStar::Evolve() {
         m_Flags.stellarMerger        = true;
         m_Flags.stellarMergerAtBirth = true;
         evolutionStatus              = EVOLUTION_STATUS::STELLAR_MERGER_AT_BIRTH;                                                           // binary components are touching - merger at birth
+        StashRLOFProperties(MASS_TRANSFER_TIMING::PRE_MT);
+        (void)PrintRLOFParameters();                                                                                                // print (log) RLOF parameters
     }
 
     (void)PrintDetailedOutput(m_Id);                                                                                                        // print (log) detailed output for binary
