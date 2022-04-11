@@ -388,7 +388,7 @@ void Options::OptionValues::Initialise() {
     // Mass transfer rejuvenation prescriptions
     m_MassTransferRejuvenationPrescription.type                     = MT_REJUVENATION_PRESCRIPTION::STARTRACK;
     m_MassTransferRejuvenationPrescription.typeString               = MT_REJUVENATION_PRESCRIPTION_LABEL.at(m_MassTransferRejuvenationPrescription.type);
-    
+
     // Mass transfer critical mass ratios
     m_MassTransferCriticalMassRatioMSLowMass                        = false;
     m_MassTransferCriticalMassRatioMSLowMassNonDegenerateAccretor   = 1.44;                                                 // Claeys+ 2014 = 1.44

@@ -936,12 +936,13 @@ bool GiantBranch::IsMassRatioUnstable(const double p_AccretorMass, const bool p_
     bool result = false;                                                                                                    // default is stable
 
     if (OPTIONS->MassTransferCriticalMassRatioGiant()) {
-        return (p_AccretorMass / m_Mass) < (1.67 - 0.3 + 2*PPOW(m_HeCoreMass/m_Mass, 5.0))/2.13; // Hurley 57, assuming x fixed at 0.3
-
-        // RTW hack - Hurley style critical mass ratio
         //result = p_AccretorIsDegenerate
         //            ? (p_AccretorMass / m_Mass) < OPTIONS->MassTransferCriticalMassRatioGiantDegenerateAccretor()           // degenerate accretor
         //            : (p_AccretorMass / m_Mass) < OPTIONS->MassTransferCriticalMassRatioGiantNonDegenerateAccretor();       // non-degenerate accretor
+        
+        // RTW hack - Hurley style critical mass ratio
+        return (p_AccretorMass / m_Mass) < (1.67 - 0.3 + 2*PPOW(m_HeCoreMass/m_Mass, 5.0))/2.13; // Hurley 57, assuming x fixed at 0.3
+
     }
 
     return result;
