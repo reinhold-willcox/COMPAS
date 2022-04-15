@@ -1615,6 +1615,10 @@ void BaseBinaryStar::ResolveCommonEnvelopeEvent() {
         }
 	}
 
+    if (utils::Compare(aFinal, 0.0) <= 0 || utils::Compare(m_Star1->Radius() + m_Star2->Radius(), aFinal * AU_TO_RSOL) > 0) {
+        m_Flags.stellarMerger = true;
+    }
+
     // if CHE enabled, update rotational frequency for constituent stars - assume tidally locked
     if (OPTIONS->CHEMode() != CHE_MODE::NONE) m_Star1->SetOmega(OrbitalAngularVelocity());
     if (OPTIONS->CHEMode() != CHE_MODE::NONE) m_Star2->SetOmega(OrbitalAngularVelocity());
@@ -1821,7 +1825,7 @@ void BaseBinaryStar::CalculateWindsMassLoss() {
 void BaseBinaryStar::CalculateMassTransfer(const double p_Dt) {
     
     InitialiseMassTransfer();                                                                                                   // initialise - even if not using mass transfer (sets some flags we might need)
-    
+
     if (Unbound())
         return;                                                                                                                 // do nothing for unbound binaries
     
@@ -1857,8 +1861,6 @@ void BaseBinaryStar::CalculateMassTransfer(const double p_Dt) {
 	                 OPTIONS->MassTransferCriticalMassRatioHG()          || OPTIONS->MassTransferCriticalMassRatioGiant()       ||
 	                 OPTIONS->MassTransferCriticalMassRatioHeliumGiant() || OPTIONS->MassTransferCriticalMassRatioHeliumMS()    ||
                      OPTIONS->MassTransferCriticalMassRatioHeliumHG()    || OPTIONS->MassTransferCriticalMassRatioWhiteDwarf();
-
-    // RTW - hacky way to force
 
     if (qCritFlag && m_Donor->IsMassRatioUnstable(m_Accretor->Mass(), m_Accretor->IsDegenerate()) ) {
         m_CEDetails.CEEnow = true;
@@ -2256,8 +2258,11 @@ void BaseBinaryStar::EvaluateBinary(const double p_Dt) {
     }
     else {
         ResolveMassChanges();                                                                                           // apply mass loss and mass transfer as necessary
-        if (StellarMerger()) {                                                                      // CEE or merger?
-            ResolveCommonEnvelopeEvent();                                                                                   // resolve CEE - immediate event
+        if (HasStarsTouching()) {                                                                                       // if stars emerged from mass transfer as touching, it's a merger
+            m_Flags.stellarMerger = true;
+            // Initialise MT for both stars so that the show correct RLOF status
+            m_Star1->InitialiseMassTransfer(m_CEDetails.CEEnow, m_SemiMajorAxis, m_Eccentricity);                                       // initialise mass transfer for star1
+            m_Star2->InitialiseMassTransfer(m_CEDetails.CEEnow, m_SemiMajorAxis, m_Eccentricity);                                       // initialise mass transfer for star2
         }
     }
 
@@ -2344,6 +2349,8 @@ EVOLUTION_STATUS BaseBinaryStar::Evolve() {
         m_Flags.stellarMerger        = true;
         m_Flags.stellarMergerAtBirth = true;
         evolutionStatus              = EVOLUTION_STATUS::STELLAR_MERGER_AT_BIRTH;                                                           // binary components are touching - merger at birth
+        StashRLOFProperties(MASS_TRANSFER_TIMING::PRE_MT);
+        (void)PrintRLOFParameters();                                                                                                // print (log) RLOF parameters
     }
 
     (void)PrintDetailedOutput(m_Id);                                                                                                        // print (log) detailed output for binary

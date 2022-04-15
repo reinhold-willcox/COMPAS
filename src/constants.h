@@ -297,7 +297,7 @@ constexpr double ADAPTIVE_RLOF_SEARCH_FACTOR            = 2.0;                  
 constexpr double FARMER_PPISN_UPP_LIM_LIN_REGIME        = 38.0;                                                     // Maximum CO core mass to result in the linear remnant mass regime of the FARMER PPISN prescription
 constexpr double FARMER_PPISN_UPP_LIM_QUAD_REGIME       = 60.0;                                                     // Maximum CO core mass to result in the quadratic remnant mass regime of the FARMER PPISN prescription
 constexpr double FARMER_PPISN_UPP_LIM_INSTABILLITY      = 140.0;                                                    // Maximum CO core mass to result in PI (upper edge of PISN gap) from FARMER PPISN prescription
-
+constexpr double STARTRACK_PPISN_HE_CORE_MASS           = 45.0;                                                     // Helium core mass remaining following PPISN as assumed in StarTrack (Belczynski et al. 2017 https://arxiv.org/abs/1607.03116)
 
 
 // logging constants
@@ -3275,6 +3275,7 @@ const ANY_PROPERTY_VECTOR BSE_PULSAR_EVOLUTION_REC = {
 //
 const ANY_PROPERTY_VECTOR BSE_RLOF_PARAMETERS_REC = {
     BINARY_PROPERTY::RANDOM_SEED,
+    BINARY_PROPERTY::STELLAR_MERGER,
     BINARY_PROPERTY::RLOF_POST_MT_STAR1_MASS,
     BINARY_PROPERTY::RLOF_POST_MT_STAR2_MASS,
     STAR_2_PROPERTY::HE_CORE_MASS,
@@ -3307,14 +3308,14 @@ const ANY_PROPERTY_VECTOR BSE_RLOF_PARAMETERS_REC = {
     BINARY_PROPERTY::RLOF_PRE_MT_STAR2_RLOF,
     BINARY_PROPERTY::RLOF_PRE_STEP_STAR_TO_ROCHE_LOBE_RADIUS_RATIO_1,
     BINARY_PROPERTY::RLOF_PRE_STEP_STAR_TO_ROCHE_LOBE_RADIUS_RATIO_2,
-    STAR_1_PROPERTY::ZETA_SOBERMAN,
-    STAR_1_PROPERTY::ZETA_SOBERMAN_HE,
-    STAR_1_PROPERTY::ZETA_HURLEY,
-    STAR_1_PROPERTY::ZETA_HURLEY_HE,
-    STAR_2_PROPERTY::ZETA_SOBERMAN,
-    STAR_2_PROPERTY::ZETA_SOBERMAN_HE,
-    STAR_2_PROPERTY::ZETA_HURLEY,
-    STAR_2_PROPERTY::ZETA_HURLEY_HE
+    //STAR_1_PROPERTY::ZETA_SOBERMAN,
+    //STAR_1_PROPERTY::ZETA_SOBERMAN_HE,
+    //STAR_1_PROPERTY::ZETA_HURLEY,
+    //STAR_1_PROPERTY::ZETA_HURLEY_HE,
+    //STAR_2_PROPERTY::ZETA_SOBERMAN,
+    //STAR_2_PROPERTY::ZETA_SOBERMAN_HE,
+    //STAR_2_PROPERTY::ZETA_HURLEY,
+    //STAR_2_PROPERTY::ZETA_HURLEY_HE
 };
 
 
@@ -3404,7 +3405,10 @@ const ANY_PROPERTY_VECTOR BSE_SYSTEM_PARAMETERS_REC = {
     STAR_1_PROPERTY::CHEMICALLY_HOMOGENEOUS_MAIN_SEQUENCE,
     STAR_2_PROPERTY::CHEMICALLY_HOMOGENEOUS_MAIN_SEQUENCE,
     BINARY_PROPERTY::ERROR,
-    PROGRAM_OPTION::NOTES
+    PROGRAM_OPTION::NOTES,
+    BINARY_PROPERTY::TIME,
+    STAR_1_PROPERTY::RZAMS,
+    STAR_2_PROPERTY::RZAMS,
 };
 
 
