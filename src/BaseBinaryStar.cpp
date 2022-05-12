@@ -2258,12 +2258,12 @@ void BaseBinaryStar::EvaluateBinary(const double p_Dt) {
         ResolveMassChanges();                                                                                           // apply mass loss and mass transfer as necessary
         if (HasStarsTouching()) {                                                                                       // if stars emerged from mass transfer as touching, it's a merger
             m_Flags.stellarMerger = true;
-		
             // Set Roche lobe flags for both stars so that they show correct RLOF status
             m_Star1->SetRocheLobeFlags(m_CEDetails.CEEnow, m_SemiMajorAxis, m_Eccentricity);                            // set Roche lobe flags for star1
             m_Star2->SetRocheLobeFlags(m_CEDetails.CEEnow, m_SemiMajorAxis, m_Eccentricity);                            // set Roche lobe flags for star2
             StashRLOFProperties(MASS_TRANSFER_TIMING::POST_MT);                                                         // stash properties immediately post-Mass Transfer 
         }
+        StashRLOFProperties(MASS_TRANSFER_TIMING::POST_MT);                                                             // stash properties immediately post-Mass Transfer 
     }
 
     if (m_PrintExtraDetailedOutput == true) { (void)PrintDetailedOutput(m_Id); }                                        // print detailed output record if stellar type changed - edit: including on stellar merger
@@ -2446,7 +2446,11 @@ EVOLUTION_STATUS BaseBinaryStar::Evolve() {
             }
         }
 
-        (void)PrintDetailedOutput(m_Id);                                                                                                // print (log) detailed output for binary
+
+        if (StellarMerger()) {                                                                                                              // print (log) RLOF parameters
+                (void)PrintRLOFParameters(); 
+        }
+        (void)PrintDetailedOutput(m_Id);                                                                                                    // print (log) detailed output for binary
 
         if (evolutionStatus == EVOLUTION_STATUS::STEPS_UP) {                                                                                // stopped because max timesteps reached?
             SHOW_ERROR(ERROR::BINARY_EVOLUTION_STOPPED);                                                                                    // show error
