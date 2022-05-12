@@ -886,7 +886,11 @@
 //                                      - Fix for issue # 773 - ONeWD not forming due to incorrect mass comparison in TPAGB. 
 // 02.27.08     RTW - Apr 12, 2022   - Defect repair:
 //                                      - Fix for issue # 783 - Some mergers involving a massive star were not logged properly in BSE_RLOF, whenever a jump in radius due to changing stellar type within ResolveMassChanges was much greater than the separation.
+// 02.27.09     VK - Apr 25, 2022    - Minor Enhancement:
+//                                      - Converted constant: MULLERMANDEL_SIGMAKICK into an option: --muller-mandel-sigma-kick
+// 02.28.00    Lvs - May 11, 2022    - Enhancements:
+//                                      - Introduced new remnant mass prescription: Fryer+ 2022, adding new options --fryer-22-fmix and --fryer-22-mcrit
  
-const std::string VERSION_STRING = "02.27.08";
+const std::string VERSION_STRING = "02.28.00";
 
 # endif // __changelog_h__
