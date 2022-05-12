@@ -847,7 +847,7 @@ bool BaseBinaryStar::PrintRLOFParameters() {
 
     if (!OPTIONS->RLOFPrinting()) return ok;                    // do not print if printing option off
 
-    StashRLOFProperties(MASS_TRANSFER_TIMING::POST_MT);         // stash properties immediately post-Mass Transfer 
+    //StashRLOFProperties(MASS_TRANSFER_TIMING::POST_MT);         // stash properties immediately post-Mass Transfer 
 
     if (m_Star1->IsRLOF() || m_Star2->IsRLOF()) {               // print if either star is in RLOF
         m_RLOFDetails.propsPostMT->eventCounter += 1;           // every time we print a MT event happened, increment counter
@@ -2244,9 +2244,12 @@ void BaseBinaryStar::EvaluateBinary(const double p_Dt) {
 
     CalculateWindsMassLoss();                                                                                           // calculate mass loss dues to winds
 
+    StashRLOFProperties(MASS_TRANSFER_TIMING::POST_MT);                                                                 // stash properties immediately post-Mass Transfer 
+    
     if ((m_CEDetails.CEEnow || StellarMerger()) &&                                                                      // CEE or merger?
         !(OPTIONS->CHEMode() != CHE_MODE::NONE && HasTwoOf({STELLAR_TYPE::CHEMICALLY_HOMOGENEOUS}))) {                  // yes - avoid CEE if CH+CH
         ResolveCommonEnvelopeEvent();                                                                                   // resolve CEE - immediate event
+        StashRLOFProperties(MASS_TRANSFER_TIMING::POST_MT);                                                             // stash properties immediately post-Mass Transfer 
     }
     else if (m_Star1->IsSNevent() || m_Star2->IsSNevent()) {
         EvaluateSupernovae();                                                                                           // evaluate supernovae (both stars) - immediate event
@@ -2259,10 +2262,11 @@ void BaseBinaryStar::EvaluateBinary(const double p_Dt) {
             // Set Roche lobe flags for both stars so that they show correct RLOF status
             m_Star1->SetRocheLobeFlags(m_CEDetails.CEEnow, m_SemiMajorAxis, m_Eccentricity);                            // set Roche lobe flags for star1
             m_Star2->SetRocheLobeFlags(m_CEDetails.CEEnow, m_SemiMajorAxis, m_Eccentricity);                            // set Roche lobe flags for star2
+            StashRLOFProperties(MASS_TRANSFER_TIMING::POST_MT);                                                         // stash properties immediately post-Mass Transfer 
         }
     }
 
-    if (m_PrintExtraDetailedOutput == true && !StellarMerger()) { (void)PrintDetailedOutput(m_Id); }                    // print detailed output record if stellar type changed (except on merger, when detailed output is meaningless)
+    if (m_PrintExtraDetailedOutput == true) { (void)PrintDetailedOutput(m_Id); }                                        // print detailed output record if stellar type changed - edit: including on stellar merger
     m_PrintExtraDetailedOutput = false;                                                                                 // reset detailed output printing flag for the next timestep
 
     if ((m_Star1->IsSNevent() || m_Star2->IsSNevent())) {
@@ -2345,6 +2349,8 @@ EVOLUTION_STATUS BaseBinaryStar::Evolve() {
         m_Flags.stellarMerger        = true;
         m_Flags.stellarMergerAtBirth = true;
         evolutionStatus              = EVOLUTION_STATUS::STELLAR_MERGER_AT_BIRTH;                                                           // binary components are touching - merger at birth
+        StashRLOFProperties(MASS_TRANSFER_TIMING::PRE_MT);
+        (void)PrintRLOFParameters();                                                                                                // print (log) RLOF parameters
     }
 
     (void)PrintDetailedOutput(m_Id);                                                                                                        // print (log) detailed output for binary
@@ -2374,9 +2380,6 @@ EVOLUTION_STATUS BaseBinaryStar::Evolve() {
             else if (StellarMerger() ) {                                                                                                    // have stars merged?
                 evolutionStatus = EVOLUTION_STATUS::STELLAR_MERGER;                                                                         // for now, stop evolution
             }
-            else if (HasStarsTouching()) {                                                                                                  // binary components touching? (should usually be avoided as MT or CE or merger should happen prior to this)
-                evolutionStatus = EVOLUTION_STATUS::STARS_TOUCHING;                                                                         // yes - stop evolution
-            }
             else if (IsUnbound() && !OPTIONS->EvolveUnboundSystems()) {                                                                     // binary is unbound and we don't want unbound systems?
                 m_Unbound       = true;                                                                                                     // yes - set the unbound flag (should already be set)
                 evolutionStatus = EVOLUTION_STATUS::UNBOUND;                                                                                // stop evolution
@@ -2394,9 +2397,6 @@ EVOLUTION_STATUS BaseBinaryStar::Evolve() {
                 // check for problems
                 if (StellarMerger()) {                                                                                                      // have stars merged?
                     evolutionStatus = EVOLUTION_STATUS::STELLAR_MERGER;                                                                     // for now, stop evolution
-                }
-                else if (HasStarsTouching()) {                                                                                              // binary components touching? (should usually be avoided as MT or CE or merger should happen prior to this)
-                    evolutionStatus = EVOLUTION_STATUS::STARS_TOUCHING;                                                                     // yes - stop evolution
                 }
                 else if (IsUnbound() && !OPTIONS->EvolveUnboundSystems()) {                                                                 // binary is unbound and we don't want unbound systems?
                     evolutionStatus = EVOLUTION_STATUS::UNBOUND;                                                                            // stop evolution
@@ -2445,8 +2445,8 @@ EVOLUTION_STATUS BaseBinaryStar::Evolve() {
                 stepNum++;                                                                                                                  // increment stepNum
             }
         }
-        if (!StellarMerger())
-            (void)PrintDetailedOutput(m_Id);                                                                                                // print (log) detailed output for binary
+
+        (void)PrintDetailedOutput(m_Id);                                                                                                // print (log) detailed output for binary
 
         if (evolutionStatus == EVOLUTION_STATUS::STEPS_UP) {                                                                                // stopped because max timesteps reached?
             SHOW_ERROR(ERROR::BINARY_EVOLUTION_STOPPED);                                                                                    // show error
