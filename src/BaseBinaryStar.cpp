@@ -909,6 +909,10 @@ void BaseBinaryStar::StashRLOFProperties(const MASS_TRANSFER_TIMING p_Which) {
     rlofPropertiesToReset->id                          = m_ObjectId;
     rlofPropertiesToReset->mass1                       = m_Star1->Mass();
     rlofPropertiesToReset->mass2                       = m_Star2->Mass();
+    rlofPropertiesToReset->Hemass1                       = m_Star1->HeCoreMass();
+    rlofPropertiesToReset->Hemass2                       = m_Star2->HeCoreMass();
+    rlofPropertiesToReset->COmass1                       = m_Star1->COCoreMass();
+    rlofPropertiesToReset->COmass2                       = m_Star2->COCoreMass();
     rlofPropertiesToReset->radius1                     = m_Star1->Radius();
     rlofPropertiesToReset->radius2                     = m_Star2->Radius();
     rlofPropertiesToReset->starToRocheLobeRadiusRatio1 = StarToRocheLobeRadiusRatio1();
