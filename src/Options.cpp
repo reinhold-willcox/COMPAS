@@ -135,6 +135,7 @@ void Options::OptionValues::Initialise() {
 
     // flags
 
+    m_AllowHRichECSN                                                = true;
     m_AllowRLOFAtBirth                                              = true;
     m_AllowTouchingAtBirth                                          = false;
 
@@ -361,6 +362,7 @@ void Options::OptionValues::Initialise() {
     m_UseMassTransfer                                               = true;
 	m_CirculariseBinaryDuringMassTransfer         	                = true;
 	m_AngularMomentumConservationDuringCircularisation              = false;
+    m_RetainCoreMassDuringCaseAMassTransfer                         = false;
 
     // Case BB/BC mass transfer stability prescription
     m_CaseBBStabilityPrescription.type                              = CASE_BB_STABILITY_PRESCRIPTION::ALWAYS_STABLE;
@@ -634,6 +636,11 @@ bool Options::AddOptions(OptionValues *p_Options, po::options_description *p_Opt
         // boolean options - alphabetically
 
         (
+            "allow-H-rich-ECSN",
+            po::value<bool>(&p_Options->m_AllowHRichECSN)->default_value(p_Options->m_AllowHRichECSN)->implicit_value(true),                                                                  
+            ("Allow ECSN to occur in H rich (unstripped) progenitors (default = " + std::string(p_Options->m_AllowHRichECSN? "TRUE" : "FALSE") + ")").c_str()
+        )
+        (
             "allow-rlof-at-birth",                                         
             po::value<bool>(&p_Options->m_AllowRLOFAtBirth)->default_value(p_Options->m_AllowRLOFAtBirth)->implicit_value(true),                                                                  
             ("Allow binaries that have one or both stars in RLOF at birth to evolve (default = " + std::string(p_Options->m_AllowRLOFAtBirth ? "TRUE" : "FALSE") + ")").c_str()
@@ -765,6 +772,11 @@ bool Options::AddOptions(OptionValues *p_Options, po::options_description *p_Opt
             "quiet",                                                       
             po::value<bool>(&p_Options->m_Quiet)->default_value(p_Options->m_Quiet)->implicit_value(true),                                                                                        
             ("Suppress printing (default = " + std::string(p_Options->m_Quiet ? "TRUE" : "FALSE") + ")").c_str()
+        )
+        (
+            "retain-core-mass-during-caseA-mass-transfer",
+            po::value<bool>(&p_Options->m_RetainCoreMassDuringCaseAMassTransfer)->default_value(p_Options->m_RetainCoreMassDuringCaseAMassTransfer)->implicit_value(true),
+            ("Retain approximate core mass of a case A donor as a minimum core at end of MS or HeMS (default = " + std::string(p_Options->m_RetainCoreMassDuringCaseAMassTransfer ? "TRUE" : "FALSE") + ")").c_str()
         )
         (
             "revised-energy-formalism-nandez-ivanova",                     
@@ -4018,10 +4030,10 @@ COMPAS_VARIABLE Options::OptionValue(const T_ANY_PROPERTY p_Property) const {
     switch (property) {
 
         case PROGRAM_OPTION::ADD_OPTIONS_TO_SYSPARMS                        : value = static_cast<int>(AddOptionsToSysParms());                             break;
+        case PROGRAM_OPTION::ALLOW_H_RICH_ECSN                              : value = AllowHRichECSN();                                                     break;
         case PROGRAM_OPTION::ALLOW_MS_STAR_TO_SURVIVE_COMMON_ENVELOPE       : value = AllowMainSequenceStarToSurviveCommonEnvelope();                       break;
-        case PROGRAM_OPTION::ALLOW_RADIATIVE_ENVELOPE_STAR_TO_SURVIVE_COMMON_ENVELOPE : value = AllowRadiativeEnvelopeStarToSurviveCommonEnvelope();                       break;
-        case PROGRAM_OPTION::ALLOW_IMMEDIATE_RLOF_POST_CE_TO_SURVIVE_COMMON_ENVELOPE  : value = AllowImmediateRLOFpostCEToSurviveCommonEnvelope();
-            break;
+        case PROGRAM_OPTION::ALLOW_RADIATIVE_ENVELOPE_STAR_TO_SURVIVE_COMMON_ENVELOPE : value = AllowRadiativeEnvelopeStarToSurviveCommonEnvelope();        break;
+        case PROGRAM_OPTION::ALLOW_IMMEDIATE_RLOF_POST_CE_TO_SURVIVE_COMMON_ENVELOPE  : value = AllowImmediateRLOFpostCEToSurviveCommonEnvelope();          break;
         case PROGRAM_OPTION::ALLOW_RLOF_AT_BIRTH                            : value = AllowRLOFAtBirth();                                                   break;
         case PROGRAM_OPTION::ALLOW_TOUCHING_AT_BIRTH                        : value = AllowTouchingAtBirth();                                               break;
         case PROGRAM_OPTION::ANG_MOM_CONSERVATION_DURING_CIRCULARISATION    : value = AngularMomentumConservationDuringCircularisation();                   break;
