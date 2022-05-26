@@ -611,6 +611,10 @@ COMPAS_VARIABLE BaseBinaryStar::BinaryPropertyValue(const T_ANY_PROPERTY p_Prope
         case BINARY_PROPERTY::RLOF_POST_MT_SEMI_MAJOR_AXIS:                         value = RLOFDetails().propsPostMT->semiMajorAxis;                           break;
         case BINARY_PROPERTY::RLOF_POST_MT_STAR1_MASS:                              value = RLOFDetails().propsPostMT->mass1;                                   break;
         case BINARY_PROPERTY::RLOF_POST_MT_STAR2_MASS:                              value = RLOFDetails().propsPostMT->mass2;                                   break;
+        case BINARY_PROPERTY::RLOF_POST_MT_STAR1_HE_CORE_MASS:                              value = RLOFDetails().propsPostMT->Hemass1;                                   break;
+        case BINARY_PROPERTY::RLOF_POST_MT_STAR2_HE_CORE_MASS:                              value = RLOFDetails().propsPostMT->Hemass2;                                   break;
+        case BINARY_PROPERTY::RLOF_POST_MT_STAR1_CO_CORE_MASS:                              value = RLOFDetails().propsPostMT->COmass1;                                   break;
+        case BINARY_PROPERTY::RLOF_POST_MT_STAR2_CO_CORE_MASS:                              value = RLOFDetails().propsPostMT->COmass2;                                   break;
         case BINARY_PROPERTY::RLOF_POST_MT_STAR1_RADIUS:                            value = RLOFDetails().propsPostMT->radius1;                                 break;
         case BINARY_PROPERTY::RLOF_POST_MT_STAR2_RADIUS:                            value = RLOFDetails().propsPostMT->radius2;                                 break;
         case BINARY_PROPERTY::RLOF_POST_MT_STAR1_RLOF:                              value = RLOFDetails().propsPostMT->isRLOF1;                                 break;
@@ -626,6 +630,10 @@ COMPAS_VARIABLE BaseBinaryStar::BinaryPropertyValue(const T_ANY_PROPERTY p_Prope
         case BINARY_PROPERTY::RLOF_PRE_MT_SEMI_MAJOR_AXIS:                          value = RLOFDetails().propsPreMT->semiMajorAxis;                            break;
         case BINARY_PROPERTY::RLOF_PRE_MT_STAR1_MASS:                               value = RLOFDetails().propsPreMT->mass1;                                    break;
         case BINARY_PROPERTY::RLOF_PRE_MT_STAR2_MASS:                               value = RLOFDetails().propsPreMT->mass2;                                    break;
+        case BINARY_PROPERTY::RLOF_PRE_MT_STAR1_HE_CORE_MASS:                               value = RLOFDetails().propsPreMT->Hemass1;                                    break;
+        case BINARY_PROPERTY::RLOF_PRE_MT_STAR2_HE_CORE_MASS:                               value = RLOFDetails().propsPreMT->Hemass2;                                    break;
+        case BINARY_PROPERTY::RLOF_PRE_MT_STAR1_CO_CORE_MASS:                               value = RLOFDetails().propsPreMT->COmass1;                                    break;
+        case BINARY_PROPERTY::RLOF_PRE_MT_STAR2_CO_CORE_MASS:                               value = RLOFDetails().propsPreMT->COmass2;                                    break;
         case BINARY_PROPERTY::RLOF_PRE_MT_STAR1_RADIUS:                             value = RLOFDetails().propsPreMT->radius1;                                  break;
         case BINARY_PROPERTY::RLOF_PRE_MT_STAR2_RADIUS:                             value = RLOFDetails().propsPreMT->radius2;                                  break;
         case BINARY_PROPERTY::RLOF_PRE_MT_STAR1_RLOF:                               value = RLOFDetails().propsPreMT->isRLOF1;                                  break;

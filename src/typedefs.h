@@ -170,6 +170,10 @@ typedef struct RLOFProperties {
 
     double        mass1;
     double        mass2;
+    double        Hemass1;
+    double        Hemass2;
+    double        COmass1;
+    double        COmass2;
 
     double        radius1;
     double        radius2;
