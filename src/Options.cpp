@@ -2440,13 +2440,38 @@ void Options::PrintOptionHelp(const bool p_Verbose) {
         std::string optionShortName = opt.canonical_display_name(cls::allow_dash_for_short);                // short name ('-') prefix
         if (optionShortName[0] == '-') optionShortName.erase(0, optionShortName.find_first_not_of("-"));    // remove the "-" or "--"
 
-        std::cout << "--" << optionLongName;
-        if (optionLongName != optionShortName) std::cout << " [ -" << optionShortName << " ]";
-        std::cout << std::endl;
 
-        if (p_Verbose) {
-            std::cout << "  " << opt.description() << std::endl;
-        }
+        // RTW
+        // Want output format of the form
+        // #--varname: default_value # [-x] Description, where [-x] is added only if it exists
+        
+        std::cout << "#--" << optionLongName << ": ";
+        // get default value
+        //std::string(p_Options->m_AllowTouchingAtBirth ? "TRUE" : "FALSE"
+        
+        
+        //po::option_description const& opt = m_CmdLine.optionDescriptions.find(it->first, false, false, false); 
+        auto mytmp = std::get<1>(*it);
+        std::cout << std::to_string( mytmp) ;
+        
+
+        //m_VM["version"].as<bool>()
+
+
+        std::cout << " #";                                                                                    // add comment for description
+        if (optionLongName != optionShortName) std::cout << " [ -" << optionShortName << " ]";               // add shortname if applicable
+        std::cout << " " << opt.description() << std::endl;                                                  // add description
+
+
+
+        //std::cout << "--" << optionLongName;
+        //if (optionLongName != optionShortName) std::cout << " [ -" << optionShortName << " ]";
+        //std::cout << std::endl;
+
+        // RTW - p_Verbose is now non-impactful
+        //if (p_Verbose) {
+        //    std::cout << "  " << opt.description() << std::endl;
+        //}
     }
 }
 
