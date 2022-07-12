@@ -81,6 +81,7 @@
 
 #include "Options.h"
 #include "changelog.h"
+#include <typeinfo>
 
 Options* Options::m_Instance = nullptr;
 
@@ -2442,6 +2443,8 @@ void Options::PrintOptionHelp(const bool p_Verbose) {
 
 
         // RTW
+        std::string mystr = typeid(it->first).name();
+        std::cout << "mystr is " << mystr << std::endl;
         // Want output format of the form
         // #--varname: default_value # [-x] Description, where [-x] is added only if it exists
         
@@ -2450,14 +2453,16 @@ void Options::PrintOptionHelp(const bool p_Verbose) {
         //std::string(p_Options->m_AllowTouchingAtBirth ? "TRUE" : "FALSE"
         
         
+
         //po::option_description const& opt = m_CmdLine.optionDescriptions.find(it->first, false, false, false); 
-        auto mytmp = std::get<1>(*it);
-        std::cout << std::to_string( mytmp) ;
+        //auto mytmp = std::get<1>(*it);
+        //std::cout << std::to_string( mytmp) ;
         
 
         //m_VM["version"].as<bool>()
 
-
+        
+        // TODO RTW need the default option
         std::cout << " #";                                                                                    // add comment for description
         if (optionLongName != optionShortName) std::cout << " [ -" << optionShortName << " ]";               // add shortname if applicable
         std::cout << " " << opt.description() << std::endl;                                                  // add description
