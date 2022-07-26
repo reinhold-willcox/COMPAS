@@ -81,6 +81,7 @@ public:
             double              Luminosity() const                                              { return m_Luminosity; }
             double              Mass() const                                                    { return m_Mass; }
             double              Mass0() const                                                   { return m_Mass0; }
+            double              MinimumCoreMass() const                                         { return m_MinimumCoreMass; }
             double              MassPrev() const                                                { return m_MassPrev; }
             STYPE_VECTOR        MassTransferDonorHistory() const                                { return m_MassTransferDonorHistory; }
             std::string         MassTransferDonorHistoryString() const;
@@ -177,13 +178,13 @@ public:
 
             double          CalculateSNKickMagnitude(const double p_RemnantMass, const double p_EjectaMass, const STELLAR_TYPE p_StellarType);
 
+            double          CalculateThermalMassAcceptanceRate(const double p_Radius) const;
+            double          CalculateThermalMassAcceptanceRate() const                                          { return CalculateThermalMassAcceptanceRate(m_Radius); }
+
     virtual double          CalculateThermalMassLossRate() const                                                { return m_Mass / CalculateThermalTimescale(); }                    // Use class member variables - and inheritance hierarchy
 
-    virtual double          CalculateThermalTimescale(const double p_Mass,
-                                                      const double p_Radius,
-                                                      const double p_Luminosity,
-                                                      const double p_EnvMass = 1.0) const                       { return 0.0; }                                                     // Use inheritance hierarchy
-    virtual double          CalculateThermalTimescale() const                                                   { return 0.0; }                                                     // Use inheritance hierarchy
+    virtual double          CalculateThermalTimescale(const double p_Radius) const;                                                                                                 // Use inheritance hierarchy
+    virtual double          CalculateThermalTimescale() const                                                   { return CalculateThermalTimescale(m_Radius); }                     // Use inheritance hierarchy
 
             double          CalculateTimestep();
 
@@ -201,13 +202,11 @@ public:
 
     virtual void            ResolveMassLoss();
 
-    virtual STELLAR_TYPE    ResolveRemnantAfterEnvelopeLoss()                                                   { return m_StellarType; }
-
             void            SetStellarTypePrev(const STELLAR_TYPE p_StellarTypePrev)                            { m_StellarTypePrev = p_StellarTypePrev; }
 
             void            StashSupernovaDetails(const STELLAR_TYPE p_StellarType)                             { LOGGING->StashSSESupernovaDetails(this, p_StellarType); }
 
-    virtual void            UpdateAgeAfterMassLoss() { }                                                                                                                            // Default is NO-OP
+    virtual void            UpdateAgeAfterMassLoss() { }                                                                                                                             // Default is NO-OP
 
             STELLAR_TYPE    UpdateAttributesAndAgeOneTimestep(const double p_DeltaMass,
                                                               const double p_DeltaMass0,
@@ -221,13 +220,15 @@ public:
                                                        const double p_Stepsize,
                                                        const double p_MassGainPerTimeStep,
                                                        const double p_Epsilon) { }                                                                                                  // Default is NO-OP
+    virtual void            UpdateMinimumCoreMass()  {}                                                                                                                 // Only set minimal core mass following Main Sequence mass transfer to MS age fraction of TAMS core mass; default is NO-OP
 
+    
     // printing functions
-            bool            PrintDetailedOutput(const int p_Id) const                                           { return OPTIONS->DetailedOutput() ? LOGGING->LogSSEDetailedOutput(this, p_Id, "") : true; } // Write record to SSE Detailed Output log file
-            bool            PrintSupernovaDetails() const                                                       { return LOGGING->LogSSESupernovaDetails(this, ""); }                      // Write record to SSE Supernovae log file
-            bool            PrintStashedSupernovaDetails()                                                      { return LOGGING->LogStashedSSESupernovaDetails(this); }                   // Write record to SSE Supernovae log file
-            bool            PrintSwitchLog(const long int p_Id) const                                           { return OPTIONS->SwitchLog() ? LOGGING->LogSSESwitchLog(this, p_Id, "") : true; } // Write record to SSE Switchlog log file
-            bool            PrintSystemParameters(const string p_Rec = "") const                                { return LOGGING->LogSSESystemParameters(this, p_Rec); }                   // Write record to SSE System Parameters file
+            bool            PrintDetailedOutput(const int p_Id) const                                           { return OPTIONS->DetailedOutput() ? LOGGING->LogSSEDetailedOutput(this, p_Id) : true; } // Write record to SSE Detailed Output log file
+            bool            PrintSupernovaDetails() const                                                       { return LOGGING->LogSSESupernovaDetails(this); }                   // Write record to SSE Supernovae log file
+            bool            PrintStashedSupernovaDetails()                                                      { return LOGGING->LogStashedSSESupernovaDetails(this); }            // Write record to SSE Supernovae log file
+            bool            PrintSwitchLog() const                                                              { return OPTIONS->SwitchLog() ? LOGGING->LogSSESwitchLog(this) : true; } // Write record to SSE Switchlog log file
+            bool            PrintSystemParameters() const                                                       { return LOGGING->LogSSESystemParameters(this); }                   // Write record to SSE System Parameters file
 
 protected:
 
@@ -262,16 +263,16 @@ protected:
     double                  m_Age;                                      // Current effective age (changes with mass loss/gain)(myrs)
     double                  m_COCoreMass;                               // Current CO core mass (Msol)
     double                  m_CoreMass;                                 // Current core mass (Msol)
-    double                  m_CoreRadius;                               // Current core radius (Rsol)                   JR: todo: I don't think this is used anywhere...
     double                  m_Dt;                                       // Current timestep (myrs)
     double                  m_HeCoreMass;                               // Current He core mass (Msol)
     bool                    m_LBVphaseFlag;                             // Flag to know if the star satisfied the conditions, at any point in its evolution, to be considered a Luminous Blue Variable (LBV)
     double                  m_Luminosity;                               // Current luminosity (Lsol)
     double                  m_Mass;                                     // Current mass (Msol)
-    double                  m_Mass0;                                    // Current effective initial mass (Msol)        JR: todo: fix this one day - it is not always initial mass
+    double                  m_Mass0;                                    // Current effective initial mass (Msol)
+    double                  m_MinimumCoreMass;                          // Minimum core mass at end of main sequence (MS stars have no core in the Hurley prescription)
     double                  m_MinimumLuminosityOnPhase;                 // JR: Only required for CHeB stars, but only needs to be calculated once per star
     double                  m_Mdot;                                     // Current mass loss rate (Msol per ?)
-    MASS_LOSS_TYPE                m_DominantMassLossRate;                                     // Current dominant mass loss rate
+    MASS_LOSS_TYPE          m_DominantMassLossRate;                     // Current dominant mass loss rate
     double                  m_Mu;                                       // Current small envelope parameter mu
     double                  m_Omega;                                    // Current angular frequency (yr-1)
     double                  m_Radius;                                   // Current radius (Rsol)
@@ -373,7 +374,7 @@ protected:
 
     static  double              CalculateDynamicalTimescale_Static(const double p_Mass, const double p_Radius);
 
-    virtual double              CalculateEddingtonCriticalRate() const                                                  { return 1.5E-8 * (m_Radius * RSOL_TO_KM / 10.0) * MYR_TO_YEAR; }           // Should never be called...
+    virtual double              CalculateEddingtonCriticalRate() const                                                  { return 2.08E-3 / 1.7 * m_Radius * MYR_TO_YEAR; }       // Hurley+, 2002, Eq. (67); should never be called...
 
             double              CalculateGBRadiusXExponent() const;
 
@@ -388,7 +389,8 @@ protected:
     virtual double              CalculateLambdaDewi() const                                                             { SHOW_WARN(ERROR::NO_LAMBDA_DEWI, "Default used: 1.0"); return 1.0; }      // Not supported: show error
             double              CalculateLambdaKruckow(const double p_Radius, const double p_Alpha) const;
             double              CalculateLambdaLoveridgeEnergyFormalism(const double p_EnvMass, const double p_IsMassLoss = false) const;
-    virtual double              CalculateLambdaNanjing() const                                                          { SHOW_WARN(ERROR::NO_LAMBDA_NANJING, "Default used: 1.0"); return 1.0; }   // Not supported: show error
+    virtual double              CalculateLambdaNanjingStarTrack(const double p_Mass, const double p_Metallicity) const           { SHOW_WARN(ERROR::NO_LAMBDA_NANJING, "Default used: 1.0"); return 1.0; }   // Not supported: show error
+    virtual double              CalculateLambdaNanjingEnhanced(const int p_MassInd, const int p_Zind) const             { SHOW_WARN(ERROR::NO_LAMBDA_NANJING, "Default used: 1.0"); return 1.0; }   // Not supported: show error
 
             void                CalculateLCoefficients(const double p_LogMetallicityXi, DBL_VECTOR &p_LCoefficients);
 
@@ -402,6 +404,10 @@ protected:
             double              CalculateLuminosityAtZAMS(const double p_MZAMS);
             double              CalculateLuminosityGivenCoreMass(const double p_CoreMass) const;
     virtual double              CalculateLuminosityOnPhase() const                                                      { return m_Luminosity; }                                                    // Default is NO-OP
+
+            double              CalculateMassAndZInterpolatedLambdaNanjing(const double p_Mass, const double p_Z) const;
+            double              CalculateMassInterpolatedLambdaNanjing(const double p_Mass, const int p_Zind) const;
+            double              CalculateZInterpolatedLambdaNanjing(const double p_Z, const int p_MassInd) const;
 
             void                CalculateMassCutoffs(const double p_Metallicity, const double p_LogMetallicityXi, DBL_VECTOR &p_MassCutoffs);
 
@@ -500,12 +506,14 @@ protected:
                                                     const double p_EjectaMass,
                                                     const double p_RemnantMass) const;
 
+            double              CalculateLambdaNanjing() const;
     virtual void                EvolveOneTimestepPreamble() { };                                                                                                                                    // Default is NO-OP
 
             STELLAR_TYPE        EvolveOnPhase();
 
     virtual STELLAR_TYPE        EvolveToNextPhase()                                                                     { return m_StellarType; }
 
+            double              FindLambdaNanjingNearestMassIndex(const double p_Mass) const;
 
     virtual bool                IsEndOfPhase() const                                                                    { return false; }
     virtual bool                IsSupernova() const                                                                     { return false; }

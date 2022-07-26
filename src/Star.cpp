@@ -85,7 +85,7 @@ Star::Star(const Star& p_Star) {
     m_ObjectId   = globalObjectId++;                                                    // set object id
     m_ObjectType = OBJECT_TYPE::STAR;                                                   // set object type
 
-    m_Star     = p_Star.m_Star ? Clone(*(p_Star.m_Star)) : nullptr;                     // copy underlying BasStar object
+    m_Star     = p_Star.m_Star ? Clone(*(p_Star.m_Star)) : nullptr;                     // copy underlying BaseStar object
     m_SaveStar = p_Star.m_SaveStar ? Clone(*(p_Star.m_Star)) : nullptr;                 // and the saved copy
 }
 
@@ -99,7 +99,7 @@ Star& Star::operator = (const Star& p_Star) {
         m_ObjectType = OBJECT_TYPE::STAR;                                               // set object type
 
         delete m_Star;
-        m_Star = p_Star.m_Star ? Clone(*(p_Star.m_Star)) : nullptr;                     // copy underlying BasStar object
+        m_Star = p_Star.m_Star ? Clone(*(p_Star.m_Star)) : nullptr;                     // copy underlying BaseStar object
 
         delete m_SaveStar;
         m_SaveStar = p_Star.m_SaveStar ? Clone(*(p_Star.m_SaveStar)) : nullptr;         // and the saved copy
@@ -169,7 +169,7 @@ STELLAR_TYPE Star::SwitchTo(const STELLAR_TYPE p_StellarType, bool p_SetInitialT
                 raise(SIGUSR1);                                                             // signal to BSE that switch is occurring
             }
             else {                                                                          // SSE
-                (void)m_Star->PrintSwitchLog(m_Id);                                         // no need for the BSE signal shenaningans - just call the function
+                (void)m_Star->PrintSwitchLog();                                             // no need for the BSE signal shenanigans - just call the function
             }
         }
     }

@@ -76,8 +76,9 @@ protected:
             double          CalculateProtoCoreMassRapid();
             double          CalculateRemnantMassByBelczynski2002(const double p_Mass, const double p_COCoreMass, const double p_FallbackFraction);
             DBL_DBL         CalculateRemnantMassByFryer2012(const double p_Mass, const double p_COCoreMass);
+            DBL_DBL         CalculateRemnantMassByFryer2022(const double p_Mass, const double p_COCoreMass);
             double          CalculateRemnantMassByMuller2016(const double p_Mass, const double p_COCoreMass);
-	    double          CalculateRemnantMassByMullerMandel(const double p_COCoreMass, const double p_HeCoreMass);
+	        double          CalculateRemnantMassByMullerMandel(const double p_COCoreMass, const double p_HeCoreMass);
             double          CalculateRemnantMassBySchneider2020(const double p_COCoreMass, const bool p_useSchneiderAlt = false);
             double          CalculateRemnantMassBySchneider2020Alt(const double p_COCoreMass)               { return CalculateRemnantMassBySchneider2020(p_COCoreMass, true); }
             double          CalculateMomentOfInertia(const double p_RemnantRadius = 0.0) const              { return (0.1 * (m_Mass - m_CoreMass) * m_Radius * m_Radius) + (0.21 * m_CoreMass * p_RemnantRadius * p_RemnantRadius); } // k2 = 0.1 and k3 = 0.21 as defined in Hurley et al. 2000, after eq 109
@@ -106,9 +107,6 @@ protected:
 
             double          CalculateThermalMassLossRate() const                                            { return (m_Mass - m_CoreMass) / CalculateThermalTimescale(); }     // Use class member variables
 
-            double          CalculateThermalTimescale(const double p_Mass, const double p_Radius, const double p_Luminosity, const double p_EnvMass = 1.0) const;
-            double          CalculateThermalTimescale() const                                               { return CalculateThermalTimescale(m_Mass, m_Radius, m_Luminosity, m_Mass - m_CoreMass); }
-
             void            CalculateTimescales(const double p_Mass, DBL_VECTOR &p_Timescales);
             void            CalculateTimescales()                                                           { CalculateTimescales(m_Mass0, m_Timescales); }                     // Use class member variables
 
@@ -128,6 +126,8 @@ protected:
             void            UpdateAgeAfterMassLoss() { }                                                                                                                        // NO-OP for most stellar types
 
             void            UpdateInitialMass() { }                                                                                                                             // NO-OP for most stellar types
+    
+            void            UpdateMinimumCoreMass()  {}                                                                                                                 // NO-OP for most stellar types
 
 };
 

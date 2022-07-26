@@ -1,4 +1,5 @@
 #include "MainSequence.h"
+#include "HG.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -27,8 +28,6 @@ void MainSequence::CalculateTimescales(const double p_Mass, DBL_VECTOR &p_Timesc
 #define timescales(x) p_Timescales[static_cast<int>(TIMESCALE::x)]  // for convenience and readability - undefined at end of function
     timescales(tBGB)   = CalculateLifetimeToBGB(p_Mass);
     timescales(tMS)    = CalculateLifetimeOnPhase(p_Mass, timescales(tBGB));
-    timescales(tMcMax) = 0.0;                                       // JR: todo: this is never used - is it actually needed?
-
 #undef timescales
 }
 
@@ -57,7 +56,7 @@ double MainSequence::CalculateDeltaL(const double p_Mass) const {
 
     double deltaL;
 
-    if (utils::Compare(p_Mass, massCutoffs(MHook)) <= 0) {              // JR: todo: added "=" per Hurley et al. 2000, eq 16
+    if (utils::Compare(p_Mass, massCutoffs(MHook)) <= 0) {              // per Hurley et al. 2000, eq 16
         deltaL = 0.0;                                                   // this really is supposed to be zero
     }
     else if (utils::Compare(p_Mass, a[33]) < 0) {
@@ -321,7 +320,7 @@ double MainSequence::CalculateBetaR(const double p_Mass) const {
          if (utils::Compare(p_Mass, 1.0)   <= 0) betaRPrime = 1.06;
     else if (utils::Compare(p_Mass, a[74]) <  0) betaRPrime = 1.06 + (a[72] - 1.06) * (p_Mass - 1.0) / (a[74] - 1.06);
     else if (utils::Compare(p_Mass, 2.0)   <  0) betaRPrime = a[72] + (m_RConstants[static_cast<int>(R_CONSTANTS::B_BETA_R)] - a[72]) * (p_Mass - a[74]) / (2.0 - a[74]);
-    else if (utils::Compare(p_Mass, 16.0)  <= 0) betaRPrime = (a[69] * p_Mass * p_Mass * p_Mass * sqrt(p_Mass)) / (a[70] + PPOW(p_Mass, a[71]));  // pow()is slow - use multiplication (sqrt() is faster than pow())
+    else if (utils::Compare(p_Mass, 16.0)  <= 0) betaRPrime = (a[69] * p_Mass * p_Mass * p_Mass * std::sqrt(p_Mass)) / (a[70] + PPOW(p_Mass, a[71]));  // pow()is slow - use multiplication (sqrt() is faster than pow())
     else                                         betaRPrime = m_RConstants[static_cast<int>(R_CONSTANTS::C_BETA_R)] + a[73] * (p_Mass - 16.0);
 
     return betaRPrime - 1.0;
@@ -348,11 +347,11 @@ double MainSequence::CalculateDeltaR(const double p_Mass) const {
     double deltaR;
 
     if (utils::Compare(p_Mass, massCutoffs(MHook)) <= 0) deltaR = 0.0;   // this really is supposed to be 0
-    else if (utils::Compare(p_Mass, a[42])         <= 0) deltaR = a[43] * PPOW(((p_Mass - massCutoffs(MHook)) / (a[42] - massCutoffs(MHook))), 0.5);
+    else if (utils::Compare(p_Mass, a[42])         <= 0) deltaR = a[43] * std::sqrt((p_Mass - massCutoffs(MHook)) / (a[42] - massCutoffs(MHook)));
     else if (utils::Compare(p_Mass, 2.0)            < 0) deltaR = a[43] + ((m_RConstants[static_cast<int>(R_CONSTANTS::B_DELTA_R)] - a[43]) * PPOW(((p_Mass - a[42]) / (2.0 - a[42])), a[44]));
     else {
         // pow() is slow - use multiplication (sqrt() is faster than pow())
-        double top    = a[38] + (a[39] * p_Mass * p_Mass * p_Mass * sqrt(p_Mass));
+        double top    = a[38] + (a[39] * p_Mass * p_Mass * p_Mass * std::sqrt(p_Mass));
         double bottom = (a[40] * p_Mass * p_Mass * p_Mass) + PPOW(p_Mass, a[41]);
         deltaR = (top / bottom) - 1.0;
     }
@@ -483,7 +482,7 @@ double MainSequence::CalculateRadiusOnPhase(const double p_Mass, const double p_
  * @return                                      Radial extent of the star's convective envelope in Rsol
  */
 double MainSequence::CalculateRadialExtentConvectiveEnvelope() const {
-    return utils::Compare(m_Mass, 0.35) <= 0 ? m_Radius * PPOW(1.0 - m_Tau, 1.0 / 4.0) : 0.0;
+    return utils::Compare(m_Mass, 0.35) <= 0 ? m_Radius * std::sqrt(std::sqrt(1.0 - m_Tau)) : 0.0;
 }
 
 
@@ -539,25 +538,6 @@ double MainSequence::CalculateLifetimeOnPhase(const double p_Mass, const double 
     return std::max(tHook, (x * p_TBGB));
 
 #undef a
-}
-
-
-/*
- * Calculate thermal timescale
- *
- * Kalogera & Webbink 1996, eq 2 [note that (61) of BSE proposes a value a factor of 3 smaller]
- *
- *
- * double CalculateThermalTimescale(const double p_Mass, const double p_Radius, const double p_Luminosity) const
- *
- * @param   [IN]    p_Mass                      Mass in Msol
- * @param   [IN]    p_Radius                    Radius in Rsol
- * @param   [IN]    p_Luminosity                Luminosity in Lsol
- * @param   [IN]    p_EnvMass                   Envelope mass in Msol (ignored here)
- * @return                                      Thermal timescale in Myr
- */
-double MainSequence::CalculateThermalTimescale(const double p_Mass, const double p_Radius, const double p_Luminosity, const double p_EnvMass) const {
-    return 30.0 * p_Mass * p_Mass / (p_Radius * p_Luminosity);      // G*Msol^2/(Lsol*Rsol) ~ 30 Myr
 }
 
 
@@ -690,21 +670,37 @@ double MainSequence::ChooseTimestep(const double p_Time) const {
  *     - m_COCoreMass
  *     - m_Age
  *
- * Hurley et al. 2000, just after eq 105
  *
- * JR: todo: why is this different from ResolveEnvelopeLoss()?
- * JR: todo: original code: Star::radiusRemnantStarAfterLosingEnvelope() vs Star::modifyStarAfterLosingEnvelope(int stellarType, double mass)
- * JR: todo: why is stellar type changed for some types, but not others?  CheB and EAGB stars have stellar type changed, but no other types do...
- * JR: todo: probably not a huge issue - only called in TIDES() and ResolveRemnantAfterEnvelopeLoss(), and with a copy of the star - probably ok there that attributes are changed (except maybe TIDES()?)
- *
- *
- * STELLAR_TYPE ResolveRemnantAfterEnvelopeLoss()
+ * STELLAR_TYPE ResolveEnvelopeLoss()
  *
  * @return                                      Stellar type to which star should evolve
  */
-STELLAR_TYPE MainSequence::ResolveRemnantAfterEnvelopeLoss() {
+STELLAR_TYPE MainSequence::ResolveEnvelopeLoss(bool p_NoCheck) {
 
-    if (utils::Compare(m_Mass, 0.0) <= 0) m_Radius = 0.0;   // massless remnant
+    STELLAR_TYPE stellarType = m_StellarType;
+    
+    if (p_NoCheck || utils::Compare(m_Mass, 0.0) <= 0) {
+        stellarType = STELLAR_TYPE::MASSLESS_REMNANT;
+        m_Radius = 0.0;   // massless remnant
+        m_Mass = 0.0;
+    }
+    
+    return stellarType;
+}
 
-    return m_StellarType;                                   // no change to stellar type
+/*
+ * Update the minimum core mass of a main sequence star that loses mass through Case A mass transfer by setting it equal to the core mass of a TAMS star, scaled by the fractional age
+ *
+ *
+ * STELLAR_TYPE UpdateMinimumCoreMass()
+ *
+ */
+void MainSequence::UpdateMinimumCoreMass()
+{
+    if(OPTIONS->RetainCoreMassDuringCaseAMassTransfer()) {
+        double fractionalAge=CalculateTauOnPhase();
+        HG clone = *this;                               //create an HG star clone to query its core mass just after TAMS
+        double TAMSCoreMass = clone.CoreMass();
+        m_MinimumCoreMass=std::max(m_MinimumCoreMass, fractionalAge * TAMSCoreMass);
+    }
 }

@@ -38,12 +38,12 @@ protected:
     double          CalculateCOCoreMassAtPhaseEnd() const                                   { return CalculateCOCoreMassOnPhase(); }                                // Same as on phase
     double          CalculateCOCoreMassOnPhase() const                                      { return 0.0; }                                                         // McCO(MS) = 0.0
 
-    double          CalculateCoreMassAtPhaseEnd() const                                     { return CalculateCoreMassOnPhase(); }                                  // Same as on phase
+    double          CalculateCoreMassAtPhaseEnd() const                                     { return OPTIONS->RetainCoreMassDuringCaseAMassTransfer() ? MinimumCoreMass() : 0.0; }                // Accounts for minimal core mass built up prior to mass loss through mass transfer
     double          CalculateCoreMassOnPhase() const                                        { return 0.0; }                                                         // Mc(MS) = 0.0 (Hurley et al. 2000, just before eq 28)
 
     double          CalculateGyrationRadius() const;
 
-    double          CalculateHeCoreMassAtPhaseEnd() const                                   { return CalculateHeCoreMassOnPhase(); }                                // Same as on phase
+    double          CalculateHeCoreMassAtPhaseEnd() const                                   { return CalculateCoreMassAtPhaseEnd(); }                               // Same as He core mass
     double          CalculateHeCoreMassOnPhase() const                                      { return 0.0; }                                                         // McHe(MS) = 0.0
 
     double          CalculateLifetimeOnPhase(const double p_Mass, const double p_TBGB) const;
@@ -68,9 +68,6 @@ protected:
     double          CalculateTauAtPhaseEnd() const                                          { return 1.0; }                                                         // tau = 1.0 at end of MS
     double          CalculateTauOnPhase() const;
 
-    double          CalculateThermalTimescale(const double p_Mass, const double p_Radius, const double p_Luminosity, const double p_EnvMass = 1.0) const;
-    double          CalculateThermalTimescale() const                                       { return CalculateThermalTimescale(m_Mass, m_Radius, m_Luminosity); }   // Use class member variables
-
     void            CalculateTimescales(const double p_Mass, DBL_VECTOR &p_Timescales);
     void            CalculateTimescales()                                                   { CalculateTimescales(m_Mass0, m_Timescales); }                         // Use class member variables
 
@@ -85,14 +82,14 @@ protected:
 
     void            PerturbLuminosityAndRadius() { }                                                                                                                // NO-OP
 
-    STELLAR_TYPE    ResolveEnvelopeLoss(bool p_NoCheck = false)                             { return m_StellarType; }                                               // NO-OP
-
-    STELLAR_TYPE    ResolveRemnantAfterEnvelopeLoss();
+    STELLAR_TYPE    ResolveEnvelopeLoss(bool p_NoCheck = false);
 
     bool            ShouldEvolveOnPhase() const                                             { return (m_Age < m_Timescales[static_cast<int>(TIMESCALE::tMS)]); }    // Evolve on MS phase if age in MS timescale
 
     void            UpdateInitialMass()                                                     { m_Mass0 = m_Mass; }                                                   // Per Hurley et al. 2000, section 7.1
     void            UpdateAgeAfterMassLoss();                                                                                                                       // Per Hurley et al. 2000, section 7.1
+    
+    void            UpdateMinimumCoreMass();                                                                                                                 // Set minimal core mass following Main Sequence mass transfer to MS age fraction of TAMS core mass
 
 };
 
