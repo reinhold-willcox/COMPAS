@@ -1509,10 +1509,10 @@ void BaseBinaryStar::ResolveCommonEnvelopeEvent() {
     double rRLd1Rsol = periastronRsol * CalculateRocheLobeRadius_Static(m_Star1->Mass(), m_Star2->Mass());              // Roche-lobe radius at periastron in Rsol at the moment where CEE begins, seen by star1
     double rRLd2Rsol = periastronRsol * CalculateRocheLobeRadius_Static(m_Star2->Mass(), m_Star1->Mass());              // Roche-lobe radius at periastron in Rsol at the moment where CEE begins, seen by star2
     
-    bool donorMS = false;                                                                                               // check for main sequence donor
+    bool isDonorMS = false;                                                                                               // check for main sequence donor
     if (OPTIONS->AllowMainSequenceStarToSurviveCommonEnvelope()) {                                                      // allow main sequence stars to survive CEE?
         if (m_Star1->IsOneOf(ALL_MAIN_SEQUENCE)) {                                                                      // yes - star1 MS_LTE_07, MS_GT_07 or NAKED_HELIUM_STAR_MS?
-            donorMS      = donorMS || m_Star1->IsRLOF();                                                                // yes - donor MS?
+            isDonorMS      = isDonorMS || m_Star1->IsRLOF();                                                                // yes - donor MS?
             m_Mass1Final = m_Star1->Mass();                                                                             // set mass
             m_MassEnv1   = 0.0;                                                                                         // no envelope
         }
@@ -1522,7 +1522,7 @@ void BaseBinaryStar::ResolveCommonEnvelopeEvent() {
         }
 
         if (m_Star2->IsOneOf(ALL_MAIN_SEQUENCE)) {                                                                      // star2 MS_LTE_07, MS_GT_07 or NAKED_HELIUM_STAR_MS?
-            donorMS      = donorMS || m_Star2->IsRLOF();                                                                // yes - donor MS?
+            isDonorMS      = isDonorMS || m_Star2->IsRLOF();                                                                // yes - donor MS?
             m_Mass2Final = m_Star2->Mass();                                                                             // yes - set mass
             m_MassEnv2   = 0.0;                                                                                         // no envelope
         }
@@ -1539,7 +1539,7 @@ void BaseBinaryStar::ResolveCommonEnvelopeEvent() {
     }
 
     bool envelopeFlag1 = utils::Compare(m_MassEnv1, 0.0) > 0 && utils::Compare(m_Mass1Final, 0.0) > 0;                  // star1 not massless remnant and has envelope?
-    bool envelopeFlag2 = utils::Compare(m_MassEnv2, 0.0) > 0 && utils::Compare(m_Mass2Final, 0.0) > 0;                  // star1 not massless remnant and has envelope?
+    bool envelopeFlag2 = utils::Compare(m_MassEnv2, 0.0) > 0 && utils::Compare(m_Mass2Final, 0.0) > 0;                  // star2 not massless remnant and has envelope?
     m_CEDetails.doubleCoreCE = envelopeFlag1 && envelopeFlag2;
 
     m_CEDetails.CEEcount++;                                                                                             // increment CEE count
@@ -1583,7 +1583,7 @@ void BaseBinaryStar::ResolveCommonEnvelopeEvent() {
 
     // update stellar type after losing its envelope. Star1, Star2 or both if double CEE.
 
-    if (donorMS || (!envelopeFlag1 && !envelopeFlag2)) {                                                                // stellar merger
+    if (isDonorMS || (!envelopeFlag1 && !envelopeFlag2)) {                                                                // stellar merger
         m_MassTransferTrackerHistory = MT_TRACKING::MERGER; 
         m_Flags.stellarMerger        = true;
     }
@@ -1868,6 +1868,9 @@ void BaseBinaryStar::CalculateMassTransfer(const double p_Dt) {
 
     if (qCritFlag && m_Donor->IsMassRatioUnstable(m_Accretor->Mass(), m_Accretor->IsDegenerate()) ) {
         m_CEDetails.CEEnow = true;
+        if (m_Donor->IsOneOf( MAIN_SEQUENCE )) {
+            m_Flags.stellarMerger = true;
+        }
     }
     else {
 
@@ -2144,7 +2147,7 @@ double BaseBinaryStar::CalculateAngularMomentum(const double p_SemiMajorAxis,
 
 	double Is1  = ks1 * m1 * R1 * R1;
 	double Is2  = ks2 * m2 * R2 * R2;
-    	double Jorb = ((m1 * m2) / (m1 + m2)) * std::sqrt(G1 * (m1 + m2) * p_SemiMajorAxis * (1.0 - (p_Eccentricity * p_Eccentricity)));
+    double Jorb = ((m1 * m2) / (m1 + m2)) * std::sqrt(G1 * (m1 + m2) * p_SemiMajorAxis * (1.0 - (p_Eccentricity * p_Eccentricity)));
 
 	return (Is1 * w1) + (Is2 * w2) + Jorb;
 }
