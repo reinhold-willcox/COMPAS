@@ -1155,6 +1155,85 @@ double BaseStar::CalculateMassAndZInterpolatedLambdaNanjing(const double p_Mass,
 }
 
 
+// RTW
+/* 
+ * Interpolate Ge+15 Critical Mass Ratios
+ * 
+ * 
+ * double BaseStar::CalculateInterpolatedQCritGe2015()
+ *
+ * WARNING: This function and the QCRIT_GE15 map currently only work for HG stars.
+ * In the future, it can and should be extended to all stellar types, hence why this
+ * function is in BaseStar. -RTW 20/08/22
+ * 
+ * @param   [IN]    p_Mass                      Mass / Msun to evaluate lambda with
+ * @return                                      Critical mass ratio for given stellar mass / radius
+ */ 
+double BaseStar::CalculateInterpolatedQCritGe2015() const {
+
+    // Get vector of masses from QCRIT_GE15
+    std::vector<double> massesFromQcrit15 = std::get<0>(QCRIT_GE15);
+    std::vector< std::tuple<std::vector<double>, std::vector<double>, std::vector<double>>> radiiAndQCritsFromQcrit15 = std::get<1>(QCRIT_GE15);
+
+    std::vector<int> ind = utils::binarySearch(massesFromQcrit15, m_Mass);
+    int lowerMassInd = ind[0];
+    int upperMassInd = ind[1];
+
+    //std::tuple<std::vector<double>, std::vector<double>> logRadiusAndMassRatio;
+    std::vector<double> logRadiusVectorLowerMass = std::get<0>(radiiAndQCritsFromQcrit15[lowerMassInd]);
+    std::vector<double> logRadiusVectorUpperMass = std::get<0>(radiiAndQCritsFromQcrit15[upperMassInd]);
+
+    // Set the qCrit value from either Ge+15 qad or qadic
+    std::vector<double> qCritVectorLowerMass;
+    std::vector<double> qCritVectorUpperMass;
+    switch (OPTIONS->QCritPrescription()) {
+        case QCRIT_PRESCRIPTION::GE15:
+            qCritVectorLowerMass     = std::get<1>(radiiAndQCritsFromQcrit15[lowerMassInd]);
+            qCritVectorUpperMass     = std::get<1>(radiiAndQCritsFromQcrit15[upperMassInd]);
+            break;
+        case QCRIT_PRESCRIPTION::GE15_IC:
+            qCritVectorLowerMass     = std::get<2>(radiiAndQCritsFromQcrit15[lowerMassInd]);
+            qCritVectorUpperMass     = std::get<2>(radiiAndQCritsFromQcrit15[upperMassInd]);
+            break;
+        //default:
+        //    m_Error = ERROR::UNKNOWN_QCRIT_PRESCRIPTION;                                    // set error value
+        //    SHOW_WARN(m_Error);                                                             // warn that an error occurred
+    }
+
+    // Get vector of radii from QCRIT_GE15 for both lower and upper masses
+
+    std::vector<int> indR0 = utils::binarySearch(logRadiusVectorLowerMass, log10(m_Radius));
+    double lowerRadiusLowerMassInd = indR0[0];
+    double upperRadiusLowerMassInd = indR0[1];
+
+    std::vector<int> indR1 = utils::binarySearch(logRadiusVectorUpperMass, log10(m_Radius));
+    double lowerRadiusUpperMassInd = indR1[0];
+    double upperRadiusUpperMassInd = indR1[1];
+
+    // Set the 4 qCrit boundary points for the 2D interpolation
+    double qLowLow = qCritVectorLowerMass[lowerRadiusLowerMassInd];
+    double qLowUpp = qCritVectorLowerMass[upperRadiusLowerMassInd];
+    double qUppLow = qCritVectorUpperMass[lowerRadiusUpperMassInd];
+    double qUppUpp = qCritVectorUpperMass[upperRadiusUpperMassInd];
+
+    double lowerMass = massesFromQcrit15[lowerMassInd];
+    double upperMass = massesFromQcrit15[upperMassInd];
+    double lowerRadiusLowerMass = pow(10, logRadiusVectorLowerMass[lowerRadiusLowerMassInd]);
+    double upperRadiusLowerMass = pow(10, logRadiusVectorLowerMass[upperRadiusLowerMassInd]);
+    double lowerRadiusUpperMass = pow(10, logRadiusVectorUpperMass[lowerRadiusUpperMassInd]);
+    double upperRadiusUpperMass = pow(10, logRadiusVectorUpperMass[upperRadiusUpperMassInd]);
+
+
+    // Interpolate on the radii first, then the masses
+    double qCritLowerMass = qLowLow + (upperRadiusLowerMass - m_Radius)/(upperRadiusLowerMass - lowerRadiusLowerMass) * (qLowUpp - qLowLow);
+    double qCritUpperMass = qUppLow + (upperRadiusUpperMass - m_Radius)/(upperRadiusUpperMass - lowerRadiusUpperMass) * (qUppUpp - qUppLow);
+        
+    double qCrit = qCritLowerMass + (upperMass - m_Mass)/(upperMass - lowerMass) * (qCritUpperMass - qCritLowerMass);
+
+    return qCrit;
+
+}
+
 /* 
  * Interpolate Nanjing lambda in mass for a given metallicity
  * 
@@ -1261,7 +1340,7 @@ double BaseStar::CalculateZadiabaticHurley2002(const double p_CoreMass) const{
     if (utils::Compare(p_CoreMass, m_Mass) >= 0) return 0.0;    // If the object is all core, the calculation is meaningless
 
     double m = p_CoreMass / m_Mass;
-    double x = -0.3;                                            // Depends on composition, should use x from Hurley et al 2000
+    double x = BaseStar::CalculateGBRadiusXExponent();          // x from Hurley et al 2000, Eq. 47 - Depends on composition
     return -x + (2.0 * m * m * m * m * m);
 }
 

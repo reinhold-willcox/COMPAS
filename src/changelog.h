@@ -924,8 +924,9 @@
 //                                      - Max evolution time and max number of timesteps now read in from gridline as well as commandline
 // 02.31.10     RTW - Aug 12, 2022   - Enhancement:
 //                                      - Added option to set the Temperature boundary between convective/radiative giant envelopes
-// 02.32.00     RTW - Aug 11, 2022   - Enhancement:
+// 02.32.00     RTW - Aug 13, 2022   - Enhancement:
 //                                      - Added critical mass ratios from Claeys+ 2014 for determining if MT is unstable
+//                                      - Cleaned up stability check functions in BaseBinaryStar.cpp for clarity, and to allow for critical mass ratios to be checked correctly
 
 const std::string VERSION_STRING = "02.32.00";
 
