@@ -34,7 +34,9 @@ protected:
 
     double          CalculateCoreMassOnPhase() const                                                            { return m_Mass; }                                                      // Return m_Mass
 
-    double          CalculateEddingtonCriticalRate() const                                                      { return 2.08E-3 / 1.7 * m_Radius * MYR_TO_YEAR; }       // Hurley+, 2002, Eq. (67)
+    double          CalculateCriticalMassRatio(const bool p_AccretorIsDegenerate) const                         { return 0.0; }                                                         // Should never be called...
+
+    double          CalculateEddingtonCriticalRate() const                                                      { return 2.08E-3 / 1.7 * m_Radius * MYR_TO_YEAR; }                      // Hurley+, 2002, Eq. (67)
 
     void            CalculateGBParams()                                                                         { GiantBranch::CalculateGBParams(); }                                   // Default to GiantBranch
 
@@ -71,7 +73,7 @@ protected:
     void            CalculateTimescales(const double p_Mass, DBL_VECTOR &p_Timescales)                          { return TPAGB::CalculateTimescales(p_Mass, p_Timescales); }            // Use TPAGB
     void            CalculateTimescales()                                                                       { CalculateTimescales(m_Mass0, m_Timescales); }                         // Use class member variables
 
-    double          CalculateZeta(ZETA_PRESCRIPTION p_ZetaPrescription)                                         { return 0.0; }                                                         // Should never be called...
+    double          CalculateZetaConstantsByEnvelope(ZETA_PRESCRIPTION p_ZetaPrescription)                      { return 0.0; }                                                         // Should never be called...
 
     double          ChooseTimestep(const double p_Time) const;
 
@@ -86,8 +88,6 @@ protected:
     bool            IsEndOfPhase() const                                                                        { return !ShouldEvolveOnPhase(); }                                      // Phase ends when envelope loss or going supernova
 
     bool            IsSupernova() const                                                                         { return false; }                                                       // Default
-
-    bool            IsMassRatioUnstable(const double p_AccretorMass, const bool p_AccretorIsDegenerate) const   { return false; }                                                       // Should never be called...
 
     void            PerturbLuminosityAndRadius() { }                                                                                                                                    // NO-OP
 

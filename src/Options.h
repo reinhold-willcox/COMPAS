@@ -206,19 +206,24 @@ private:
         //"logfile-be-binaries",
 
         "logfile-common-envelopes",
+        "logfile-common-envelopes-record-types",
         "logfile-definitions",
         "logfile-detailed-output",
+        "logfile-detailed-output-record-types",
         "logfile-double-compact-objects",
+        "logfile-double-compact-objects-record-types",
         "logfile-name-prefix",
         "logfile-pulsar-evolution",
+        "logfile-pulsar-evolution-record-types",
         "logfile-rlof-parameters",
+        "logfile-rlof-parameters-record-types",
         "logfile-supernovae",
+        "logfile-supernovae-record-types",
         "logfile-switch-log",
         "logfile-system-parameters",
+        "logfile-system-parameters-record-types",
         "logfile-type",
 
-        "maximum-evolution-time",
-        "maximum-number-timestep-iterations",
         "mode",
 
         "notes-hdrs",
@@ -313,31 +318,6 @@ private:
         "common-envelope-recombination-energy-density",
         "common-envelope-slope-kruckow",
 
-        "critical-mass-ratio-giant-degenerate-accretor",
-        "critical-mass-ratio-giant-non-degenerate-accretor",
-        "use-critical-mass-ratio-giant",
-        "critical-mass-ratio-helium-giant-degenerate-accretor",
-        "critical-mass-ratio-helium-giant-non-degenerate-accretor",
-        "use-critical-mass-ratio-helium-giant",
-        "critical-mass-ratio-helium-hg-degenerate-accretor",
-        "critical-mass-ratio-helium-hg-non-degenerate-accretor",
-        "use-critical-mass-ratio-helium-hg",
-        "critical-mass-ratio-helium-ms-degenerate-accretor",
-        "critical-mass-ratio-helium-ms-non-degenerate-accretor",
-        "use-critical-mass-ratio-helium-ms",
-        "critical-mass-ratio-hg-degenerate-accretor",
-        "critical-mass-ratio-hg-non-degenerate-accretor",
-        "use-critical-mass-ratio-hg",
-        "critical-mass-ratio-ms-high-mass-degenerate-accretor",
-        "critical-mass-ratio-ms-high-mass-non-degenerate-accretor",
-        "use-critical-mass-ratio-ms-high-mass",
-        "critical-mass-ratio-ms-low-mass-degenerate-accretor",
-        "critical-mass-ratio-ms-low-mass-non-degenerate-accretor",
-        "use-critical-mass-ratio-ms-low-mass",
-        "critical-mass-ratio-white-dwarf-degenerate-accretor",
-        "critical-mass-ratio-white-dwarf-non-degenerate-accretor",
-        "use-critical-mass-ratio-white-dwarf",
-
         "eccentricity", "e",
         "eccentricity-distribution",
         "eccentricity-max",
@@ -361,11 +341,17 @@ private:
         "kick-theta-1",
         "kick-theta-2",
 
+        //"logfile-be-binaries",
+        //"logfile-be-binaries-record-types",
+
         "logfile-common-envelopes",
+        "logfile-common-envelopes-record-types",
         "logfile-double-compact-objects",
+        "logfile-double-compact-objects-record-types",
         "logfile-pulsar-evolution",
+        "logfile-pulsar-evolution-record-types",
         "logfile-rlof-parameters",
-        "logfile-system-parameters",
+        "logfile-rlof-parameters-record-types",
 
         "mass-ratio", "q",
         "mass-ratio-max",
@@ -415,7 +401,7 @@ private:
 
         "add-options-to-sysparms",
 
-        "allow-H-rich-ECSN"
+        "allow-non-stripped-ECSN"
         "allow-rlof-at-birth",
         "allow-touching-at-birth",
         "angular-momentum-conservation-during-circularisation",
@@ -431,6 +417,8 @@ private:
         "common-envelope-allow-main-sequence-survive",
         "common-envelope-lambda-prescription",
         "common-envelope-mass-accretion-prescription",
+
+        "critical-mass-ratio-prescription",
 
         "debug-classes",
         "debug-level",
@@ -464,17 +452,24 @@ private:
         "log-classes",
 
         //"logfile-be-binaries",
+        //"logfile-be-binaries-record-types",
 
         "logfile-common-envelopes",
+        "logfile-common-envelopes-record-types",
         "logfile-definitions",
         "logfile-detailed-output",
         "logfile-double-compact-objects",
+        "logfile-double-compact-objects-record-types",
         "logfile-name-prefix",
         "logfile-pulsar-evolution",
+        "logfile-pulsar-evolution-record-types",
         "logfile-rlof-parameters",
+        "logfile-rlof-parameters-record-types",
         "logfile-supernovae",
+        "logfile-supernovae-record-types",
         "logfile-switch-log",
         "logfile-system-parameters",
+        "logfile-system-parameters-record-types",
         "logfile-type",
         "luminous-blue-variable-prescription",
 
@@ -550,17 +545,25 @@ private:
         "log-level", 
 
         //"logfile-be-binaries",
+        //"logfile-be-binaries-record-types",
 
         "logfile-common-envelopes",
+        "logfile-common-envelopes-record-types",
         "logfile-definitions",
         "logfile-detailed-output",
+        "logfile-detailed-output-record-types",
         "logfile-double-compact-objects",
+        "logfile-double-compact-objects-record-types",
         "logfile-name-prefix",
         "logfile-pulsar-evolution",
+        "logfile-pulsar-evolution-record-types",
         "logfile-rlof-parameters",
+        "logfile-rlof-parameters-record-types",
         "logfile-supernovae",
+        "logfile-supernovae-record-types",
         "logfile-switch-log",
         "logfile-system-parameters",
+        "logfile-system-parameters-record-types",
         "logfile-type",
 
         "mode",
@@ -611,7 +614,7 @@ public:
             
             // member variables - alphabetically in groups (sort of...)
 
-            bool                                                m_AllowHRichECSN;                                               // Indicates whether single stars should undergo ECSNe if they have H envelopes
+            bool                                                m_AllowNonStrippedECSN;                                         // Indicates whether single stars should undergo ECSNe if they were not stripped by a companion
             bool                                                m_AllowRLOFAtBirth;                                             // Indicates whether binaries that have one or both stars in RLOF at birth are allowed to evolve
             bool                                                m_AllowTouchingAtBirth;                                         // Indicates whether binaries that are touching at birth are allowed to evolve
 
@@ -791,6 +794,7 @@ public:
             bool                                                m_UseMassTransfer;                                              // Whether to use mass transfer (default = true)
 	        bool                                                m_CirculariseBinaryDuringMassTransfer;						    // Whether to circularise binary when it starts (default = true)
 	        bool                                                m_AngularMomentumConservationDuringCircularisation;			    // Whether to conserve angular momentum while circularising or circularise to periastron (default = false)
+            double                                              m_ConvectiveEnvelopeTemperatureThreshold;                        // The boundary between convective and radiative envelopes for HG and Giant stars
 	
             bool                                                m_RetainCoreMassDuringCaseAMassTransfer;                        // Whether to retain the approximate core mass of a case A donor as a minimum core at end of MS or HeMS (default = false)
         
@@ -814,37 +818,29 @@ public:
             // Mass transfer rejuvenation prescription
             ENUM_OPT<MT_REJUVENATION_PRESCRIPTION>              m_MassTransferRejuvenationPrescription;                         // Which mass transfer rejuvenation prescription
 
-            // AVG
             // Mass transfer critical mass ratios
-            bool                                                m_MassTransferCriticalMassRatioMSLowMass;                       // Whether to use critical mass ratios
+            ENUM_OPT<QCRIT_PRESCRIPTION>                        m_QCritPrescription;                                            // The critical mass ratio prescription, if any
             double                                              m_MassTransferCriticalMassRatioMSLowMassNonDegenerateAccretor;  // Critical mass ratio for MT from a MS low mass star
             double                                              m_MassTransferCriticalMassRatioMSLowMassDegenerateAccretor;     // Critical mass ratio for MT from a MS low mass star on to a degenerate accretor
 
-            bool                                                m_MassTransferCriticalMassRatioMSHighMass;                      // Whether to use critical mass ratios
             double                                              m_MassTransferCriticalMassRatioMSHighMassNonDegenerateAccretor; // Critical mass ratio for MT from a MS high mass star
             double                                              m_MassTransferCriticalMassRatioMSHighMassDegenerateAccretor;    // Critical mass ratio for MT from a MS high mass star on to a degenerate accretor
 
-            bool                                                m_MassTransferCriticalMassRatioGiant;                           // Whether to use critical mass ratios
             double                                              m_MassTransferCriticalMassRatioGiantNonDegenerateAccretor;      // Critical mass ratio for MT from a giant
             double                                              m_MassTransferCriticalMassRatioGiantDegenerateAccretor;         // Critical mass ratio for MT from a giant on to a degenerate accretor
 
-            bool                                                m_MassTransferCriticalMassRatioHG;                              // Whether to use critical mass ratios
             double                                              m_MassTransferCriticalMassRatioHGNonDegenerateAccretor;         // Critical mass ratio for MT from a HG star
             double                                              m_MassTransferCriticalMassRatioHGDegenerateAccretor;            // Critical mass ratio for MT from a HG star on to a degenerate accretor
 
-            bool                                                m_MassTransferCriticalMassRatioHeliumMS;                        // Whether to use critical mass ratios
             double                                              m_MassTransferCriticalMassRatioHeliumMSNonDegenerateAccretor;   // Critical mass ratio for MT from a Helium MS star
             double                                              m_MassTransferCriticalMassRatioHeliumMSDegenerateAccretor;      // Critical mass ratio for MT from a Helium MS star on to a degenerate accretor
 
-            bool                                                m_MassTransferCriticalMassRatioHeliumHG;                        // Whether to use critical mass ratios
             double                                              m_MassTransferCriticalMassRatioHeliumHGNonDegenerateAccretor;   // Critical mass ratio for MT from a Helium HG star
             double                                              m_MassTransferCriticalMassRatioHeliumHGDegenerateAccretor;      // Critical mass ratio for MT from a Helium HG star on to a degenerate accretor
 
-            bool                                                m_MassTransferCriticalMassRatioHeliumGiant;                     // Whether to use critical mass ratios
             double                                              m_MassTransferCriticalMassRatioHeliumGiantNonDegenerateAccretor;// Critical mass ratio for MT from a helium giant
             double                                              m_MassTransferCriticalMassRatioHeliumGiantDegenerateAccretor;   // Critical mass ratio for MT from a helium giant on to a degenerate accretor
 
-            bool                                                m_MassTransferCriticalMassRatioWhiteDwarf;                      // Whether to use critical mass ratios
             double                                              m_MassTransferCriticalMassRatioWhiteDwarfNonDegenerateAccretor; // Critical mass ratio for MT from a white dwarf
             double                                              m_MassTransferCriticalMassRatioWhiteDwarfDegenerateAccretor;    // Critical mass ratio for MT from a white dwarf on to a degenerate accretor
 
@@ -950,6 +946,15 @@ public:
             std::string                                         m_LogfileBeBinaries;                                            // output file name: Be Binaries
             std::string                                         m_LogfilePulsarEvolution;                                       // output file name: pulsar evolution
             std::string                                         m_LogfileSwitchLog;                                             // output file name: switch log
+
+            int                                                 m_LogfileSystemParametersRecordTypes;                           // enabled record types: system parameters
+            int                                                 m_LogfileDetailedOutputRecordTypes;                             // enabled record types: detailed output
+            int                                                 m_LogfileDoubleCompactObjectsRecordTypes;                       // enabled record types: double compact objects
+            int                                                 m_LogfileSupernovaeRecordTypes;                                 // enabled record types: supernovae
+            int                                                 m_LogfileCommonEnvelopesRecordTypes;                            // enabled record types: common envelopes
+            int                                                 m_LogfileRLOFParametersRecordTypes;                             // enabled record types: Roche Lobe overflow
+            int                                                 m_LogfileBeBinariesRecordTypes;                                 // enabled record types: Be Binaries
+            int                                                 m_LogfilePulsarEvolutionRecordTypes;                            // enabled record types: pulsar evolution
 
             ENUM_OPT<ADD_OPTIONS_TO_SYSPARMS>                   m_AddOptionsToSysParms;                                         // Whether/when to add program option columns to BSE/SSE sysparms file
 
@@ -1122,7 +1127,7 @@ public:
 
     ADD_OPTIONS_TO_SYSPARMS                     AddOptionsToSysParms() const                                            { return m_CmdLine.optionValues.m_AddOptionsToSysParms.type; }
 
-    bool                                        AllowHRichECSN() const                                                  { return OPT_VALUE("allow-H-rich-ECSN", m_AllowHRichECSN, true); }
+    bool                                        AllowNonStrippedECSN() const                                            { return OPT_VALUE("allow-non-stripped-ECSN", m_AllowNonStrippedECSN, true); }
     bool                                        AllowMainSequenceStarToSurviveCommonEnvelope() const                    { return OPT_VALUE("common-envelope-allow-main-sequence-survive", m_AllowMainSequenceStarToSurviveCommonEnvelope, true); }
     bool                                        AllowRadiativeEnvelopeStarToSurviveCommonEnvelope() const               { return OPT_VALUE("common-envelope-allow-radiative-envelope-survive", m_AllowRadiativeEnvelopeStarToSurviveCommonEnvelope, true); }
     bool                                        AllowImmediateRLOFpostCEToSurviveCommonEnvelope() const                 { return OPT_VALUE("common-envelope-allow-immediate-rlof-post-ce-survive", m_AllowImmediateRLOFpostCEToSurviveCommonEnvelope, true); }
@@ -1161,6 +1166,8 @@ public:
     CE_ACCRETION_PRESCRIPTION                   CommonEnvelopeMassAccretionPrescription() const                         { return OPT_VALUE("common-envelope-mass-accretion-prescription", m_CommonEnvelopeMassAccretionPrescription.type, true); }
     double                                      CommonEnvelopeRecombinationEnergyDensity() const                        { return OPT_VALUE("common-envelope-recombination-energy-density", m_CommonEnvelopeRecombinationEnergyDensity, true); }
     double                                      CommonEnvelopeSlopeKruckow() const                                      { return OPT_VALUE("common-envelope-slope-kruckow", m_CommonEnvelopeSlopeKruckow, true); }
+
+    double                                      ConvectiveEnvelopeTemperatureThreshold() const                          { return OPT_VALUE("convective-envelope-temperature-threshold", m_ConvectiveEnvelopeTemperatureThreshold, true); }
 
     double                                      CoolWindMassLossMultiplier() const                                      { return OPT_VALUE("cool-wind-mass-loss-multiplier", m_CoolWindMassLossMultiplier, true); }
 
@@ -1231,7 +1238,9 @@ public:
 
     std::vector<std::string>                    LogClasses() const                                                      { return m_CmdLine.optionValues.m_LogClasses; }
     std::string                                 LogfileBeBinaries() const                                               { return m_CmdLine.optionValues.m_LogfileBeBinaries; }
+    int                                         LogfileBeBinariesRecordTypes() const                                    { return m_CmdLine.optionValues.m_LogfileBeBinariesRecordTypes; }
     std::string                                 LogfileCommonEnvelopes() const                                          { return m_CmdLine.optionValues.m_LogfileCommonEnvelopes; }
+    int                                         LogfileCommonEnvelopesRecordTypes() const                               { return m_CmdLine.optionValues.m_LogfileCommonEnvelopesRecordTypes; }
     std::string                                 LogfileDefinitionsFilename() const                                      { return m_CmdLine.optionValues.m_LogfileDefinitionsFilename; }
     std::string                                 LogfileDetailedOutput() const                                           { return m_CmdLine.optionValues.m_Populated && !m_CmdLine.optionValues.m_VM["logfile-detailed-output"].defaulted()
                                                                                                                                     ? m_CmdLine.optionValues.m_LogfileDetailedOutput
@@ -1240,10 +1249,14 @@ public:
                                                                                                                                         : std::get<0>(LOGFILE_DESCRIPTOR.at(LOGFILE::BSE_DETAILED_OUTPUT))
                                                                                                                                       );
                                                                                                                         }
+    int                                         LogfileDetailedOutputRecordTypes() const                                { return m_CmdLine.optionValues.m_LogfileDetailedOutputRecordTypes; }
     std::string                                 LogfileDoubleCompactObjects() const                                     { return m_CmdLine.optionValues.m_LogfileDoubleCompactObjects; }
+    int                                         LogfileDoubleCompactObjectsRecordTypes() const                          { return m_CmdLine.optionValues.m_LogfileDoubleCompactObjectsRecordTypes; }
     std::string                                 LogfileNamePrefix() const                                               { return m_CmdLine.optionValues.m_LogfileNamePrefix; }
     std::string                                 LogfilePulsarEvolution() const                                          { return m_CmdLine.optionValues.m_LogfilePulsarEvolution; }
+    int                                         LogfilePulsarEvolutionRecordTypes() const                               { return m_CmdLine.optionValues.m_LogfilePulsarEvolutionRecordTypes; }
     std::string                                 LogfileRLOFParameters() const                                           { return m_CmdLine.optionValues.m_LogfileRLOFParameters; }
+    int                                         LogfileRLOFParametersRecordTypes() const                                { return m_CmdLine.optionValues.m_LogfileRLOFParametersRecordTypes; }
     std::string                                 LogfileSupernovae() const                                               { return m_CmdLine.optionValues.m_Populated && !m_CmdLine.optionValues.m_VM["logfile-supernovae"].defaulted()
                                                                                                                                     ? m_CmdLine.optionValues.m_LogfileSupernovae
                                                                                                                                     : (m_CmdLine.optionValues.m_EvolutionMode.type == EVOLUTION_MODE::SSE
@@ -1251,6 +1264,7 @@ public:
                                                                                                                                         : std::get<0>(LOGFILE_DESCRIPTOR.at(LOGFILE::BSE_SUPERNOVAE))
                                                                                                                                       );
                                                                                                                         }
+    int                                         LogfileSupernovaeRecordTypes() const                                    { return m_CmdLine.optionValues.m_LogfileSupernovaeRecordTypes; }
     std::string                                 LogfileSwitchLog() const                                                { return m_CmdLine.optionValues.m_Populated && !m_CmdLine.optionValues.m_VM["logfile-switch-log"].defaulted()
                                                                                                                                     ? m_CmdLine.optionValues.m_LogfileSwitchLog
                                                                                                                                     : (m_CmdLine.optionValues.m_EvolutionMode.type == EVOLUTION_MODE::SSE
@@ -1265,6 +1279,7 @@ public:
                                                                                                                                         : std::get<0>(LOGFILE_DESCRIPTOR.at(LOGFILE::BSE_SYSTEM_PARAMETERS))
                                                                                                                                       );
                                                                                                                         }
+    int                                         LogfileSystemParametersRecordTypes() const                              { return m_CmdLine.optionValues.m_LogfileSystemParametersRecordTypes; }
     LOGFILETYPE                                 LogfileType() const                                                     { return m_CmdLine.optionValues.m_LogfileType.type; }
     std::string                                 LogfileTypeString() const                                               { return m_CmdLine.optionValues.m_LogfileType.typeString; }
     int                                         LogLevel() const                                                        { return m_CmdLine.optionValues.m_LogLevel; }
@@ -1283,29 +1298,20 @@ public:
     MT_ANGULAR_MOMENTUM_LOSS_PRESCRIPTION       MassTransferAngularMomentumLossPrescription() const                     { return OPT_VALUE("mass-transfer-angular-momentum-loss-prescription", m_MassTransferAngularMomentumLossPrescription.type, true); }
     double                                      MassTransferCParameter() const                                          { return OPT_VALUE("mass-transfer-thermal-limit-C", m_MassTransferCParameter, true); }
 
-    // AVG
-    bool                                        MassTransferCriticalMassRatioMSLowMass() const                          { return OPT_VALUE("use-critical-mass-ratio-MS-low-mass", m_MassTransferCriticalMassRatioMSLowMass, true); }
     double                                      MassTransferCriticalMassRatioMSLowMassDegenerateAccretor() const        { return OPT_VALUE("critical-mass-ratio-ms-low-mass-degenerate-accretor", m_MassTransferCriticalMassRatioMSLowMassDegenerateAccretor, true); }
     double                                      MassTransferCriticalMassRatioMSLowMassNonDegenerateAccretor() const     { return OPT_VALUE("critical-mass-ratio-ms-low-mass-non-degenerate-accretor", m_MassTransferCriticalMassRatioMSLowMassNonDegenerateAccretor, true); }
-    bool                                        MassTransferCriticalMassRatioMSHighMass() const                         { return OPT_VALUE("use-critical-mass-ratio-MS-high-mass", m_MassTransferCriticalMassRatioMSHighMass, true); }
     double                                      MassTransferCriticalMassRatioMSHighMassDegenerateAccretor() const       { return OPT_VALUE("critical-mass-ratio-ms-high-mass-degenerate-accretor", m_MassTransferCriticalMassRatioMSHighMassDegenerateAccretor, true); }
     double                                      MassTransferCriticalMassRatioMSHighMassNonDegenerateAccretor() const    { return OPT_VALUE("critical-mass-ratio-ms-high-mass-non-degenerate-accretor", m_MassTransferCriticalMassRatioMSHighMassNonDegenerateAccretor, true); }
-    bool                                        MassTransferCriticalMassRatioGiant() const                              { return OPT_VALUE("use-critical-mass-ratio-giant", m_MassTransferCriticalMassRatioGiant, true); }
     double                                      MassTransferCriticalMassRatioGiantDegenerateAccretor() const            { return OPT_VALUE("critical-mass-ratio-giant-degenerate-accretor", m_MassTransferCriticalMassRatioGiantDegenerateAccretor, true); }
     double                                      MassTransferCriticalMassRatioGiantNonDegenerateAccretor() const         { return OPT_VALUE("critical-mass-ratio-giant-non-degenerate-accretor", m_MassTransferCriticalMassRatioGiantNonDegenerateAccretor, true); }
-    bool                                        MassTransferCriticalMassRatioHG() const                                 { return OPT_VALUE("use-critical-mass-ratio-HG", m_MassTransferCriticalMassRatioHG, true); }
     double                                      MassTransferCriticalMassRatioHGDegenerateAccretor() const               { return OPT_VALUE("critical-mass-ratio-hg-degenerate-accretor", m_MassTransferCriticalMassRatioHGDegenerateAccretor, true); }
     double                                      MassTransferCriticalMassRatioHGNonDegenerateAccretor() const            { return OPT_VALUE("critical-mass-ratio-hg-non-degenerate-accretor", m_MassTransferCriticalMassRatioHGNonDegenerateAccretor, true); }
-    bool                                        MassTransferCriticalMassRatioHeliumGiant() const                        { return OPT_VALUE("use-critical-mass-ratio-helium-giant", m_MassTransferCriticalMassRatioHeliumGiant, true); }
     double                                      MassTransferCriticalMassRatioHeliumGiantDegenerateAccretor() const      { return OPT_VALUE("critical-mass-ratio-helium-giant-degenerate-accretor", m_MassTransferCriticalMassRatioHeliumGiantDegenerateAccretor, true); }
     double                                      MassTransferCriticalMassRatioHeliumGiantNonDegenerateAccretor() const   { return OPT_VALUE("critical-mass-ratio-helium-giant-non-degenerate-accretor", m_MassTransferCriticalMassRatioHeliumGiantNonDegenerateAccretor, true); }
-    bool                                        MassTransferCriticalMassRatioHeliumHG() const                           { return OPT_VALUE("use-critical-mass-ratio-helium-HG", m_MassTransferCriticalMassRatioHeliumHG, true); }
     double                                      MassTransferCriticalMassRatioHeliumHGDegenerateAccretor() const         { return OPT_VALUE("critical-mass-ratio-helium-hg-degenerate-accretor", m_MassTransferCriticalMassRatioHeliumHGDegenerateAccretor, true); }
     double                                      MassTransferCriticalMassRatioHeliumHGNonDegenerateAccretor() const      { return OPT_VALUE("critical-mass-ratio-helium-hg-non-degenerate-accretor", m_MassTransferCriticalMassRatioHeliumHGNonDegenerateAccretor, true); }
-    bool                                        MassTransferCriticalMassRatioHeliumMS() const                           { return OPT_VALUE("use-critical-mass-ratio-helium-MS", m_MassTransferCriticalMassRatioHeliumMS, true); }
     double                                      MassTransferCriticalMassRatioHeliumMSDegenerateAccretor() const         { return OPT_VALUE("critical-mass-ratio-helium-ms-degenerate-accretor", m_MassTransferCriticalMassRatioHeliumMSDegenerateAccretor, true); }
     double                                      MassTransferCriticalMassRatioHeliumMSNonDegenerateAccretor() const      { return OPT_VALUE("critical-mass-ratio-helium-ms-non-degenerate-accretor", m_MassTransferCriticalMassRatioHeliumMSNonDegenerateAccretor, true); }
-    bool                                        MassTransferCriticalMassRatioWhiteDwarf() const                         { return OPT_VALUE("use-critical-mass-ratio-white-dwarf", m_MassTransferCriticalMassRatioWhiteDwarf, true); }
     double                                      MassTransferCriticalMassRatioWhiteDwarfDegenerateAccretor() const       { return OPT_VALUE("critical-mass-ratio-white-dwarf-degenerate-accretor", m_MassTransferCriticalMassRatioWhiteDwarfDegenerateAccretor, true); }
     double                                      MassTransferCriticalMassRatioWhiteDwarfNonDegenerateAccretor() const    { return OPT_VALUE("critical-mass-ratio-white-dwarf-non-degenerate-accretor", m_MassTransferCriticalMassRatioWhiteDwarfNonDegenerateAccretor, true); }
 
@@ -1314,9 +1320,9 @@ public:
     double                                      MassTransferJlossMacLeodLinearFraction() const                          { return OPT_VALUE("mass-transfer-jloss-macleod-linear-fraction", m_MassTransferJlossMacLeodLinearFraction, true); }
     MT_REJUVENATION_PRESCRIPTION                MassTransferRejuvenationPrescription() const                            { return OPT_VALUE("mass-transfer-rejuvenation-prescription", m_MassTransferRejuvenationPrescription.type, true); }
     MT_THERMALLY_LIMITED_VARIATION              MassTransferThermallyLimitedVariation() const                           { return OPT_VALUE("mass-transfer-thermal-limit-accretor", m_MassTransferThermallyLimitedVariation.type, true); }
-    double                                      MaxEvolutionTime() const                                                { return m_CmdLine.optionValues.m_MaxEvolutionTime; }
+    double                                      MaxEvolutionTime() const                                                { return OPT_VALUE("maximum-evolution-time", m_MaxEvolutionTime, true); }
     double                                      MaximumNeutronStarMass() const                                          { return OPT_VALUE("maximum-neutron-star-mass", m_MaximumNeutronStarMass, true); }
-    int                                         MaxNumberOfTimestepIterations() const                                   { return m_CmdLine.optionValues.m_MaxNumberOfTimestepIterations; }
+    int                                         MaxNumberOfTimestepIterations() const                                   { return OPT_VALUE("maximum-number-timestep-iterations", m_MaxNumberOfTimestepIterations, true); }
     double                                      MaximumDonorMass() const                                                { return OPT_VALUE("maximum-mass-donor-nandez-ivanova", m_MaximumMassDonorNandezIvanova, true); }
     double                                      MCBUR1() const                                                          { return OPT_VALUE("mcbur1", m_mCBUR1, true); }
 
@@ -1376,6 +1382,8 @@ public:
     PPI_PRESCRIPTION                            PulsationalPairInstabilityPrescription() const                          { return OPT_VALUE("pulsational-pair-instability-prescription", m_PulsationalPairInstabilityPrescription.type, true); }
     double                                      PulsationalPairInstabilityLowerLimit() const                            { return OPT_VALUE("PPI-lower-limit", m_PulsationalPairInstabilityLowerLimit, true); }
     double                                      PulsationalPairInstabilityUpperLimit() const                            { return OPT_VALUE("PPI-upper-limit", m_PulsationalPairInstabilityUpperLimit, true); }
+
+    QCRIT_PRESCRIPTION                          QCritPrescription() const                                               { return OPT_VALUE("critical-mass-ratio-prescription", m_QCritPrescription.type, true); }
 
     bool                                        Quiet() const                                                           { return m_CmdLine.optionValues.m_Quiet; }
 
