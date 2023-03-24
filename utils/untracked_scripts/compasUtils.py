@@ -4,11 +4,11 @@ import pandas as pd
 
 
 ########################################################################
-### 
-### Function to print the data from a given COMPAS HDF5 group 
-### in a readable pandas template
-### 
-########################################################################
+# ## 
+# ## Function to print the data from a given COMPAS HDF5 group 
+# ## in a readable pandas template
+# ## 
+# #######################################################################
 
 def printCompasDetails(data, *seeds, mask=()):
     """
@@ -64,12 +64,12 @@ def printCompasDetails(data, *seeds, mask=()):
 
 
 ########################################################################
-### 
-### Get event histories of MT data, SN data, and combined MT, SN data
-### 
-########################################################################
+# ## 
+# ## Get event histories of MT data, SN data, and combined MT, SN data
+# ## 
+# #######################################################################
 
-def getMTevents(MTs):                                     
+def getMTevents(MTs, seeds=None):                                     
     """
     This function takes in the `BSE_RLOF` output category from COMPAS, and returns the information
     on the Mass Transfer (MT) events that happen for each seed. The events do not have to be in order, 
@@ -85,12 +85,17 @@ def getMTevents(MTs):
     """
 
     mtSeeds = MTs['SEED'][()]
-    mtTimes = MTs['Time<MT'][()]
-    mtPrimaryStype = MTs['Stellar_Type(1)<MT'][()]
-    mtSecondaryStype = MTs['Stellar_Type(2)<MT'][()]
-    mtIsRlof1 = MTs['RLOF(1)>MT'][()] == 1
-    mtIsRlof2 = MTs['RLOF(2)>MT'][()] == 1
-    mtIsCEE = MTs['CEE>MT'][()] == 1
+    if seeds is None:
+        mask = np.ones_like(mtSeeds).astype(bool)
+    else:
+        mask = np.in1d(mtSeeds, seeds)
+    mtSeeds = MTs['SEED'][()][mask]
+    mtTimes = MTs['Time<MT'][()][mask]
+    mtPrimaryStype = MTs['Stellar_Type(1)<MT'][()][mask]
+    mtSecondaryStype = MTs['Stellar_Type(2)<MT'][()][mask]
+    mtIsRlof1 = MTs['RLOF(1)>MT'][()][mask] == 1
+    mtIsRlof2 = MTs['RLOF(2)>MT'][()][mask] == 1
+    mtIsCEE = MTs['CEE>MT'][()][mask] == 1
 
     # We want the return arrays sorted by seed, so sort here.
     mtSeedsInds = mtSeeds.argsort()
@@ -134,7 +139,7 @@ def getMTevents(MTs):
     return returnedSeeds, returnedEvents, returnedTimes       # see above for description
 
 
-def getSNevents(SNe):                                     
+def getSNevents(SNe, seeds=None):
     """
     This function takes in the `BSE_Supernovae` output category from COMPAS, and returns the information
     on the Supernova (SN) events that happen for each seed. The events do not have to be in order chronologically,
@@ -150,11 +155,16 @@ def getSNevents(SNe):
     """
     
     snSeeds = SNe['SEED'][()]
-    snTimes = SNe['Time'][()]
-    snProgStype = SNe['Stellar_Type_Prev(SN)'][()]
-    snRemnStype = SNe['Stellar_Type(SN)'][()]
-    snWhichProg = SNe['Supernova_State'][()]
-    snIsUnbound = SNe['Unbound'][()] == 1
+    if seeds is None:
+        mask = np.ones_like(snSeeds).astype(bool)
+    else:
+        mask = np.in1d(snSeeds, seeds)
+    snSeeds = SNe['SEED'][()][mask]
+    snTimes = SNe['Time'][()][mask]
+    snProgStype = SNe['Stellar_Type_Prev(SN)'][()][mask]
+    snRemnStype = SNe['Stellar_Type(SN)'][()][mask]
+    snWhichProg = SNe['Supernova_State'][()][mask]
+    snIsUnbound = SNe['Unbound'][()][mask] == 1
 
     # We want the return arrays sorted by seed, so sort here.
     snSeedsInds = snSeeds.argsort()
@@ -195,7 +205,7 @@ def getSNevents(SNe):
     return returnedSeeds, returnedEvents, returnedTimes     # see above for description
 
 
-def getEventHistory(h5file, exclude_null=False):
+def getEventHistory(h5file, exclude_null=False, seeds=None):
     """
     Get the event history for all seeds, including both RLOF and SN events, in chronological order.
     IN:
@@ -212,8 +222,10 @@ def getEventHistory(h5file, exclude_null=False):
     MTs = h5file['BSE_RLOF']
     SNe = h5file['BSE_Supernovae']
     allSeeds = SPs['SEED'][()]                                              # get all seeds
-    mtSeeds, mtEvents, mtTimes = getMTevents(MTs)                           # get MT events
-    snSeeds, snEvents, snTimes = getSNevents(SNe)                           # get SN events
+    if seeds is not None:
+        allSeeds = allSeeds[np.in1d(allSeeds, seeds)]
+    mtSeeds, mtEvents, mtTimes = getMTevents(MTs, seeds)                    # get MT events
+    snSeeds, snEvents, snTimes = getSNevents(SNe, seeds)                    # get SN events
 
     numMtSeeds = len(mtSeeds)                                               # number of MT events
     numSnSeeds = len(snSeeds)                                               # number of SN events
@@ -258,10 +270,10 @@ def getEventHistory(h5file, exclude_null=False):
 
 
 ###########################################
-### 
-### Produce strings of the event histories
-### 
-###########################################
+# ## 
+# ## Produce strings of the event histories
+# ## 
+# ##########################################
 
 def buildEventString(events):
     """
@@ -305,7 +317,7 @@ def buildEventString(events):
 
 
 
-def getEventStrings(h5file=None, allEvents=None):
+def getEventStrings(h5file=None, allEvents=None, seeds=None):
     """
     Function to calculate the event history strings for either the entire Compas output, or some list of events
     IN: One of
@@ -319,11 +331,74 @@ def getEventStrings(h5file=None, allEvents=None):
     if (h5file == None) & (allEvents == None):
         return 
     elif (allEvents == None):
-        _, allEvents = getEventHistory(h5file)
+        allSeeds, allEvents = getEventHistory(h5file, seeds=seeds)
     
     eventStrings = []                                                        # array of event strings to be returned
     for eventsForGivenSeed in allEvents:  
         eventString = buildEventString(eventsForGivenSeed)
         eventStrings.append(eventString)                                     # append event string for this star (pop the last underscore first)
 
-    return eventStrings
+    return allSeeds, eventStrings
+
+""
+def chirp_mass(m1, m2):
+    return np.power(m1*m2, 3/5) / np.power(m1+m2, 1/5) 
+
+myf = h5.File('/home/rwillcox/astro/Kicks_with_directions/data/run1M/schneider//COMPAS_Output.h5', 'r')
+#print(myf.keys())
+MTs = myf['BSE_RLOF']
+SNe = myf['BSE_Supernovae']
+DCs = myf['BSE_Double_Compact_Objects']
+SPs = myf['BSE_System_Parameters']
+sds, cts = np.unique(SPs['SEED'][()], return_counts=True)
+print(sds)
+
+""
+dcSeeds = DCs['SEED'][()]
+m1 = DCs['Mass(1)'][()]
+m2 = DCs['Mass(2)'][()]
+mC = chirp_mass(m1, m2)
+
+middlePeakMask = (mC < 12.5) & (mC > 9) # middle peak
+middlePeakSeeds = dcSeeds[middlePeakMask]
+
+print(np.sum(middlePeakMask))
+print(middlePeakSeeds)
+print()
+# Get total number of 
+eventSeeds, eventStrings = getEventStrings(myf, seeds=middlePeakSeeds)
+print(eventSeeds)
+
+print(middlePeakSeeds == eventSeeds)
+
+numNA  = 0
+numInt = 0
+numCEE = 0
+for seed, event in zip(eventSeeds, eventStrings):
+    print("{} : {}".format(seed, event))
+    if event == 'NA':
+        numNA += 1
+    else:
+        numInt += 1
+        if '=' in event:
+            numCEE +=1
+
+""
+seedsToStudy = 4005981
+
+getEventStrings(myf, seeds=seedsToStudy)
+
+""
+printCompasDetails(MTs, seedsToStudy)
+
+""
+printCompasDetails(SNe, seedsToStudy)
+
+""
+printCompasDetails(DCs, seedsToStudy)
+
+""
+
+
+""
+
