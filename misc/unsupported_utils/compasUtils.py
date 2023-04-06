@@ -138,7 +138,7 @@ def getMTevents(MTs, seeds=None):
 
     return returnedSeeds, returnedEvents, returnedTimes       # see above for description
 
-
+""
 def getSNevents(SNe, seeds=None):
     """
     This function takes in the `BSE_Supernovae` output category from COMPAS, and returns the information
@@ -204,7 +204,7 @@ def getSNevents(SNe, seeds=None):
                 
     return returnedSeeds, returnedEvents, returnedTimes     # see above for description
 
-
+""
 def getEventHistory(h5file, exclude_null=False, seeds=None):
     """
     Get the event history for all seeds, including both RLOF and SN events, in chronological order.
@@ -221,11 +221,11 @@ def getEventHistory(h5file, exclude_null=False, seeds=None):
     SPs = h5file['BSE_System_Parameters']
     MTs = h5file['BSE_RLOF']
     SNe = h5file['BSE_Supernovae']
-    allSeeds = SPs['SEED'][()]                                              # get all seeds
+    allSeeds = np.sort(SPs['SEED'][()])                                              # get all seeds
     if seeds is not None:
         allSeeds = allSeeds[np.in1d(allSeeds, seeds)]
-    mtSeeds, mtEvents, mtTimes = getMTevents(MTs, seeds)                    # get MT events
-    snSeeds, snEvents, snTimes = getSNevents(SNe, seeds)                    # get SN events
+    mtSeeds, mtEvents, mtTimes = getMTevents(MTs, allSeeds)                    # get MT events
+    snSeeds, snEvents, snTimes = getSNevents(SNe, allSeeds)                    # get SN events
 
     numMtSeeds = len(mtSeeds)                                               # number of MT events
     numSnSeeds = len(snSeeds)                                               # number of SN events
@@ -266,8 +266,7 @@ def getEventHistory(h5file, exclude_null=False, seeds=None):
         returnedSeeds.append(seed)                                          # record the seed in the seeds array being returned
         returnedEvents.append(seedEvents)                                   # record the events for this seed in the events array being returned
 
-    return returnedSeeds, returnedEvents                                              # see above for details
-
+    return np.array(returnedSeeds), returnedEvents                                              # see above for details
 
 ###########################################
 # ## 
@@ -315,8 +314,7 @@ def buildEventString(events):
 
     return eventStr[:-1]                                                   # return event string for this star (pop the last underscore first)
 
-
-
+""
 def getEventStrings(h5file=None, allEvents=None, seeds=None):
     """
     Function to calculate the event history strings for either the entire Compas output, or some list of events
@@ -339,63 +337,6 @@ def getEventStrings(h5file=None, allEvents=None, seeds=None):
         eventStrings.append(eventString)                                     # append event string for this star (pop the last underscore first)
 
     return allSeeds, eventStrings
-
-""
-def chirp_mass(m1, m2):
-    return np.power(m1*m2, 3/5) / np.power(m1+m2, 1/5) 
-
-myf = h5.File('/home/rwillcox/astro/Kicks_with_directions/data/run1M/schneider//COMPAS_Output.h5', 'r')
-#print(myf.keys())
-MTs = myf['BSE_RLOF']
-SNe = myf['BSE_Supernovae']
-DCs = myf['BSE_Double_Compact_Objects']
-SPs = myf['BSE_System_Parameters']
-sds, cts = np.unique(SPs['SEED'][()], return_counts=True)
-print(sds)
-
-""
-dcSeeds = DCs['SEED'][()]
-m1 = DCs['Mass(1)'][()]
-m2 = DCs['Mass(2)'][()]
-mC = chirp_mass(m1, m2)
-
-middlePeakMask = (mC < 12.5) & (mC > 9) # middle peak
-middlePeakSeeds = dcSeeds[middlePeakMask]
-
-print(np.sum(middlePeakMask))
-print(middlePeakSeeds)
-print()
-# Get total number of 
-eventSeeds, eventStrings = getEventStrings(myf, seeds=middlePeakSeeds)
-print(eventSeeds)
-
-print(middlePeakSeeds == eventSeeds)
-
-numNA  = 0
-numInt = 0
-numCEE = 0
-for seed, event in zip(eventSeeds, eventStrings):
-    print("{} : {}".format(seed, event))
-    if event == 'NA':
-        numNA += 1
-    else:
-        numInt += 1
-        if '=' in event:
-            numCEE +=1
-
-""
-seedsToStudy = 4005981
-
-getEventStrings(myf, seeds=seedsToStudy)
-
-""
-printCompasDetails(MTs, seedsToStudy)
-
-""
-printCompasDetails(SNe, seedsToStudy)
-
-""
-printCompasDetails(DCs, seedsToStudy)
 
 ""
 
