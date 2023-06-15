@@ -98,7 +98,7 @@ public:
         m_SynchronizationTimescale         = p_Star.m_SynchronizationTimescale;
 
         m_SystemicVelocity                 = p_Star.m_SystemicVelocity;
-
+        m_OrbitalAngularMomentumVector     = p_Star.m_OrbitalAngularMomentumVector;
         m_ThetaE                           = p_Star.m_ThetaE;
         m_PhiE                             = p_Star.m_PhiE;  
         m_PsiE                             = p_Star.m_PsiE;  
@@ -229,8 +229,8 @@ public:
     double              RocheLobe1to2PreCEE() const                 { return m_CEDetails.preCEE.rocheLobe1to2; }
     double              RocheLobe2to1PostCEE() const                { return m_CEDetails.postCEE.rocheLobe2to1; }
     double              RocheLobe2to1PreCEE() const                 { return m_CEDetails.preCEE.rocheLobe2to1; }
-    double              RocheLobeRadius1() const                    { return CalculateRocheLobeRadius_Static(m_Star1->Mass(), m_Star2->Mass()); }
-    double              RocheLobeRadius2() const                    { return CalculateRocheLobeRadius_Static(m_Star2->Mass(), m_Star1->Mass()); }
+    double              RocheLobeRadius1() const                    { return CalculateRocheLobeRadius_Static(m_Star1->Mass(), m_Star2->Mass()) * SemiMajorAxisRsol() * (1-Eccentricity()); }
+    double              RocheLobeRadius2() const                    { return CalculateRocheLobeRadius_Static(m_Star2->Mass(), m_Star1->Mass()) * SemiMajorAxisRsol() * (1-Eccentricity()); }
     double              StarToRocheLobeRadiusRatio1() const         { return m_Star1->StarToRocheLobeRadiusRatio(m_SemiMajorAxis, m_Eccentricity); }
     double              StarToRocheLobeRadiusRatio2() const         { return m_Star2->StarToRocheLobeRadiusRatio(m_SemiMajorAxis, m_Eccentricity); }
     double              SemiMajorAxisAtDCOFormation() const         { return m_SemiMajorAxisAtDCOFormation; }
@@ -250,6 +250,10 @@ public:
     STELLAR_TYPE        StellarType2() const                        { return m_Star2->StellarType(); }
     STELLAR_TYPE        StellarType2PostCEE() const                 { return m_Star2->StellarTypePostCEE(); }
     STELLAR_TYPE        StellarType2PreCEE() const                  { return m_Star2->StellarTypePreCEE(); }
+    double              SN_OrbitInclinationAngle() const            { return m_ThetaE; }
+    double              SN_OrbitInclinationVectorX() const          { return m_OrbitalAngularMomentumVector.xValue(); }
+    double              SN_OrbitInclinationVectorY() const          { return m_OrbitalAngularMomentumVector.yValue(); }
+    double              SN_OrbitInclinationVectorZ() const          { return m_OrbitalAngularMomentumVector.zValue(); }
     SN_STATE            SN_State() const                            { return m_SupernovaState; }
     double              SynchronizationTimescale() const            { return m_SynchronizationTimescale; }
     double              SystemicSpeed() const                       { return m_SystemicVelocity.Magnitude(); }
@@ -326,8 +330,8 @@ private:
 
     double	            m_JLoss;			                                                // Specific angular momentum with which mass is lost during non-conservative mass transfer
 
-    double              m_Mass1Final;                                                       // Star1 mass in Msol after losing its envelope (in this case, we asume it loses all of its envelope)
-    double              m_Mass2Final;                                                       // Star2 mass in Msol after losing its envelope (in this case, we asume it loses all of its envelope)
+    double              m_Mass1Final;                                                       // Star1 mass in Msol after losing its envelope (in this case, we assume it loses all of its envelope)
+    double              m_Mass2Final;                                                       // Star2 mass in Msol after losing its envelope (in this case, we assume it loses all of its envelope)
 
     double              m_MassEnv1;                                                         // Star1 envelope mass in Msol
     double              m_MassEnv2;                                                         // Star2 envelope mass in Msol
@@ -354,6 +358,7 @@ private:
     double              m_SynchronizationTimescale;
 
     Vector3d            m_SystemicVelocity;                                                 // Systemic velocity vector, relative to ZAMS Center of Mass
+    Vector3d            m_OrbitalAngularMomentumVector;                                     // Orbital AM vector postSN, in preSN frame
     double              m_ThetaE;                                                           // Euler Theta
     double              m_PhiE;                                                             // Euler Phi                
     double              m_PsiE;                                                             // Euler Psi
@@ -395,11 +400,10 @@ private:
     // CalculateAngularMomentum - the actual function takes 10 parameters because of the various calling permutations
     //                          - various signatures are defined here - they just assemble the parameters as required
     //                            and call the actual function
-    // JR: todo: note in the orginal code the binary orbital velicity was passed in as a parameter but never used - I removed it
+    // JR: todo: note in the original code the binary orbital velicity was passed in as a parameter but never used - I removed it
 
     void    SetInitialValues(const unsigned long int p_Seed, const long int p_Id);
     void    SetRemainingValues();
-
 
     double  CalculateAngularMomentum(const double p_SemiMajorAxis,
                                      const double p_Eccentricity,
@@ -447,7 +451,7 @@ private:
                                    const double p_Mass,
                                    const double p_SemiMajorAxis) const          { return -(G1 * p_Mu * p_Mass) / (2.0 * p_SemiMajorAxis); }
 
-    double  CalculateZRocheLobe(const double p_jLoss) const;
+    double  CalculateZetaRocheLobe(const double p_jLoss) const;
 
     double  CalculateTimeToCoalescence(double a0, double e0, double m1, double m2) const;
 
@@ -591,7 +595,7 @@ private:
         double factor = ADAPTIVE_RLOF_SEARCH_FACTOR;                            // Size of search steps
         
         const boost::uintmax_t maxit = ADAPTIVE_RLOF_MAX_ITERATIONS;            // Limit to maximum iterations.
-        boost::uintmax_t it = maxit;                                            // Initally our chosen max iterations, but updated with actual.
+        boost::uintmax_t it = maxit;                                            // Initially our chosen max iterations, but updated with actual.
         bool is_rising = true;                                                  // So if result with guess is too low, then try increasing guess.
         int digits = std::numeric_limits<double>::digits;                       // Maximum possible binary digits accuracy for type T.
 

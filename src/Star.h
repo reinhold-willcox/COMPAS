@@ -73,21 +73,23 @@ public:
     STELLAR_TYPE        InitialStellarType() const                                                                  { return m_Star->InitialStellarType(); }
     STELLAR_TYPE        StellarType() const                                                                         { return m_Star->StellarType(); }
 
-
     // getters - alphabetically
     double              Age() const                                                                                 { return m_Star->Age(); }
     double              BindingEnergy_Fixed() const                                                                 { return m_Star->BindingEnergy_Fixed(); }
     double              BindingEnergy_Loveridge() const                                                             { return m_Star->BindingEnergy_Loveridge(); }
     double              BindingEnergy_Nanjing() const                                                               { return m_Star->BindingEnergy_Nanjing(); }
     double              BindingEnergy_Kruckow() const                                                               { return m_Star->BindingEnergy_Kruckow(); }
+    double              BindingEnergy_Dewi() const                                                                  { return m_Star->BindingEnergy_Dewi(); }
     double              CalculateCriticalMassRatio(const bool p_AccretorIsDegenerate) const                         { return m_Star->CalculateCriticalMassRatio(p_AccretorIsDegenerate); }
+    double              CalculateCriticalMassRatioClaeys14(const bool p_AccretorIsDegenerate) const                 { return m_Star->CalculateCriticalMassRatioClaeys14(p_AccretorIsDegenerate); }
+    double              CalculateCriticalMassRatioHurleyHjellmingWebbink() const                                    { return m_Star->CalculateCriticalMassRatioHurleyHjellmingWebbink(); }
     double              CalculateDynamicalTimescale() const                                                         { return m_Star->CalculateDynamicalTimescale(); }
-    double              CalculateInterpolatedQCritOrZetaGe2020() const                                              { return m_Star->CalculateInterpolatedQCritOrZetaGe2020(); }
     double              CalculateNuclearTimescale() const                                                           { return m_Star->CalculateNuclearTimescale(); }
     double              CalculateRadialExpansionTimescale() const                                                   { return m_Star->CalculateRadialExpansionTimescale(); }
     double              CalculateThermalTimescale() const                                                           { return m_Star->CalculateThermalTimescale(); }
     double              COCoreMass() const                                                                          { return m_Star->COCoreMass(); }
     double              CoreMass() const                                                                            { return m_Star->CoreMass(); }
+    bool                EnvelopeJustExpelledByPulsations() const                                                    { return m_Star->EnvelopeJustExpelledByPulsations(); }
     bool                ExperiencedAIC() const                                                                      { return m_Star->ExperiencedAIC(); }
     bool                ExperiencedCCSN() const                                                                     { return m_Star->ExperiencedCCSN(); }
     bool                ExperiencedECSN() const                                                                     { return m_Star->ExperiencedECSN(); }
@@ -107,6 +109,7 @@ public:
     double              Lambda_Loveridge() const                                                                    { return m_Star->Lambda_Loveridge(); }
     double              Lambda_Nanjing() const                                                                      { return m_Star->Lambda_Nanjing(); }
     double              Lambda_Kruckow() const                                                                      { return m_Star->Lambda_Kruckow(); }
+    double              Lambda_Dewi() const                                                                         { return m_Star->Lambda_Dewi(); }
     double              Luminosity() const                                                                          { return m_Star->Luminosity(); }
     double              Mass() const                                                                                { return m_Star->Mass(); }
     double              Mass0() const                                                                               { return m_Star->Mass0(); }
@@ -139,6 +142,7 @@ public:
 
     void                UpdateMassTransferDonorHistory()                                                            { m_Star->UpdateMassTransferDonorHistory(); }
 
+    void                ResetEnvelopeExpulsationByPulsations()                                                      { m_Star->ResetEnvelopeExpulsationByPulsations(); }
 
     // member functions - alphabetically
     STELLAR_TYPE    AgeOneTimestep(const double p_Dt, bool p_Switch = true);
@@ -149,14 +153,19 @@ public:
                                              const double p_EnvMass,
                                              const double p_Radius)                                                 { m_Star->CalculateBindingEnergies(p_CoreMass, p_EnvMass, p_Radius); }
 
+    double          CalculateConvectiveEnvelopeBindingEnergy(const double p_CoreMass, const double p_ConvectiveEnvelopeMass, const double p_Radius, const double p_Lambda)
+        { return m_Star->CalculateConvectiveEnvelopeBindingEnergy(p_CoreMass, p_ConvectiveEnvelopeMass, p_Radius, p_Lambda); }
+    double          CalculateConvectiveEnvelopeMass()                                                               { return m_Star->CalculateConvectiveEnvelopeMass(); }
+    
     double          CalculateEddyTurnoverTimescale()                                                                { return m_Star->CalculateEddyTurnoverTimescale(); }
-
     double          CalculateGyrationRadius() const                                                                 { return m_Star->CalculateGyrationRadius(); }
 
     void            CalculateLambdas()                                                                              { m_Star->CalculateLambdas(); }
     void            CalculateLambdas(const double p_EnvMass)                                                        { m_Star->CalculateLambdas(p_EnvMass); }
 
-    DBL_DBL         CalculateMassAcceptanceRate(const double p_DonorMassRate, const double p_AccretorMassRate)      { return m_Star->CalculateMassAcceptanceRate(p_DonorMassRate, p_AccretorMassRate); }
+    DBL_DBL         CalculateMassAcceptanceRate(const double p_DonorMassRate, 
+                                                const double p_AccretorMassRate,
+                                                const bool   p_IsHeRich)                                            { return m_Star->CalculateMassAcceptanceRate(p_DonorMassRate, p_AccretorMassRate, p_IsHeRich); }
 
     double          CalculateMassLossValues(const bool p_UpdateMDot = false, const bool p_UpdateMDt = false)        { return m_Star->CalculateMassLossValues(p_UpdateMDot, p_UpdateMDt); }
 
@@ -179,12 +188,15 @@ public:
 
     double          CalculateTimestep()                                                                             { return m_Star->CalculateTimestep(); }
 
-    double          CalculateZetaAdiabatic(ZETA_PRESCRIPTION p_ZetaPrescription)                                    { return m_Star->CalculateZetaAdiabatic(p_ZetaPrescription); }
-    double          CalculateZetaByStellarType(ZETA_PRESCRIPTION p_ZetaPrescription)                                { return m_Star->CalculateZetaByStellarType(p_ZetaPrescription); }
+    double          CalculateZetaAdiabatic()                                                                        { return m_Star->CalculateZetaAdiabatic(); }
+    double          CalculateZetaConstantsByEnvelope(ZETA_PRESCRIPTION p_ZetaPrescription)                          { return m_Star->CalculateZetaConstantsByEnvelope(p_ZetaPrescription); }
 
     void            ClearCurrentSNEvent()                                                                           { m_Star->ClearCurrentSNEvent(); }
 
     BaseStar*       Clone(const BaseStar& p_Star);
+
+    ACCRETION_REGIME DetermineAccretionRegime(const bool p_HeRich,
+                                              const double p_DonorThermalMassLossRate)                              { return m_Star->DetermineAccretionRegime(p_HeRich, p_DonorThermalMassLossRate); }  // Used in WDs
 
     ENVELOPE        DetermineEnvelopeType() const                                                                   { return m_Star->DetermineEnvelopeType(); }
 
@@ -192,9 +204,17 @@ public:
 
     double          EvolveOneTimestep(const double p_Dt);
 
+    double          InterpolateGe20QCrit(const QCRIT_PRESCRIPTION p_qCritPrescription)                              { return m_Star->InterpolateGe20QCrit(p_qCritPrescription); }
+    void            HaltWinds()                                                                                     { m_Star->HaltWinds(); }
+
     void            ResolveAccretion(const double p_AccretionMass)                                                  { m_Star->ResolveAccretion(p_AccretionMass); }
 
+    void            ResolveAccretionRegime(const ACCRETION_REGIME p_Regime,
+                                           const double p_DonorThermalMassLossRate)                                 { m_Star->ResolveAccretionRegime(p_Regime, p_DonorThermalMassLossRate); }  // Used in WDs
+
     void            ResolveEnvelopeLossAndSwitch()                                                                  { (void)SwitchTo(m_Star->ResolveEnvelopeLoss(true)); }
+
+    void            ResolveShellChange(const double p_AccretedMass)                                                 { m_Star->ResolveShellChange(p_AccretedMass); }  // Used in WDs
 
     bool            RevertState();
 
@@ -233,9 +253,9 @@ public:
                                                                                                                                                          p_Stepsize,
                                                                                                                                                          p_MassGainPerTimeStep,
                                                                                                                                                          p_Epsilon);}
-    
-    void        UpdateMinimumCoreMass()                                                                             { m_Star->UpdateMinimumCoreMass(); }
 
+    void            UpdateMinimumCoreMass()                                                                         { m_Star->UpdateMinimumCoreMass(); }
+    ACCRETION_REGIME    WhiteDwarfAccretionRegime() const                                                           { return m_Star->WhiteDwarfAccretionRegime(); }
 
 private:
 

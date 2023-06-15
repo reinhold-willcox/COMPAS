@@ -252,7 +252,7 @@ double HeHG::CalculateMassTransferRejuvenationFactor() const {
             }
             break;
 
-        default:                                                        // unknow prescription - use default Hurley et al. 2000 prescription = 1.0
+        default:                                                        // unknown prescription - use default Hurley et al. 2000 prescription = 1.0
             SHOW_WARN(ERROR::UNKNOWN_MT_REJUVENATION_PRESCRIPTION);     // show warning
     }
 
@@ -357,12 +357,12 @@ ENVELOPE HeHG::DetermineEnvelopeType() const {
  * Assumes this star is the donor; relevant accretor details are passed as parameters.
  * Critical mass ratio is defined as qCrit = mAccretor/mDonor.
  *
- * double HeHG::CalculateCriticalMassRatio(const bool p_AccretorIsDegenerate) 
+ * double HeHG::CalculateCriticalMassRatioClaeys14(const bool p_AccretorIsDegenerate) 
  *
  * @param   [IN]    p_AccretorIsDegenerate      Boolean indicating if accretor in degenerate (true = degenerate)
  * @return                                      Critical mass ratio for unstable MT 
  */
-double HeHG::CalculateCriticalMassRatio(const bool p_AccretorIsDegenerate) const {
+double HeHG::CalculateCriticalMassRatioClaeys14(const bool p_AccretorIsDegenerate) const {
 
     double qCrit;
                                                                                                                             
@@ -411,7 +411,7 @@ bool HeHG::ShouldEvolveOnPhase() const {
 #define gbParams(x) m_GBParams[static_cast<int>(GBP::x)]    // for convenience and readability - undefined at end of function
 
     double McMax = CalculateMaximumCoreMass(m_Mass);
-    return utils::Compare(m_COCoreMass, McMax) <= 0 || utils::Compare(McMax, gbParams(McSN)) >= 0;    // Evolve on HeHG phase if McCO <= McMax or McMax >= McSN
+    return ((utils::Compare(m_COCoreMass, McMax) <= 0 || utils::Compare(McMax, gbParams(McSN)) >= 0) && !ShouldEnvelopeBeExpelledByPulsations());    // Evolve on HeHG phase if McCO <= McMax or McMax >= McSN and envelope is not ejected by pulsations
 
 #undef gbParams
 }
@@ -444,7 +444,9 @@ STELLAR_TYPE HeHG::ResolveEnvelopeLoss(bool p_NoCheck) {
 
     STELLAR_TYPE stellarType = m_StellarType;
     
-    if (p_NoCheck || utils::Compare(m_COCoreMass, m_Mass) >= 0) {        // Envelope lost - determine what type of star to form
+    if(ShouldEnvelopeBeExpelledByPulsations())          { m_EnvelopeJustExpelledByPulsations = true; }
+    
+    if (p_NoCheck || utils::Compare(m_COCoreMass, m_Mass) >= 0 || m_EnvelopeJustExpelledByPulsations) {        // Envelope lost - determine what type of star to form
 
         m_Mass      = std::min(m_COCoreMass, m_Mass);
         m_CoreMass  = m_Mass;

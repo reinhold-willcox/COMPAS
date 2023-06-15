@@ -264,7 +264,7 @@ void GiantBranch::CalculateGBParams(const double p_Mass, DBL_VECTOR &p_GBParams)
     gbParams(AHe)    = CalculateHeRateConstant_Static();
 
     gbParams(B)      = CalculateCoreMass_Luminosity_B_Static(p_Mass);
-    gbParams(D)      = CalculateCoreMass_Luminosity_D_Static(p_Mass, m_LogMetallicityXi, m_MassCutoffs);
+    gbParams(D)      = CalculateCoreMass_Luminosity_D_Static(p_Mass, LogMetallicityXi(), m_MassCutoffs);
 
     gbParams(p)      = CalculateCoreMass_Luminosity_p_Static(p_Mass, m_MassCutoffs);
     gbParams(q)      = CalculateCoreMass_Luminosity_q_Static(p_Mass, m_MassCutoffs);
@@ -762,7 +762,7 @@ double GiantBranch::CalculateCoreMassAtBAGB_Static(const double p_Mass, const DB
  * double CalculateCoreMassAtBGB(const double p_Mass, const DBL_VECTOR &p_GBParams)
  *
  * @param   [IN]    p_Mass                      Mass in Msol
- * @param   [IN]    p_GBParams                  Giant Branch paramaters
+ * @param   [IN]    p_GBParams                  Giant Branch parameters
  * @return                                      Core mass at the Base of the Giant Branch in Msol
  */
 double GiantBranch::CalculateCoreMassAtBGB(const double p_Mass, const DBL_VECTOR &p_GBParams) {
@@ -795,7 +795,7 @@ double GiantBranch::CalculateCoreMassAtBGB(const double p_Mass, const DBL_VECTOR
  * @param   [IN]    p_Mass                      Mass in Msol
  * @param   [IN]    p_MassCutoffs               Mass cutoffs
  * @param   [IN]    p_AnCoefficients            a(n) coefficients
- * @param   [IN]    p_GBParams                  Giant Branch paramaters
+ * @param   [IN]    p_GBParams                  Giant Branch parameters
  * @return                                      Core mass at the Base of the Giant Branch in Msol
  */
 double GiantBranch::CalculateCoreMassAtBGB_Static(const double      p_Mass, 
@@ -927,12 +927,12 @@ double GiantBranch::CalculateMassLossRateHurley() {
  * Assumes this star is the donor; relevant accretor details are passed as parameters.
  * Critical mass ratio is defined as qCrit = mAccretor/mDonor.
  *
- * double GiantBranch::CalculateCriticalMassRatio(const bool p_AccretorIsDegenerate) 
+ * double GiantBranch::CalculateCriticalMassRatioClaeys14(const bool p_AccretorIsDegenerate) 
  *
  * @param   [IN]    p_AccretorIsDegenerate      Boolean indicating if accretor in degenerate (true = degenerate)
  * @return                                      Critical mass ratio for unstable MT 
  */
-double GiantBranch::CalculateCriticalMassRatio(const bool p_AccretorIsDegenerate) const {
+double GiantBranch::CalculateCriticalMassRatioClaeys14(const bool p_AccretorIsDegenerate) const {
 
     double qCrit;
                                                                                                                             
@@ -951,6 +951,25 @@ double GiantBranch::CalculateCriticalMassRatio(const bool p_AccretorIsDegenerate
     return qCrit;
 }
 
+
+/*
+ * Determines if mass transfer is unstable according to the critical mass ratio.
+ *
+ * See Hurley et al. 2002 sect. 2.6.1.
+ *
+ * Assumes this star is the donor.
+ * Critical mass ratio is defined as qCrit = mAccretor/mDonor.
+ *
+ * double GiantBranch::CalculateCriticalMassRatioHurleyHjellmingWebbink() 
+ *
+ * @return                                      Critical mass ratio for unstable MT 
+ */
+double GiantBranch::CalculateCriticalMassRatioHurleyHjellmingWebbink() const {
+    
+    double qCrit = 0.362 + 1.0 / (3.0 * (1.0 - CoreMass() / Mass())); // Defined as mDonor/mAccretor in Hurley et al. 2002, equation found after eq. 57 (no label)
+    
+    return 1.0 / qCrit;
+}
 
 
 /*
@@ -995,12 +1014,12 @@ double GiantBranch::CalculateZetaConvectiveEnvelopeGiant(ZETA_PRESCRIPTION p_Zet
  * Hurley et al. 2000, eqs 97 & 98
  *
  *
- * double CalculateZetaByStellarType(ZETA_PRESCRIPTION p_ZetaPrescription)
+ * double CalculateZetaConstantsByEnvelope(ZETA_PRESCRIPTION p_ZetaPrescription)
  *
  * @param   [IN]    p_ZetaPrescription          Prescription for computing ZetaStar
  * @return                                      mass-radius response exponent Zeta
  */
-double GiantBranch::CalculateZetaByStellarType(ZETA_PRESCRIPTION p_ZetaPrescription) {
+double GiantBranch::CalculateZetaConstantsByEnvelope(ZETA_PRESCRIPTION p_ZetaPrescription) {
     
     double zeta = 0.0;                                              // default value
     
@@ -1022,6 +1041,35 @@ double GiantBranch::CalculateZetaByStellarType(ZETA_PRESCRIPTION p_ZetaPrescript
     return zeta;
 }
 
+
+/*
+ * Approximates the mass of the outer convective envelope.
+ *
+ * This is needed for the Hirai & Mandel (2022) two-stage CE formalism.
+ * Follows the fits of Picker, Hirai, Mandel (2023).
+ *
+ *
+ * double GiantBranch::CalculateConvectiveEnvelopeMass()
+ *
+ * @return                                      Mass of the outer convective envelope
+ */
+double GiantBranch::CalculateConvectiveEnvelopeMass() const {
+    
+    double log10Z = log10 (m_Metallicity);
+    HG clone = *this;                                                                                                       // Create an HG star clone to query its core mass just after TAMS
+    double log10Ltams = log10 (clone.Luminosity());
+    double Mcorefinal = CalculateCoreMassAtBAGB(m_Mass);
+    double Mconvmax = m_Mass - 1.1 * Mcorefinal;
+    double b1 = 14.4 * log10Z * log10Z + 57.4 * log10Z + 95.7;
+    double a2 = -16.9 * log10Z * log10Z - 81.9 * log10Z - 47.9;
+    double b2 = 184.0 * log10Z * log10Z + 872.2 * log10Z + 370.0;
+    double c2 = -660.1 * log10Z * log10Z - 3482.0 * log10Z + 1489.0;
+    double Tnorm = a2 * log10Ltams * log10Ltams + b2 * log10Ltams + c2;
+    double convectiveEnvelopeMass = Mconvmax / (1+exp(b1*(m_Temperature*TSOL-Tnorm)/Tnorm));
+    convectiveEnvelopeMass = std::max(std::min(convectiveEnvelopeMass, (m_Mass - m_CoreMass)), 0.0);                        // Ensure that convective envelope mass is limited to [0, envelope mass]
+    
+    return convectiveEnvelopeMass;
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -1772,8 +1820,6 @@ STELLAR_TYPE GiantBranch::ResolveElectronCaptureSN() {
         m_HeCoreMass = m_Mass;
         m_COCoreMass = m_Mass;
         m_Mass0      = m_Mass;
-        m_Radius     = NS::CalculateRadiusOnPhase_Static(m_Mass);                           // neutronStarRadius in Rsol
-        m_Luminosity = NS::CalculateLuminosityOnPhase_Static(m_Mass, m_Age);
     
         SetSNCurrentEvent(SN_EVENT::ECSN);                                                  // electron capture SN happening now
         SetSNPastEvent(SN_EVENT::ECSN);                                                     // ... and will be a past event

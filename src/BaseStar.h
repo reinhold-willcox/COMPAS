@@ -46,28 +46,34 @@ public:
             double              BindingEnergy_Loveridge() const                                 { return m_BindingEnergies.loveridge; }
             double              BindingEnergy_LoveridgeWinds() const                            { return m_BindingEnergies.loveridgeWinds; }
             double              BindingEnergy_Kruckow() const                                   { return m_BindingEnergies.kruckow; }
+            double              BindingEnergy_Dewi() const                                      { return m_BindingEnergies.dewi; }
             bool                CHonMS() const                                                  { return m_CHE; }
             double              COCoreMass() const                                              { return m_COCoreMass; }
             double              CoreMass() const                                                { return m_CoreMass; }
             int                 DominantMassLossRate() const                                    { return static_cast<int>(m_DominantMassLossRate); }
             double              Dt() const                                                      { return m_Dt; }
             double              DtPrev() const                                                  { return m_DtPrev; }
+            bool                EnvelopeJustExpelledByPulsations() const                        { return m_EnvelopeJustExpelledByPulsations; }
             ERROR               Error() const                                                   { return m_Error; }
             bool                ExperiencedAIC() const                                          { return (m_SupernovaDetails.events.past & SN_EVENT::AIC) == SN_EVENT::AIC; }
             bool                ExperiencedCCSN() const                                         { return (m_SupernovaDetails.events.past & SN_EVENT::CCSN) == SN_EVENT::CCSN; }
+            bool                ExperiencedHeSD() const                                         { return (m_SupernovaDetails.events.past & SN_EVENT::HeSD) == SN_EVENT::HeSD; }
             bool                ExperiencedECSN() const                                         { return (m_SupernovaDetails.events.past & SN_EVENT::ECSN) == SN_EVENT::ECSN; }
             bool                ExperiencedPISN() const                                         { return (m_SupernovaDetails.events.past & SN_EVENT::PISN) == SN_EVENT::PISN; }
             bool                ExperiencedPPISN() const                                        { return (m_SupernovaDetails.events.past & SN_EVENT::PPISN) == SN_EVENT::PPISN; }
+            bool                ExperiencedSNIA() const                                         { return (m_SupernovaDetails.events.past & SN_EVENT::SNIA) == SN_EVENT::SNIA; }
             SN_EVENT            ExperiencedSN_Type() const                                      { return utils::SNEventType(m_SupernovaDetails.events.past); }
             bool                ExperiencedUSSN() const                                         { return (m_SupernovaDetails.events.past & SN_EVENT::USSN) == SN_EVENT::USSN; }
             double              HeCoreMass() const                                              { return m_HeCoreMass; }
             bool                IsAIC() const                                                   { return (m_SupernovaDetails.events.current & SN_EVENT::AIC) == SN_EVENT::AIC; }
             bool                IsCCSN() const                                                  { return (m_SupernovaDetails.events.current & SN_EVENT::CCSN) == SN_EVENT::CCSN; }
+            bool                IsHeSD() const                                                  { return (m_SupernovaDetails.events.current & SN_EVENT::HeSD) == SN_EVENT::HeSD; }
     virtual bool                IsDegenerate() const                                            { return false; }   // default is not degenerate - White Dwarfs, NS and BH are degenerate
             bool                IsECSN() const                                                  { return (m_SupernovaDetails.events.current & SN_EVENT::ECSN) == SN_EVENT::ECSN; }
             bool                IsOneOf(const STELLAR_TYPE_LIST p_List) const;
             bool                IsPISN() const                                                  { return (m_SupernovaDetails.events.current & SN_EVENT::PISN) == SN_EVENT::PISN; }
             bool                IsPPISN() const                                                 { return (m_SupernovaDetails.events.current & SN_EVENT::PPISN) == SN_EVENT::PPISN; }
+            bool                IsSNIA() const                                                  { return (m_SupernovaDetails.events.current & SN_EVENT::SNIA) == SN_EVENT::SNIA; }
             bool                IsUSSN() const                                                  { return (m_SupernovaDetails.events.current & SN_EVENT::USSN) == SN_EVENT::USSN; }
             double              Lambda_Dewi() const                                             { return m_Lambdas.dewi; }
             double              Lambda_Fixed() const                                            { return m_Lambdas.fixed; }
@@ -79,6 +85,9 @@ public:
             double              Lambda_LoveridgeWinds() const                                   { return m_Lambdas.loveridgeWinds; }
             double              Lambda_Nanjing() const                                          { return m_Lambdas.nanjing; }
             bool                LBV_Phase_Flag() const                                          { return m_LBVphaseFlag; }
+            double              LogMetallicityRho() const                                       { return LogMetallicityXi() + 1.0; }            // rho in Hurley+ 2000
+            double              LogMetallicitySigma() const                                     { return m_Log10Metallicity; }                  // sigma in Hurley+ 2000
+            double              LogMetallicityXi() const                                        { return m_Log10Metallicity - LOG10_ZSOL; }     // xi in Hurley+ 2000
             double              Luminosity() const                                              { return m_Luminosity; }
             double              Mass() const                                                    { return m_Mass; }
             double              Mass0() const                                                   { return m_Mass0; }
@@ -99,6 +108,8 @@ public:
             double              Pulsar_SpinPeriod() const                                       { return m_PulsarDetails.spinPeriod; }
             double              Pulsar_SpinFrequency() const                                    { return m_PulsarDetails.spinFrequency; }
             double              Pulsar_SpinDownRate() const                                     { return m_PulsarDetails.spinDownRate; }
+            double              Pulsar_BirthPeriod() const                                      { return m_PulsarDetails.birthPeriod; }
+            double              Pulsar_BirthSpinDownRate() const                                { return m_PulsarDetails.birthSpinDownRate; }
             double              Radius() const                                                  { return m_Radius; }
             double              RadiusPrev() const                                              { return m_RadiusPrev; }
             unsigned long int   RandomSeed() const                                              { return m_RandomSeed; }
@@ -125,6 +136,7 @@ public:
             double              Temperature() const                                             { return m_Temperature; }
             double              Time() const                                                    { return m_Time; }
             double              Timescale(TIMESCALE p_Timescale) const                          { return m_Timescales[static_cast<int>(p_Timescale)]; }
+    virtual ACCRETION_REGIME    WhiteDwarfAccretionRegime() const                               { return ACCRETION_REGIME::NONE; }
             double              XExponent() const                                               { return m_XExponent; }
 
 
@@ -146,8 +158,15 @@ public:
             void            ApplyMassTransferRejuvenationFactor()                                               { m_Age *= CalculateMassTransferRejuvenationFactor(); }             // Apply age rejuvenation factor
 
             void            CalculateBindingEnergies(const double p_CoreMass, const double p_EnvMass, const double p_Radius);
+    
+            double          CalculateConvectiveEnvelopeBindingEnergy(const double p_CoreMass, const double p_ConvectiveEnvelopeMass, const double p_Radius, const double p_Lambda);
 
-    virtual double          CalculateCriticalMassRatio(const bool p_AccretorIsDegenerate) const                 { return 0.0; }                                                     // Default is 0.0
+    virtual double          CalculateConvectiveEnvelopeMass() const                                             { return 0.0; }
+
+    virtual double          CalculateCriticalMassRatio(const bool p_AccretorIsDegenerate); 
+    virtual double          CalculateCriticalMassRatioClaeys14(const bool p_AccretorIsDegenerate) const         { return 0.0; }                                                     // Default is 0.0
+            double          CalculateCriticalMassRatioGe20(const QCRIT_PRESCRIPTION p_qCritPrescription)        { return InterpolateGe20QCrit(p_qCritPrescription); }
+    virtual double          CalculateCriticalMassRatioHurleyHjellmingWebbink() const                            { return 0.0; }                                                     // Default is 0.0
                                                                                                                                                                                          
             double          CalculateDynamicalTimescale() const                                                 { return CalculateDynamicalTimescale_Static(m_Mass, m_Radius); }    // Use class member variables
 
@@ -158,13 +177,14 @@ public:
 
     virtual double          CalculateGyrationRadius() const                                                     { return 0.0; }                                                     // Default is 0.0
 
-    virtual double          CalculateInterpolatedQCritOrZetaGe2020() const;  
-
             void            CalculateLambdas()                                                                  { CalculateLambdas(m_Mass - m_CoreMass); }                          // Use class member variables
             void            CalculateLambdas(const double p_EnvMass);
 
+            DBL_DBL         CalculateMassAcceptanceRate(const double p_DonorMassRate,
+                                                        const double p_AccretorMassRate); 
     virtual DBL_DBL         CalculateMassAcceptanceRate(const double p_DonorMassRate,
-                                                        const double p_AccretorMassRate = 0.0);
+                                                        const double p_AccretorMassRate,
+                                                        const bool   p_IsHeRich)                                { return CalculateMassAcceptanceRate(p_DonorMassRate, p_AccretorMassRate); } // Ignore the He content for non-WDs
 
             double          CalculateMassLossValues(const bool p_UpdateMDot = false, const bool p_UpdateMDt = false);                                                               // JR: todo: better name?
 
@@ -193,20 +213,36 @@ public:
 
             double          CalculateTimestep();
 
-            double          CalculateZetaAdiabatic(ZETA_PRESCRIPTION p_ZetaPrescription);
-    virtual double          CalculateZetaByStellarType(ZETA_PRESCRIPTION p_ZetaPrescription)                    { return 0.0; }                                                     // Use inheritance hierarchy
+            double          CalculateZetaAdiabatic();
+    virtual double          CalculateZetaConstantsByEnvelope(ZETA_PRESCRIPTION p_ZetaPrescription)              { return 0.0; }                                               // Use inheritance hierarchy
 
             void            ClearCurrentSNEvent()                                                               { m_SupernovaDetails.events.current = SN_EVENT::NONE; }             // Clear supernova event/state for current timestep
 
     virtual ENVELOPE        DetermineEnvelopeType() const                                                       { return ENVELOPE::REMNANT; }                                       // Default is REMNANT - but should never be called
+    
+            void            HaltWinds()                                                                         { m_Mdot = 0.0; }       // Disable wind mass loss in current time step (e.g., if star is a donor or accretor in a RLOF episode)
+
+    virtual ACCRETION_REGIME DetermineAccretionRegime(const bool p_HeRich,
+                                                      const double p_DonorThermalMassLossRate)                  { return ACCRETION_REGIME::NONE; }                                  // Placeholder, use inheritance for WDs
+
+            void            ResetEnvelopeExpulsationByPulsations()                                              { m_EnvelopeJustExpelledByPulsations = false; }
+
+    virtual void            ResolveShellChange(const double p_AccretedMass) { }                                                                                                     // Default does nothing, use inheritance for WDs.
+
+            double          InterpolateGe20QCrit(const QCRIT_PRESCRIPTION p_qCritPrescription); 
 
             void            ResolveAccretion(const double p_AccretionMass)                                      { m_Mass = std::max(0.0, m_Mass + p_AccretionMass); }               // Handles donation and accretion - won't let mass go negative
+
+    virtual void            ResolveAccretionRegime(const ACCRETION_REGIME p_Regime,
+                                                   const double p_DonorThermalMassLossRate) { }                                                                                     // Default does nothing, only works for WDs.
 
     virtual STELLAR_TYPE    ResolveEnvelopeLoss(bool p_NoCheck = false)                                         { return m_StellarType; }
 
     virtual void            ResolveMassLoss();
-
+   
             void            SetStellarTypePrev(const STELLAR_TYPE p_StellarTypePrev)                            { m_StellarTypePrev = p_StellarTypePrev; }
+    
+            bool            ShouldEnvelopeBeExpelledByPulsations() const                                        { return false; }       // Default is that there is no envelope expulsion by pulsations
 
             void            StashSupernovaDetails(const STELLAR_TYPE p_StellarType,
                                                   const SSE_SN_RECORD_TYPE p_RecordType = SSE_SN_RECORD_TYPE::DEFAULT) { LOGGING->StashSSESupernovaDetails(this, p_StellarType, p_RecordType); }
@@ -285,6 +321,7 @@ protected:
     double                  m_COCoreMass;                               // Current CO core mass (Msol)
     double                  m_CoreMass;                                 // Current core mass (Msol)
     double                  m_Dt;                                       // Current timestep (myrs)
+    bool                    m_EnvelopeJustExpelledByPulsations;         // Flag to know if the convective envelope has just been expelled by pulsations
     double                  m_HeCoreMass;                               // Current He core mass (Msol)
     bool                    m_LBVphaseFlag;                             // Flag to know if the star satisfied the conditions, at any point in its evolution, to be considered a Luminous Blue Variable (LBV)
     double                  m_Luminosity;                               // Current luminosity (Lsol)
@@ -309,10 +346,8 @@ protected:
     STELLAR_TYPE            m_StellarTypePrev;                          // Stellar type at previous timestep
 
     // Metallicity variables
-    double                  m_LogMetallicityRho;                        // logMetallicityXi + 1.0       - called rho in Hurley et al 2000
-    double                  m_LogMetallicitySigma;                      // log10(Metallicity)           - called sigma in Hurley et al 2000
-    double                  m_LogMetallicityXi;                         // log10(Metallicity / Zsol)    - called xi in Hurley et al 2000
     double                  m_Metallicity;                              // Metallicity
+    double                  m_Log10Metallicity;                         // log10(Metallicity) - for performance
 
     // Metallicity dependent constants
     double                  m_Alpha1;                                   // alpha1 in Hurly et al. 2000, just after eq 49
@@ -353,7 +388,7 @@ protected:
     DBL_VECTOR              m_RConstants;                               // Radius constants
 
     // Binding energies, Lambdas and Zetas
-    BindingEnergiesT        m_BindingEnergies;                          // Binding enery values
+    BindingEnergiesT        m_BindingEnergies;                          // Binding energy values
     LambdasT                m_Lambdas;                                  // Lambda values
 
     // Stellar details squirrelled away...
@@ -364,7 +399,7 @@ protected:
     Vector3d                m_ComponentVelocity;                        // Isolated star velocity vector (binary's center-of-mass velocity for bound binary)
 
     // Star mass transfer history 
-    STYPE_VECTOR            m_MassTransferDonorHistory;                 // List of MT donor stellar types - mostly relevent for binary stars
+    STYPE_VECTOR            m_MassTransferDonorHistory;                 // List of MT donor stellar types - mostly relevant for binary stars
 
     // member functions - alphabetically
             void                AgeOneTimestepPreamble(const double p_DeltaTime);
@@ -395,7 +430,7 @@ protected:
 
     static  double              CalculateDynamicalTimescale_Static(const double p_Mass, const double p_Radius);
 
-    virtual double              CalculateEddingtonCriticalRate() const                                                  { return 2.08E-3 / 1.7 * m_Radius * MYR_TO_YEAR; }       // Hurley+, 2002, Eq. (67); should never be called...
+    virtual double              CalculateEddingtonCriticalRate() const                                                  { return 2.08E-3 / 1.7 * m_Radius * MYR_TO_YEAR * OPTIONS->EddingtonAccretionFactor() ; }                          // Hurley+, 2002, Eq. (67)
 
             double              CalculateGBRadiusXExponent() const;
 
@@ -499,10 +534,10 @@ protected:
     virtual void                CalculateTimescales()                                                                   { CalculateTimescales(m_Mass0, m_Timescales); }                             // Use class member variables
     virtual void                CalculateTimescales(const double p_Mass, DBL_VECTOR &p_Timescales) { }                                                                                              // Default is NO-OP
 
+            double              CalculateZAMSAngularFrequency(const double p_MZAMS, const double p_RZAMS) const;
+
             double              CalculateZetaAdiabaticHurley2002(const double p_CoreMass) const;
             double              CalculateZetaAdiabaticSPH(const double p_CoreMass) const;
-
-            double              CalculateZAMSAngularFrequency(const double p_MZAMS, const double p_RZAMS) const;
 
     virtual double              ChooseTimestep(const double p_Time) const                                               { return m_Dt; }
 
@@ -527,6 +562,7 @@ protected:
                                                     const double p_RemnantMass) const;
 
             double              CalculateLambdaNanjing() const;
+    
     virtual void                EvolveOneTimestepPreamble() { };                                                                                                                                    // Default is NO-OP
 
             STELLAR_TYPE        EvolveOnPhase();
@@ -561,7 +597,6 @@ protected:
     virtual void                PerturbLuminosityAndRadius() { }                                                                                                                                    // NO-OP
     virtual void                PerturbLuminosityAndRadiusAtPhaseEnd()                                                  { PerturbLuminosityAndRadiusOnPhase(); }                                    // Same as on phase
     virtual void                PerturbLuminosityAndRadiusOnPhase()                                                     { PerturbLuminosityAndRadius(); }
-
             STELLAR_TYPE        ResolveEndOfPhase();
     virtual void                ResolveHeliumFlash() { }
     virtual STELLAR_TYPE        ResolveSkippedPhase()                                                                   { return EvolveToNextPhase(); }                                             // Default is evolve to next phase

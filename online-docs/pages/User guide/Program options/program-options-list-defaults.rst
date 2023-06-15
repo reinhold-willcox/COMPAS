@@ -121,7 +121,7 @@ Default = TRUE
 
 **--common-envelope-allow-radiative-envelope-survive** |br| 
 Allow binaries with an evolved component with a radiative envelope to survive the common envelope phase. |br|
-Deafult = FALSE
+Default = FALSE
 
 **--common-envelope-alpha** |br|
 Common Envelope efficiency alpha. |br|
@@ -131,6 +131,12 @@ Default = 1.0
 Thermal energy contribution to the total envelope binding energy. |br|
 Defined such that :math:`\lambda = \alpha_{th} \times \lambda_{b} + (1.0 - \alpha_{th}) \times \lambda_{g}`. |br|
 Default = 1.0
+
+**--common-envelope-formalism** |br|
+CE formalism prescription. |br|
+Options: { ENERGY, TWO_STAGE } |br|
+``ENERGY`` is the standard alpha-lambda formalism; ``TWO_STAGE`` is the formalism of Hirai & Mandel (2022) |br| 
+Default = ENERGY
 
 **--common-envelope-lambda** |br|
 Common Envelope lambda. |br|
@@ -178,8 +184,8 @@ Default = 0.04
 
 **--common-envelope-mass-accretion-prescription** |br|
 Assumption about whether NS/BHs can accrete mass during common envelope evolution. |br|
-``ZERO`` is no accretion; ``CONSTANT`` means a fixed amount of accretion determined by ``--common-envelope-mass-accretion-constant``; ``UNIFORM`` means a uniform random draw between ``--common-envelope-mass-accretion-min`` and ``--common-envelope-mass-accretion-max`` (Oslowski et al., 2011); and ``MACLEOD`` follows the prescription of MacLeod et al., 2015 |br|
-Options: { ZERO, CONSTANT, UNIFORM, MACLEOD } |br|
+``ZERO`` is no accretion; ``CONSTANT`` means a fixed amount of accretion determined by ``--common-envelope-mass-accretion-constant``; ``UNIFORM`` means a uniform random draw between ``--common-envelope-mass-accretion-min`` and ``--common-envelope-mass-accretion-max`` (Oslowski et al., 2011);, ``MACLEOD`` follows the prescription of MacLeod et al., 2015, and ``CHEVALIER`` follows the accretion assumptions in Chevalier et al. 1993 as in Model 2 from van Son et al. 2020 |br|
+Options: { ZERO, CONSTANT, UNIFORM, MACLEOD, CHEVALIER } |br|
 Default = ZERO
 
 **--common-envelope-recombination-energy-density** |br|
@@ -190,7 +196,7 @@ Default = :math:`1.5 \times 10^{13}`
 Slope for the Kruckow lambda (see Kruckow et al. 2016 as implemented by Vigna-Gomez et al. 2018). |br|
 Default = −0.833333
 
-**convective-envelope-temperature-threshold** |br|
+**--convective-envelope-temperature-threshold** |br|
 Temperature [K] threshold, below which the envelopes of giants are convective. 
 Only used for --envelope-state-prescription = FIXED_TEMPERATURE, ignored otherwise. |br|
 Default = 5370
@@ -201,91 +207,100 @@ VINK_MASS_LOSS_MINIMUM_TEMP (default 12500K). |br|
 Only applicable when ``--mass-loss-prescription = VINK``. |br|
 Default = 1.0
 
+**--create-YAML-file** |br|
+Creates new YAML file.  Argument is filename for new YAML file. |br|
+Default = None - name must be supplied if option is present.
+
 **--critical-mass-ratio-HG-degenerate-accretor** |br|
 Critical mass ratio for MT from a HG star to a degenerate accretor.
-0 is always stable, <0 is disabled. Only used for "--critical-mass-ratio-prescription CLAEYS", ignored otherwise. |br|
+0 is always stable, <0 is disabled. Only used for ``--critical-mass-ratio-prescription CLAEYS``, ignored otherwise. |br|
 Default = 0.210000
 
 **--critical-mass-ratio-HG-non-degenerate-accretor** |br|
 Critical mass ratio for MT from a HG star to a non-degenerate accretor.
-0 is always stable, <0 is disabled. Only used for "--critical-mass-ratio-prescription CLAEYS", ignored otherwise. |br|
+0 is always stable, <0 is disabled. Only used for ``--critical-mass-ratio-prescription CLAEYS``, ignored otherwise. |br|
 Default = 0.250000
 
 **--critical-mass-ratio-MS-high-mass-degenerate-accretor** |br|
 Critical mass ratio for MT from a MS star to a degenerate accretor.
-0 is always stable, <0 is disabled. Only used for "--critical-mass-ratio-prescription CLAEYS", ignored otherwise. |br|
+0 is always stable, <0 is disabled. Only used for ``--critical-mass-ratio-prescription CLAEYS``, ignored otherwise. |br|
 Default = 0.000000
 
 **--critical-mass-ratio-MS-high-mass-non-degenerate-accretor** |br|
 Critical mass ratio for MT from a MS star to a non-degenerate accretor.
-0 is always stable, <0 is disabled. Only used for "--critical-mass-ratio-prescription CLAEYS", ignored otherwise. |br|
+0 is always stable, <0 is disabled. Only used for ``--critical-mass-ratio-prescription CLAEYS``, ignored otherwise. |br|
 Default = 0.625000
 
 **--critical-mass-ratio-MS-low-mass-degenerate-accretor** |br|
 Critical mass ratio for MT from a MS star to a degenerate accretor.
-0 is always stable, <0 is disabled. Only used for "--critical-mass-ratio-prescription CLAEYS", ignored otherwise. |br|
+0 is always stable, <0 is disabled. Only used for ``--critical-mass-ratio-prescription CLAEYS``, ignored otherwise. |br|
 Default = 1.000000
 
 **--critical-mass-ratio-MS-low-mass-non-degenerate-accretor** |br|
 Critical mass ratio for MT from a MS star to a non-degenerate accretor.
-0 is always stable, <0 is disabled. Only used for "--critical-mass-ratio-prescription CLAEYS", ignored otherwise. |br|
+0 is always stable, <0 is disabled. Only used for ``--critical-mass-ratio-prescription CLAEYS``, ignored otherwise. |br|
 Default = 1.440000
 
 **--critical-mass-ratio-giant-degenerate-accretor** |br|
 Critical mass ratio for MT from a giant star to a degenerate accretor.
-0 is always stable, <0 is disabled. Only used for "--critical-mass-ratio-prescription CLAEYS", ignored otherwise. |br|
+0 is always stable, <0 is disabled. Only used for ``--critical-mass-ratio-prescription CLAEYS``, ignored otherwise. |br|
 Default = 0.870000
 
 **--critical-mass-ratio-giant-non-degenerate-accretor** |br|
 Critical mass ratio for MT from a giant star to a non-degenerate accretor.
-0 is always stable, <0 is disabled. Only used for "--critical-mass-ratio-prescription CLAEYS", ignored otherwise. |br|
+0 is always stable, <0 is disabled. Only used for ``--critical-mass-ratio-prescription CLAEYS``, ignored otherwise. |br|
 Default shows -1, but this translates to a function of the core mass ratio, as described in Claeys+ 2014. 
 
 **--critical-mass-ratio-helium-HG-degenerate-accretor** |br|
 Critical mass ratio for MT from a helium HG star to a degenerate accretor.
-0 is always stable, <0 is disabled. Only used for "--critical-mass-ratio-prescription CLAEYS", ignored otherwise. |br|
+0 is always stable, <0 is disabled. Only used for ``--critical-mass-ratio-prescription CLAEYS``, ignored otherwise. |br|
 Default = 0.210000
 
 **--critical-mass-ratio-helium-HG-non-degenerate-accretor** |br|
 Critical mass ratio for MT from a helium HG star to a non-degenerate accretor.
-0 is always stable, <0 is disabled. Only used for "--critical-mass-ratio-prescription CLAEYS", ignored otherwise. |br|
+0 is always stable, <0 is disabled. Only used for ``--critical-mass-ratio-prescription CLAEYS``, ignored otherwise. |br|
 Default = 0.250000
 
 **--critical-mass-ratio-helium-MS-degenerate-accretor** |br|
 Critical mass ratio for MT from a helium MS star to a degenerate accretor.
-0 is always stable, <0 is disabled. Only used for "--critical-mass-ratio-prescription CLAEYS", ignored otherwise. |br|
+0 is always stable, <0 is disabled. Only used for ``--critical-mass-ratio-prescription CLAEYS``, ignored otherwise. |br|
 Default = 0.000000
 
 **--critical-mass-ratio-helium-MS-non-degenerate-accretor** |br|
 Critical mass ratio for MT from a helium MS star to a non-degenerate accretor.
-0 is always stable, <0 is disabled. Only used for "--critical-mass-ratio-prescription CLAEYS", ignored otherwise. |br|
+0 is always stable, <0 is disabled. Only used for ``--critical-mass-ratio-prescription CLAEYS``, ignored otherwise. |br|
 Default = 0.000000
 
 **--critical-mass-ratio-helium-giant-degenerate-accretor** |br|
 Critical mass ratio for MT from a helium giant star to a degenerate accretor.
-0 is always stable, <0 is disabled. Only used for "--critical-mass-ratio-prescription CLAEYS", ignored otherwise. |br|
+0 is always stable, <0 is disabled. Only used for ``--critical-mass-ratio-prescription CLAEYS``, ignored otherwise. |br|
 Default = 0.870000
 
 **--critical-mass-ratio-helium-giant-non-degenerate-accretor** |br|
 Critical mass ratio for MT from a helium giant star to a non-degenerate accretor.
-0 is always stable, <0 is disabled. Only used for "--critical-mass-ratio-prescription CLAEYS", ignored otherwise. |br|
+0 is always stable, <0 is disabled. Only used for ``--critical-mass-ratio-prescription CLAEYS``, ignored otherwise. |br|
 Default = 1.280000
 
 **--critical-mass-ratio-prescription** |br|
 Which critical mass ratio stability prescription to use (if any).
-Options: { NONE, CLAEYS } |br|
+Options: { NONE, CLAEYS, GE20, GE20_IC, HURLEY_HJELLMING_WEBBINK } |br|
 ``NONE`` defaults to the zeta prescription for stability, 
-``CLAEYS`` uses qCrit values from Claeys et al. 2014. |br|
+``CLAEYS`` uses qCrit values from Claeys et al. 2014. 
+``GE20`` uses qCrit values from Ge et al. 2020 (adiabatic assumption). 
+``GE20_IC`` uses qCrit values from Ge et al. 2020 (isentropic envelope assumption).
+``HURLEY_HJELLMING_WEBBINK`` uses qCrit values from Hurley et al. 2002 (Hjellming & Webbink 1987 for mass transfer from a giant primary). |br|
+Warning: if running with ``--critical-mass-ratio-prescription``, zetas will not be computed, 
+so should not be trusted in the outputs. |br|
 Default = NONE
 
 **--critical-mass-ratio-white-dwarf-degenerate-accretor** |br|
 Critical mass ratio for MT from a white dwarf to a degenerate accretor.
-0 is always stable, <0 is disabled. Only used for "--critical-mass-ratio-prescription CLAEYS", ignored otherwise. |br|
+0 is always stable, <0 is disabled. Only used for ``--critical-mass-ratio-prescription CLAEYS``, ignored otherwise. |br|
 Default = 1.600000
 
 **--critical-mass-ratio-white-dwarf-non-degenerate-accretor** |br|
 Critical mass ratio for MT from a white dwarf to a non-degenerate accretor.
-0 is always stable, <0 is disabled. Only used for "--critical-mass-ratio-prescription CLAEYS", ignored otherwise. |br|
+0 is always stable, <0 is disabled. Only used for ``--critical-mass-ratio-prescription CLAEYS``, ignored otherwise. |br|
 Default = 0.000000
 
 .. _options-props-D:
@@ -344,9 +359,12 @@ Options: { LEGACY, HURLEY, FIXED_TEMPERATURE } |br|
 ``LEGACY`` refers to the model used in Stevenson et al., 2017; ``HURLEY`` refers to the model of Hurley, Pols, Tout, 2002; and ``FIXED_TEMPERATURE`` assumes that a deep convective envelope developes only when the temperature drops below ``CONVECTIVE_BOUNDARY_TEMPERATURE`` (Klencki et al., 2020) |br|
 Default = LEGACY
 
-
 **--errors-to-file** |br|
 Write error messages to file. |br|
+Default = FALSE
+
+**--expel-convective-envelope-above-luminosity-threshold** |br|
+Expel convective envelope in a pulsation if the luminosity to mass ratio exceeds the threshold given by ``--luminosity-to-mass-threshold`` |br|
 Default = FALSE
 
 **--evolve-pulsars** |br|
@@ -371,7 +389,7 @@ Options: { DELAYED, RAPID }
 Default = DELAYED
 
 **--fryer-22-fmix** |br|
-Paramter describing the mixing growth time when using the 'FRYER2022' remnant mass distribution  :cite:`Fryer2022`. |br|
+Parameter describing the mixing growth time when using the 'FRYER2022' remnant mass distribution  :cite:`Fryer2022`. |br|
 Default = 0.5, which is closest to the 'DELAYED' remnant mass prescription from :cite:`Fryer2012`. A value of 4.0 is closest to  the 'RAPID' remnant mass prescription from :cite:`Fryer2012`. |br|
 If the FALLBACK option is used for the kicks, then the proto core masses will be determined by the fryer-supernova-engine option. |br| 
 
@@ -485,6 +503,8 @@ Default = 0.0
 Natal kick magnitude distribution. |br|
 Options: { ZERO, FIXED, FLAT, MAXWELLIAN, BRAYELDRIDGE, MULLER2016, MULLER2016MAXWELLIAN, MULLERMANDEL } |br|
 ``ZERO`` assigns kick magnitudes of 0, ``FIXED`` always sets the magnitude to a fixed value based on supernova type, ``FLAT`` and ``MAXWELLIAN`` draw kicks from uniform or Maxwellian (e.g., Hobbs et al., 2005) distributions, respectively, ``BRAYELDRIDGE`` and ``MULLERMANDEL`` use momenum-preserving kicks from Bray & Eldrigde 2018 and Mandel & Mueller 2020, respectively, and ``MULLER2016`` and ``MULLER2016MAXWELLIAN`` use kicks from Mueller 2016 as implemented in Vigna-Gomez et al., 2018 (reduced by a factor of sqrt(3) in the latter case). |br|
+Note that this is independent from ``--remnant-mass-prescription`` to provide flexibility; 
+however, if using ``MULLERMANDEL``, it is recommended to keep them consistent by doing so for both. |br|
 Default = MAXWELLIAN
 
 **--kick-magnitude-max** |br|
@@ -734,6 +754,10 @@ Options: { NONE, HURLEY, HURLEY_ADD, BELCZYNSKI } |br|
 No LBV winds for ``NONE``,  Hurley, Pols, Tout (2000) LBV winds only for ``HURLEY`` LBV stars (or in addition to other winds for ``HURLEY_ADD``, Belzcynski et al. 2010 winds for ``BELCZYNSKI`` |br|
 Default = HURLEY_ADD
 
+**--luminosity-to-mass-threshold** |br|
+Threshold log_10(Luminosity/Mass) (in solar units) above which, if the option ``expel-convective-envelope-above-luminosity-threshold`` is set to TRUE, pulsations eject the convective envelope |br|
+Default = 4.2
+
 .. _options-props-M:
 
 :ref:`Back to Top <options-props-top>`
@@ -822,7 +846,7 @@ Maximum number of timesteps to evolve binary. Evolution of the binary will stop 
 Default = 99999
 
 **--mcbur1** |br|
-Minimum core mass at base of AGB to avoid fully degnerate CO core formation (:math:`M_\odot`). |br|
+Minimum core mass at base of AGB to avoid fully degenerate CO core formation (:math:`M_\odot`). |br|
 e.g. 1.6 in :cite:`Hurley2000` presciption; 1.83 in :cite:`Fryer2012` and :doc:`Belczynski et al. (2008) <../../references>` models. |br|
 Default = 1.6
 
@@ -1039,6 +1063,8 @@ Default = 0
 Remnant mass prescription. |br|
 Options: { HURLEY2000, BELCZYNSKI2002, FRYER2012, FRYER2022, MULLER2016, MULLERMANDEL, SCHNEIDER2020, SCHNEIDER2020ALT } |br|
 Remnant mass recipes from Hurley, Pols, Tout (2000) for ``HURLEY2000``, Belczynski et al. 2002, Fryer et al. 2012,  Fryer et al. 2022, Mueller 2016, Mandel & Mueller 2020, and Schneider et al. 2020 (with the alternative prescription for effectively single stars from the same paper in the ``SCHNEIDER2020ALT`` case) |br|
+Note that this is independent from ``--kick-magnitude-distribution`` to provide flexibility; 
+however, if using ``MULLERMANDEL``, it is recommended to keep them consistent by doing so for both. |br|
 Default = FRYER2012
 
 **--retain-core-mass-during-caseA-mass-transfer** |br|
@@ -1094,9 +1120,13 @@ Minimum semi-major axis to generate (AU). |br|
 Default = 0.01
 
 **--stellar-zeta-prescription** |br|
-Prescription for stellar zeta. |br|
+Prescription for convective donor radial response zeta. 
 Options: { SOBERMAN, HURLEY, ARBITRARY } |br|
-Use Soberman, Phinney, and van den Heuvel (1997) or Hurley, Pols, Tout (2002) or the fixed value specified via ``--zeta-adiabatic-arbitrary`` for the stellar radial response to mass loss for convective-envelope giant-like stars |br|
+The prescription only applies to stars with convective envelopes.
+Stars with radiative envelopes take the values from ``--zeta-main-sequence`` or ``--zeta-radiative-giant-star``. |br|
+``SOBERMAN`` uses zeta from Soberman, Phinney, and van den Heuvel (1997) 
+``HURLEY`` uses zeta from Hurley, Pols, Tout (2002) 
+``ARBITRARY`` uses fixed value set in ``--zeta-adiabatic-arbitrary`` |br|
 Default = SOBERMAN
 
 **--store-input-files** |br|
@@ -1120,7 +1150,12 @@ Default = 1.0
 :ref:`Back to Top <options-props-top>`
 
 **--use-mass-loss** |br|
-Enable mass loss. |br|
+Enable mass loss through winds. |br|
+Note that setting this option to false can have unexpected consequences, e.g., TPAGB stars that are prevented from losing mass 
+cannot become white dwarfs, so will end up as massless remnants.  This is a useful option for testing, but this setting is not recommended
+for production. It is better to use specific wind prescription controls, such as --cool-wind-mass-loss-multiplier, 
+--luminous-blue-variable-prescription, --luminous-blue-variable-multiplier, 
+--mass-loss-prescription, --overall-wind-mass-loss-multiplier, --wolf-rayet-multiplier . |br|
 Default = TRUE
 
 .. _options-props-V:
@@ -1141,6 +1176,13 @@ Default = 1.0
 
 .. _options-props-X:
 .. _options-props-Y:
+
+:ref:`Back to Top <options-props-top>`
+
+**--YAML-template** |br|
+Template filename for creation of YAML file (see also ``--create-YAML-file``). |br|
+Default = "" (No template file)
+
 .. _options-props-Z:
 
 :ref:`Back to Top <options-props-top>`
@@ -1160,7 +1202,7 @@ Default = 6.5
 
 
 Category listing
---------------------
+----------------
 
 Go to :ref:`the top of this page <options-props-top>` for the full alphabetical list of options with explanations and default values
 
@@ -1187,8 +1229,9 @@ Go to :ref:`the top of this page <options-props-top>` for the full alphabetical 
 
 **Stellar evolution and winds**
 
---use-mass-loss, --check-photon-tiring-limit, --cool-wind-mass-loss-multiplier, --luminous-blue-variable-prescription, --luminous-blue-variable-multiplier, 
---mass-loss-prescription, --overall-wind-mass-loss-multiplier, --wolf-rayet-multiplier
+--use-mass-loss, --check-photon-tiring-limit, --cool-wind-mass-loss-multiplier, --luminous-blue-variable-prescription, 
+--luminous-blue-variable-multiplier, --mass-loss-prescription, --overall-wind-mass-loss-multiplier, --wolf-rayet-multiplier, 
+--expel-convective-envelope-above-luminosity-threshold, --luminosity-to-mass-threshold
 
 --chemically-homogeneous-evolution
 
@@ -1211,7 +1254,8 @@ Go to :ref:`the top of this page <options-props-top>` for the full alphabetical 
 
 --circulariseBinaryDuringMassTransfer, --angular-momentum-conservation-during-circularisation
 
---envelope-state-prescription, --common-envelope-alpha, --common-envelope-alpha-thermal, --common-envelope-lambda-prescription, --common-envelope-lambda, 
+--envelope-state-prescription, --common-envelope-alpha, --common-envelope-alpha-thermal, --common-envelope-formalism,
+--common-envelope-lambda-prescription, --common-envelope-lambda, 
 --common-envelope-slope-kruckow, --common-envelope-lambda-multiplier, --common-envelope-lambda-nanjing-enhanced, 
 --common-envelope-lambda-nanjing-interpolate-in-mass, --common-envelope-lambda-nanjing-interpolate-in-metallicity, 
 --common-envelope-lambda-nanjing-use_rejuvenated-mass, --common-envelope-allow-main-sequence-survive, --common-envelope-allow-radiative-envelope-survive, 
@@ -1259,6 +1303,8 @@ Go to :ref:`the top of this page <options-props-top>` for the full alphabetical 
 --logfile-pulsar-evolution, --logfile-pulsar-evolution-record-type, --logfile-rlof-parameters, --logfile-rlof-parameters-record-types, --logfile-supernovae, 
 --logfile-supernovae-record-types, --logfile-switch-log, --logfile-system-parameters, --logfile-system-parameters-record-types, --output-container, 
 --output-path, --rlof-printing, --store-input-files, --switch-log, --hdf5-buffer-size, --hdf5-chunk-size
+
+--create-YAML-file, YAML-template
 
 :ref:`Back to Top <options-props-top>`
 

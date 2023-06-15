@@ -50,9 +50,7 @@ BaseStar::BaseStar(const unsigned long int p_RandomSeed,
     m_Metallicity         = p_Metallicity;
 
     // Initialise metallicity dependent values
-    m_LogMetallicityXi    = log10(m_Metallicity / ZSOL);
-    m_LogMetallicitySigma = log10(m_Metallicity);
-    m_LogMetallicityRho   = m_LogMetallicityXi + 1.0;
+    m_Log10Metallicity    = log10(m_Metallicity);
 
 
     // Initialise coefficients, parameters and constants
@@ -90,10 +88,10 @@ BaseStar::BaseStar(const unsigned long int p_RandomSeed,
 
     // calculate coefficients, constants etc.
 
-    CalculateRCoefficients(m_LogMetallicityXi, m_RCoefficients);
-    CalculateLCoefficients(m_LogMetallicityXi, m_LCoefficients);
+    CalculateRCoefficients(LogMetallicityXi(), m_RCoefficients);
+    CalculateLCoefficients(LogMetallicityXi(), m_LCoefficients);
 
-    CalculateMassCutoffs(m_Metallicity, m_LogMetallicityXi, m_MassCutoffs);
+    CalculateMassCutoffs(m_Metallicity, LogMetallicityXi(), m_MassCutoffs);
 
     CalculateAnCoefficients(m_AnCoefficients, m_LConstants, m_RConstants, m_GammaConstants);
     CalculateBnCoefficients(m_BnCoefficients);
@@ -143,6 +141,7 @@ BaseStar::BaseStar(const unsigned long int p_RandomSeed,
 
     m_MinimumLuminosityOnPhase                 = DEFAULT_INITIAL_DOUBLE_VALUE;
     m_LBVphaseFlag                             = false;
+    m_EnvelopeJustExpelledByPulsations         = false;
 
     // Previous timestep attributes
     m_StellarTypePrev                          = m_StellarType;
@@ -170,7 +169,7 @@ BaseStar::BaseStar(const unsigned long int p_RandomSeed,
     m_BindingEnergies.loveridgeWinds           = DEFAULT_INITIAL_DOUBLE_VALUE;
     m_BindingEnergies.kruckow                  = DEFAULT_INITIAL_DOUBLE_VALUE;
 
-    // Supernova detais
+    // Supernova details
 
     m_SupernovaDetails.initialKickParameters   = p_KickParameters;
 
@@ -208,6 +207,8 @@ BaseStar::BaseStar(const unsigned long int p_RandomSeed,
     m_PulsarDetails.spinPeriod                 = DEFAULT_INITIAL_DOUBLE_VALUE;
     m_PulsarDetails.spinFrequency              = DEFAULT_INITIAL_DOUBLE_VALUE;
     m_PulsarDetails.spinDownRate               = DEFAULT_INITIAL_DOUBLE_VALUE;
+    m_PulsarDetails.birthPeriod                = DEFAULT_INITIAL_DOUBLE_VALUE;
+    m_PulsarDetails.birthSpinDownRate          = DEFAULT_INITIAL_DOUBLE_VALUE;
 
     // Mass Transfer Donor Type History
     m_MassTransferDonorHistory                 = STYPE_VECTOR();
@@ -300,10 +301,12 @@ COMPAS_VARIABLE BaseStar::StellarPropertyValue(const T_ANY_PROPERTY p_Property) 
             case ANY_STAR_PROPERTY::ENV_MASS:                                           value = Mass()-CoreMass();                                      break;
             case ANY_STAR_PROPERTY::ERROR:                                              value = Error();                                                break;
             case ANY_STAR_PROPERTY::EXPERIENCED_AIC:                                    value = ExperiencedAIC();                                       break;
+            case ANY_STAR_PROPERTY::EXPERIENCED_HeSD:                                   value = ExperiencedHeSD();                                        break;
             case ANY_STAR_PROPERTY::EXPERIENCED_CCSN:                                   value = ExperiencedCCSN();                                      break;
             case ANY_STAR_PROPERTY::EXPERIENCED_ECSN:                                   value = ExperiencedECSN();                                      break;
             case ANY_STAR_PROPERTY::EXPERIENCED_PISN:                                   value = ExperiencedPISN();                                      break;
             case ANY_STAR_PROPERTY::EXPERIENCED_PPISN:                                  value = ExperiencedPPISN();                                     break;
+            case ANY_STAR_PROPERTY::EXPERIENCED_SNIA:                                   value = ExperiencedSNIA();                                      break;
             case ANY_STAR_PROPERTY::EXPERIENCED_SN_TYPE:                                value = ExperiencedSN_Type();                                   break;
             case ANY_STAR_PROPERTY::EXPERIENCED_USSN:                                   value = ExperiencedUSSN();                                      break;
             case ANY_STAR_PROPERTY::FALLBACK_FRACTION:                                  value = SN_FallbackFraction();                                  break;
@@ -315,9 +318,11 @@ COMPAS_VARIABLE BaseStar::StellarPropertyValue(const T_ANY_PROPERTY p_Property) 
             case ANY_STAR_PROPERTY::INITIAL_STELLAR_TYPE_NAME:                          value = STELLAR_TYPE_LABEL.at(InitialStellarType());            break;
             case ANY_STAR_PROPERTY::IS_AIC:                                             value = IsAIC();                                                break;
             case ANY_STAR_PROPERTY::IS_CCSN:                                            value = IsCCSN();                                               break;
+            case ANY_STAR_PROPERTY::IS_HeSD:                                            value = IsHeSD();                                               break;
             case ANY_STAR_PROPERTY::IS_ECSN:                                            value = IsECSN();                                               break;
             case ANY_STAR_PROPERTY::IS_PISN:                                            value = IsPISN();                                               break;
             case ANY_STAR_PROPERTY::IS_PPISN:                                           value = IsPPISN();                                              break;
+            case ANY_STAR_PROPERTY::IS_SNIA:                                            value = IsSNIA();                                               break;
             case ANY_STAR_PROPERTY::IS_USSN:                                            value = IsUSSN();                                               break;
             case ANY_STAR_PROPERTY::KICK_MAGNITUDE:                                     value = SN_KickMagnitude();                                     break;
             case ANY_STAR_PROPERTY::LAMBDA_DEWI:                                        value = Lambda_Dewi();                                          break;
@@ -346,6 +351,8 @@ COMPAS_VARIABLE BaseStar::StellarPropertyValue(const T_ANY_PROPERTY p_Property) 
             case ANY_STAR_PROPERTY::PULSAR_SPIN_DOWN_RATE:                              value = Pulsar_SpinDownRate();                                  break;
             case ANY_STAR_PROPERTY::PULSAR_SPIN_FREQUENCY:                              value = Pulsar_SpinFrequency();                                 break;
             case ANY_STAR_PROPERTY::PULSAR_SPIN_PERIOD:                                 value = Pulsar_SpinPeriod();                                    break;
+            case ANY_STAR_PROPERTY::PULSAR_BIRTH_PERIOD:                                value = Pulsar_BirthPeriod();                                   break;
+            case ANY_STAR_PROPERTY::PULSAR_BIRTH_SPIN_DOWN_RATE:                        value = Pulsar_BirthSpinDownRate();                                 break;
             case ANY_STAR_PROPERTY::RADIAL_EXPANSION_TIMESCALE:                         value = CalculateRadialExpansionTimescale();                    break;
             case ANY_STAR_PROPERTY::RADIUS:                                             value = Radius();                                               break;
             case ANY_STAR_PROPERTY::RANDOM_SEED:                                        value = RandomSeed();                                           break;
@@ -403,7 +410,7 @@ COMPAS_VARIABLE BaseStar::StellarPropertyValue(const T_ANY_PROPERTY p_Property) 
  * functional return is a tuple: std::tuple<bool, COMPAS_VARIABLE_TYPE>.  This type
  * is COMPAS_VARIABLE by typedef.
  *
- * The bool returned indicates whether the property value was retireved ok: true = yes, fales = no
+ * The bool returned indicates whether the property value was retrieved ok: true = yes, fales = no
  * The COMPAS_VARIABLE_TYPE variable returned is a boost variant variable, the value of which is the
  * value of the underlying primitive variable.
  *
@@ -479,8 +486,8 @@ void BaseStar::CalculateAnCoefficients(DBL_VECTOR &p_AnCoefficients,
 #define GammaConstants(x) p_GammaConstants[static_cast<int>(GAMMA_CONSTANTS::x)]    // for convenience and readability - undefined at end of function
 
     double Z     = m_Metallicity;
-    double xi    = m_LogMetallicityXi;
-    double sigma = m_LogMetallicitySigma;
+    double xi    = LogMetallicityXi();
+    double sigma = LogMetallicitySigma();
 
     // pow() is slow - use multiplication
     // do these calculations once only - and esp. outside the loop
@@ -580,9 +587,9 @@ void BaseStar::CalculateBnCoefficients(DBL_VECTOR &p_BnCoefficients) {
 
 
     double Z     = m_Metallicity;
-    double xi    = m_LogMetallicityXi;
-    double sigma = m_LogMetallicitySigma;
-    double rho   = m_LogMetallicityRho;
+    double xi    = LogMetallicityXi();
+    double sigma = LogMetallicitySigma();
+    double rho   = LogMetallicityRho();
 
     // pow() is slow - use multiplication
     // do these calculations once only - and esp. outside the loop
@@ -853,7 +860,7 @@ void BaseStar::CalculateMassCutoffs(const double p_Metallicity, const double p_L
 double BaseStar::CalculateGBRadiusXExponent() const {
 
     // pow()is slow - use multiplication
-    double xi   = m_LogMetallicityXi;
+    double xi   = LogMetallicityXi();
     double xi_2 = xi * xi;
     double xi_3 = xi_2 * xi;
     double xi_4 = xi_2 * xi_2;
@@ -1250,27 +1257,23 @@ double BaseStar::FindLambdaNanjingNearestMassIndex(const double p_Mass) const {
 
 
 /*
- * Calculate the donor radial response zeta 
+ * Calculate zeta, the adiabatic donor radial response to mass loss
  *
+ * double BaseStar::CalculateZetaAdiabatic() 
  *
- * double CalculateZetaAdiabatic(ZETA_PRESCRIPTION p_ZetaPrescription)
- *
- * @param   [IN]    p_ZetaPrescription          Prescription for computing ZetaStar
- * @return                                      Adiabatic exponent
+ * @return                                      Adiabatic exponent zeta = dlnR/dlnM
  */
-double BaseStar::CalculateZetaAdiabatic(ZETA_PRESCRIPTION p_ZetaPrescription) { 
+double BaseStar::CalculateZetaAdiabatic() { 
                                                                                 
-    double zetaStar;
-    switch (p_ZetaPrescription) {
+    double zetaStar = 0.0;
+    ZETA_PRESCRIPTION zetaPrescription = OPTIONS->StellarZetaPrescription();
+
+    switch (zetaPrescription) {
     
-        case ZETA_PRESCRIPTION::GE20:     
-        case ZETA_PRESCRIPTION::GE20_IC:  
-            zetaStar = CalculateInterpolatedQCritOrZetaGe2020();
-            break;
         case ZETA_PRESCRIPTION::SOBERMAN: 
         case ZETA_PRESCRIPTION::HURLEY:   
         case ZETA_PRESCRIPTION::ARBITRARY:
-            zetaStar = CalculateZetaByStellarType(p_ZetaPrescription);
+            zetaStar = CalculateZetaConstantsByEnvelope(zetaPrescription);
             break;
         default:
             m_Error = ERROR::UNKNOWN_ZETA_PRESCRIPTION;                                     // set error value
@@ -1298,8 +1301,6 @@ double BaseStar::CalculateZetaAdiabaticHurley2002(const double p_CoreMass) const
 }
 
 
-
-
 /*
  * Calculate the Adiabatic Exponent per Soberman, Phinney, vdHeuvel 1997
  *
@@ -1319,17 +1320,50 @@ double BaseStar::CalculateZetaAdiabaticSPH(const double p_CoreMass) const {
 }
 
 
+/*
+ * Calculate the critical mass ratio for unstable mass transfer
+ *
+ * double BaseStar::CalculateCriticalMassRatio(const bool p_AccretorIsDegenerate) 
+ *
+ * @param   [IN]    p_AccretorIsDegenerate      Whether or not the accretor is a degenerate star
+ * @return                                      Critical mass ratio
+ */
+double BaseStar::CalculateCriticalMassRatio(const bool p_AccretorIsDegenerate) {                                           
+    
+        double qCrit = 0.0;
+        QCRIT_PRESCRIPTION qCritPrescription = OPTIONS->QCritPrescription();
 
+        switch (qCritPrescription) {
+            case QCRIT_PRESCRIPTION::GE20: 
+            case QCRIT_PRESCRIPTION::GE20_IC:
+                qCrit = CalculateCriticalMassRatioGe20(qCritPrescription);   
+                break;
+            case QCRIT_PRESCRIPTION::CLAEYS:
+                qCrit = CalculateCriticalMassRatioClaeys14(p_AccretorIsDegenerate);
+                break;
+            case QCRIT_PRESCRIPTION::HURLEY_HJELLMING_WEBBINK:
+                qCrit = CalculateCriticalMassRatioHurleyHjellmingWebbink();
+                break;
+            default:
+                m_Error = ERROR::UNKNOWN_QCRIT_PRESCRIPTION;                                     // set error value
+                SHOW_ERROR(m_Error);                                                             // warn that an error occurred
+        }
+        return qCrit;
+}
 
 
 /* 
- * Interpolate Ge+20 Critical Mass Ratios and Zetas
+ * Interpolate Ge+20 Critical Mass Ratios 
  * 
- * double BaseStar::CalculateInterpolatedQCritOrZetaGe2020()
+ * Function takes input QCRIT_PRESCRIPTION, currently either of the prescriptions for critical mass ratios
+ * from Ge et al. (2020), GE20 or GE20_IC. The first is the full adiabatic response, the second assumes
+ * artificially isentropic envelopes.
  * 
- * @return                                      Critical mass ratio or zeta for given stellar mass / radius
+ * double BaseStar::InterpolateGe20QCrit( const QCRIT_PRESCRIPTION p_qCritPrescription) 
+ * 
+ * @return                                      Interpolated value of either the critical mass ratio or zeta for given stellar mass / radius
  */ 
-double BaseStar::CalculateInterpolatedQCritOrZetaGe2020() const {
+double BaseStar::InterpolateGe20QCrit( const QCRIT_PRESCRIPTION p_qCritPrescription) {
 
     // Get vector of masses from GE20_QCRIT_AND_ZETA
     std::vector<double> massesFromGe20 = std::get<0>(GE20_QCRIT_AND_ZETA);
@@ -1349,43 +1383,30 @@ double BaseStar::CalculateInterpolatedQCritOrZetaGe2020() const {
         upperMassInd = massesFromGe20.size();
     } 
 
-    // Get vector of radii from GE20_QCRIT_AND_ZETA for the lower and upper mass indeces
+    // Get vector of radii from GE20_QCRIT_AND_ZETA for the lower and upper mass indices
     std::vector<double> logRadiusVectorLowerMass = std::get<0>(radiiQCritsZetasFromGe20[lowerMassInd]);
     std::vector<double> logRadiusVectorUpperMass = std::get<0>(radiiQCritsZetasFromGe20[upperMassInd]);
 
-    // Set the param value (either qCrit or zeta, for adiabatic or isentropic model) from Ge+20 
-    std::vector<double> paramVectorLowerMass;
-    std::vector<double> paramVectorUpperMass;
+    // Get the qCrit vector for the lower and upper mass bounds 
+    std::vector<double> qCritVectorLowerMass;
+    std::vector<double> qCritVectorUpperMass;
     
     // One of the following must be set
-    if (OPTIONS->QCritPrescription() == QCRIT_PRESCRIPTION::GE20) {
-        paramVectorLowerMass     = std::get<1>(radiiQCritsZetasFromGe20[lowerMassInd]);
-        paramVectorUpperMass     = std::get<1>(radiiQCritsZetasFromGe20[upperMassInd]);
+    if (p_qCritPrescription == QCRIT_PRESCRIPTION::GE20) {
+        qCritVectorLowerMass     = std::get<1>(radiiQCritsZetasFromGe20[lowerMassInd]);
+        qCritVectorUpperMass     = std::get<1>(radiiQCritsZetasFromGe20[upperMassInd]);
     }
-    else if (OPTIONS->QCritPrescription() == QCRIT_PRESCRIPTION::GE20_IC) {
-        paramVectorLowerMass     = std::get<2>(radiiQCritsZetasFromGe20[lowerMassInd]);
-        paramVectorUpperMass     = std::get<2>(radiiQCritsZetasFromGe20[upperMassInd]);
+    else if (p_qCritPrescription == QCRIT_PRESCRIPTION::GE20_IC) {
+        qCritVectorLowerMass     = std::get<2>(radiiQCritsZetasFromGe20[lowerMassInd]);
+        qCritVectorUpperMass     = std::get<2>(radiiQCritsZetasFromGe20[upperMassInd]);
     }
-    else if (OPTIONS->StellarZetaPrescription() == ZETA_PRESCRIPTION::GE20) {
-        paramVectorLowerMass     = std::get<3>(radiiQCritsZetasFromGe20[lowerMassInd]);
-        paramVectorUpperMass     = std::get<3>(radiiQCritsZetasFromGe20[upperMassInd]);
-    }
-    else if (OPTIONS->StellarZetaPrescription() == ZETA_PRESCRIPTION::GE20_IC) {
-        paramVectorLowerMass     = std::get<4>(radiiQCritsZetasFromGe20[lowerMassInd]);
-        paramVectorUpperMass     = std::get<4>(radiiQCritsZetasFromGe20[upperMassInd]);
-    }
-    else { // RTW TODO: check
-        ERROR error = ERROR:: UNHANDLED_EXCEPTION;                                            // set error value
-        SHOW_ERROR(error);                                                                    // warn that an error occurred
-    }
-
 
     // Get vector of radii from GE20_QCRIT_AND_ZETA for both lower and upper masses
     std::vector<int> indR0 = utils::binarySearch(logRadiusVectorLowerMass, log10(m_Radius));
     double lowerRadiusLowerMassInd = indR0[0];
     double upperRadiusLowerMassInd = indR0[1];
 
-    if (lowerRadiusLowerMassInd == -1) {                                                   // if radii are out of range, set to endpoints
+    if (lowerRadiusLowerMassInd == -1) {                                        // if radii are out of range, set to endpoints
         lowerRadiusLowerMassInd = 0; 
         upperRadiusLowerMassInd = 0; 
     }
@@ -1398,7 +1419,7 @@ double BaseStar::CalculateInterpolatedQCritOrZetaGe2020() const {
     double lowerRadiusUpperMassInd = indR1[0];
     double upperRadiusUpperMassInd = indR1[1];
 
-    if (lowerRadiusUpperMassInd == -1) {                                                   // if radii are out of range, set to endpoints
+    if (lowerRadiusUpperMassInd == -1) {                                        // if radii are out of range, set to endpoints
         lowerRadiusUpperMassInd = 0; 
         upperRadiusUpperMassInd = 0; 
     }
@@ -1407,12 +1428,11 @@ double BaseStar::CalculateInterpolatedQCritOrZetaGe2020() const {
         upperRadiusUpperMassInd = logRadiusVectorUpperMass.size(); 
     }
 
-
     // Set the 4 boundary points for the 2D interpolation
-    double valLowLow = paramVectorLowerMass[lowerRadiusLowerMassInd];
-    double valLowUpp = paramVectorLowerMass[upperRadiusLowerMassInd];
-    double valUppLow = paramVectorUpperMass[lowerRadiusUpperMassInd];
-    double valUppUpp = paramVectorUpperMass[upperRadiusUpperMassInd];
+    double qLowLow = qCritVectorLowerMass[lowerRadiusLowerMassInd];
+    double qLowUpp = qCritVectorLowerMass[upperRadiusLowerMassInd];
+    double qUppLow = qCritVectorUpperMass[lowerRadiusUpperMassInd];
+    double qUppUpp = qCritVectorUpperMass[upperRadiusUpperMassInd];
 
     double lowerMass = massesFromGe20[lowerMassInd];
     double upperMass = massesFromGe20[upperMassInd];
@@ -1421,19 +1441,14 @@ double BaseStar::CalculateInterpolatedQCritOrZetaGe2020() const {
     double lowerRadiusUpperMass = pow(10, logRadiusVectorUpperMass[lowerRadiusUpperMassInd]);
     double upperRadiusUpperMass = pow(10, logRadiusVectorUpperMass[upperRadiusUpperMassInd]);
 
-
     // Interpolate on the radii first, then the masses
-    double paramLowerMass = valLowLow + (upperRadiusLowerMass - m_Radius)/(upperRadiusLowerMass - lowerRadiusLowerMass) * (valLowUpp - valLowLow);
-    double paramUpperMass = valUppLow + (upperRadiusUpperMass - m_Radius)/(upperRadiusUpperMass - lowerRadiusUpperMass) * (valUppUpp - valUppLow);
-        
-    double interpolatedValue = paramLowerMass + (upperMass - m_Mass)/(upperMass - lowerMass) * (paramUpperMass - paramLowerMass);
+    double qCritLowerMass = qLowLow + (upperRadiusLowerMass - m_Radius)/(upperRadiusLowerMass - lowerRadiusLowerMass) * (qLowUpp - qLowLow);
+    double qCritUpperMass = qUppLow + (upperRadiusUpperMass - m_Radius)/(upperRadiusUpperMass - lowerRadiusUpperMass) * (qUppUpp - qUppLow);
+    double interpolatedQCrit = qCritLowerMass + (upperMass - m_Mass)/(upperMass - lowerMass) * (qCritUpperMass - qCritLowerMass);
 
-    return interpolatedValue;
+    return interpolatedQCrit;
 
 }
-
-
-
 
 
 /*
@@ -1459,8 +1474,6 @@ void BaseStar::CalculateLambdas(const double p_EnvMass) {
 	m_Lambdas.kruckowBottom  = CalculateLambdaKruckow(m_Radius, -1.0);
 	m_Lambdas.dewi           = CalculateLambdaDewi();
 }
-
-
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -2026,7 +2039,7 @@ double BaseStar::CalculateMassLossRate() {
 
 /*
  * Calculate mass loss given mass loss rate - uses current timestep (m_Dt)
- * Returned mass loss is limited to 1% of current mass
+ * Returned mass loss is limited to MAXIMUM_MASS_LOSS_FRACTION (e.g., 1%) of current mass
  *
  *
  * double CalculateMassLoss_Static(const double p_Mass, const double p_Mdot, const double p_Dt)
@@ -2044,7 +2057,7 @@ double BaseStar::CalculateMassLoss_Static(const double p_Mass, const double p_Md
 /*
  * Calculate values for dt, mDot and mass assuming mass loss is applied
  *
- * Class member variables m_Mdot and m_Dt are updated directly by this function if required (see paramaters)
+ * Class member variables m_Mdot and m_Dt are updated directly by this function if required (see parameters)
  * Class member variables m_Mass is not updated directly by this function - the calculated mass is returned as the functional return
  *
  * - calculates (and limits) mass loss
@@ -2080,7 +2093,6 @@ double BaseStar::CalculateMassLossValues(const bool p_UpdateMDot, const bool p_U
         }
         else {
             dt    = massLoss / (mDot * 1.0E6);                              // new timestep to match limited mass loss
-            mDot  = massLoss / (dt * 1.0E6);                                // new mass loss rate to match limited mass loss
             mass -= massLoss;                                               // new mass based on limited mass loss
 
             if (p_UpdateMDt) m_Dt = dt;                                     // update class member variable if necessary
@@ -2183,7 +2195,7 @@ DBL_DBL BaseStar::CalculateMassAcceptanceRate(const double p_DonorMassRate, cons
             break;
 
         case MT_ACCRETION_EFFICIENCY_PRESCRIPTION::FIXED_FRACTION:                          // fixed fraction of mass accreted, as in StarTrack
-            fractionAccreted = OPTIONS-> MassTransferFractionAccreted();
+            fractionAccreted = OPTIONS->MassTransferFractionAccreted();
             acceptanceRate = min(p_DonorMassRate, fractionAccreted * p_DonorMassRate);
             break;
 
@@ -2207,10 +2219,14 @@ DBL_DBL BaseStar::CalculateMassAcceptanceRate(const double p_DonorMassRate, cons
  * @return                                      Thermal mass acceptance rate
  */
 double BaseStar::CalculateThermalMassAcceptanceRate(const double p_Radius) const {
-        
-    return OPTIONS->MassTransferThermallyLimitedVariation() == MT_THERMALLY_LIMITED_VARIATION::RADIUS_TO_ROCHELOBE
-            ? (m_Mass - m_CoreMass) / CalculateThermalTimescale(p_Radius)
-            : CalculateThermalMassLossRate();
+    
+    switch( OPTIONS->MassTransferThermallyLimitedVariation() ) {
+        case MT_THERMALLY_LIMITED_VARIATION::RADIUS_TO_ROCHELOBE:
+            return (m_Mass - m_CoreMass) / CalculateThermalTimescale(p_Radius);             // uses provided accretor radius (should be Roche lobe radius in practice)
+        case MT_THERMALLY_LIMITED_VARIATION::C_FACTOR:
+        default:
+            return CalculateThermalMassLossRate();
+    }
 }
 
 
@@ -2378,7 +2394,7 @@ double BaseStar::CalculateOStarRotationalVelocity_Static(const double p_Xmin, co
 
 
 /*
- * Calculate the inital rotational velocity (in km s^-1 ) of a star with ZAMS mass MZAMS
+ * Calculate the initial rotational velocity (in km s^-1 ) of a star with ZAMS mass MZAMS
  *
  * Distribution used is determined by program option "rotationalVelocityDistribution"
  *
@@ -2602,7 +2618,7 @@ double BaseStar::CalculateNuclearTimescale_Static(const double p_Mass, const dou
  * The p_Radius parameter is to accommodate the call (of this function) in BaseBinaryStar::CalculateMassTransfer()
 */
 double BaseStar::CalculateThermalTimescale(const double p_Radius) const {   
-    return 31.4 * m_Mass * (m_Mass == m_CoreMass ? m_Mass : m_Mass - m_CoreMass) / (m_Radius * m_Luminosity); // G*Msol^2/(Lsol*Rsol) ~ 31.4 Myr (~ 30 Myr in Kalogera & Webbink)
+    return 31.4 * m_Mass * (m_Mass == m_CoreMass ? m_Mass : m_Mass - m_CoreMass) / (p_Radius * m_Luminosity); // G*Msol^2/(Lsol*Rsol) ~ 31.4 Myr (~ 30 Myr in Kalogera & Webbink)
 }
 
 
@@ -2937,6 +2953,8 @@ double BaseStar::CalculateSNKickMagnitude(const double p_RemnantMass, const doub
                 break;
 
 		    case SN_EVENT::AIC:                                                                     // AIC have 0 kick 
+		    case SN_EVENT::SNIA:                                                                    // SNIA have 0 kick 
+		    case SN_EVENT::HeSD:                                                                    // HeSD have 0 kick 
 			    sigma = 0;
                 break;
 
@@ -3050,8 +3068,7 @@ void BaseStar::UpdateComponentVelocity(const Vector3d p_newVelocity) {
 
 
 /*
- *	Calculate the absolute value of the binding energy core to the envelope of the star
- *	ALEJANDRO - 08/03/2017
+ *	Calculate the absolute value of the binding energy of the envelope of the star
  *
  *
  * double CalculateBindingEnergy(const double p_CoreMass, const double p_EnvMass, const double p_Radius, const double p_Lambda)
@@ -3059,6 +3076,7 @@ void BaseStar::UpdateComponentVelocity(const Vector3d p_newVelocity) {
  * @param   [IN]    p_CoreMass                  Core mass of the star (Msol)
  * @param   [IN]    p_EnvMass                   Envelope mass of the star (Msol)
  * @param   [IN]    p_Radius                    Radius of the star (Rsol)
+ * @param   [IN]    p_Lambda                    Dimensionless parameter defining the binding energy
  * @return                                      Binding energy (erg)
  */
 double BaseStar::CalculateBindingEnergy(const double p_CoreMass, const double p_EnvMass, const double p_Radius, const double p_Lambda) const {
@@ -3069,8 +3087,8 @@ double BaseStar::CalculateBindingEnergy(const double p_CoreMass, const double p_
         SHOW_WARN(ERROR::RADIUS_NOT_POSITIVE, "Binding energy = 0.0");                  // warn radius not positive
 	}
 	else if (utils::Compare(p_Lambda, 0.0) <= 0) {                                      // positive lambda?
-        // Not necesarily zero as sometimes lambda is made 0, or maybe weird values for certain parameters of the fit. Not sure about the latter.
-//        SHOW_WARN(ERROR::LAMBDA_NOT_POSITIVE, "Binding energy = 0.0");                  // warn lambda not positive
+        // Not necessarily zero as sometimes lambda is made 0, or maybe weird values for certain parameters of the fit. Not sure about the latter.
+        SHOW_WARN(ERROR::LAMBDA_NOT_POSITIVE, "Binding energy = 0.0");                  // warn lambda not positive
 	}
 	else {                                                                              // calculate binding energy
         // convert to CGS where necessary
@@ -3105,6 +3123,21 @@ void BaseStar::CalculateBindingEnergies(const double p_CoreMass, const double p_
 	m_BindingEnergies.kruckow        = CalculateBindingEnergy(p_CoreMass, p_EnvMass, p_Radius, m_Lambdas.kruckow);
 }
 
+/*
+ * Calculate convective envelope binding energy for the two-stage Hirai & Mandel (2022) common envelope formalism
+ *
+ *
+ * double CalculateConvectiveEnvelopeBindingEnergy(const double p_CoreMass, const double p_ConvectiveEnvelopeMass, const double p_Radius, const double p_lambda)
+ *
+ * @param   [IN]    p_CoreMass                  Core mass of the star (Msol)
+ * @param   [IN]    p_ConvectiveEnvelopeMass    Mass of the convective outer envelope  (Msol)
+ * @param   [IN]    p_Radius                    Radius of the star (Rsol)
+ * @param   [IN]    p_Lambda                    Dimensionless parameter defining the binding energy
+ * @return                                      Binding energy (erg)
+ */
+double BaseStar::CalculateConvectiveEnvelopeBindingEnergy(const double p_CoreMass, const double p_ConvectiveEnvelopeMass, const double p_Radius, const double p_Lambda) {
+    return CalculateBindingEnergy(p_CoreMass, p_ConvectiveEnvelopeMass, p_Radius, p_Lambda);
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -3217,10 +3250,10 @@ void BaseStar::UpdateAttributesAndAgeOneTimestepPreamble(const double p_DeltaMas
     // calls this UpdateAttributesAndAgeOneTimestep, the GBParams and
     // Timescale functions are called here.
     //
-    // JR: todo: we should revisit where and how often we recalulate
+    // JR: todo: we should revisit where and how often we recalculate
     // GBParams and Timescales.  The problem is that there are multiple
     // entry points into the calculate/take timestep code that it isn't
-    // always abvious where we need to do this...  A project for another
+    // always obvious where we need to do this...  A project for another
     // time.
 
     CalculateGBParams();                                                                            // calculate giant branch parameters

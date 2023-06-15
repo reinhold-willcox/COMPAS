@@ -39,7 +39,7 @@ protected:
         // can get here via EvolveOneTimestep() and ResolveEnvelopeLoss(),
         // and Age is calculated differently in those cases
         
-        //Update stellar properties at start of HeHG phase (since core defintion changes)
+        //Update stellar properties at start of HeHG phase (since core definition changes)
         CalculateGBParams();
         m_COCoreMass  = CalculateCOCoreMassOnPhase();
         m_CoreMass    = CalculateCoreMassOnPhase();
@@ -60,7 +60,8 @@ protected:
     static  double          CalculateCoreMass_Luminosity_B_Static()                                                 { return 4.1E4; }
     static  double          CalculateCoreMass_Luminosity_D_Static(const double p_Mass)                              { return 5.5E4 / (1.0 + (0.4 * p_Mass * p_Mass * p_Mass * p_Mass)); }   // pow() is slow - use multiplication
 
-            double          CalculateCriticalMassRatio(const bool p_AccretorIsDegenerate) const;
+            double          CalculateCriticalMassRatioClaeys14(const bool p_AccretorIsDegenerate) const;
+            double          CalculateCriticalMassRatioHurleyHjellmingWebbink() const                                { return 1.28; }                                                        // From BSE. Using the inverse owing to how qCrit is defined in COMPAS. See Hurley et al. 2002 sect. 2.6.1 for additional details.
 
             void            CalculateGBParams(const double p_Mass, DBL_VECTOR &p_GBParams);
             void            CalculateGBParams()                                                                     { CalculateGBParams(m_Mass0, m_GBParams); }                             // Use class member variables
@@ -103,7 +104,7 @@ protected:
             void            CalculateTimescales(const double p_Mass, DBL_VECTOR &p_Timescales);
             void            CalculateTimescales()                                                                   { CalculateTimescales(m_Mass0, m_Timescales); }                         // Use class member variables
     
-            double          CalculateZetaByStellarType(ZETA_PRESCRIPTION p_ZetaPrescription)                             { return GiantBranch::CalculateZetaByStellarType(p_ZetaPrescription); }      // Calculate Zetas as for other giant stars (HeMS stars were an exception)
+            double          CalculateZetaConstantsByEnvelope(ZETA_PRESCRIPTION p_ZetaPrescription)                  { return GiantBranch::CalculateZetaConstantsByEnvelope(p_ZetaPrescription); }      // Calculate Zetas as for other giant stars (HeMS stars were an exception)
 
             double          ChooseTimestep(const double p_Time) const;
 
@@ -121,6 +122,7 @@ protected:
             void            ResolveHeliumFlash() { }                                                                                                                                        // NO-OP
             STELLAR_TYPE    ResolveSkippedPhase()                                                                   { return m_StellarType; }                                               // NO-OP
 
+            bool            ShouldEnvelopeBeExpelledByPulsations() const { return CHeB::ShouldEnvelopeBeExpelledByPulsations(); }                             // Envelope of convective star with luminosity to mass ratio beyond threshold should be expelled
             bool            ShouldEvolveOnPhase() const;
             bool            ShouldSkipPhase() const                                                                 { return false; }                                                       // Never skip HeMS phase
 

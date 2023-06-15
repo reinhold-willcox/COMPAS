@@ -84,7 +84,7 @@ double HeMS::CalculateLuminosityAtPhaseEnd_Static(const double p_Mass) {
 
 
 /*
- * Calculate luminosity for a Helium Main Seqeuence star (during central He burning)
+ * Calculate luminosity for a Helium Main Sequence star (during central He burning)
  *
  * Hurley et al. 2000, eqs 80 & 82
  *
@@ -260,12 +260,12 @@ double HeMS::CalculateMassLossRateVink() {
  * Assumes this star is the donor; relevant accretor details are passed as parameters.
  * Critical mass ratio is defined as qCrit = mAccretor/mDonor.
  *
- * double HeMS::CalculateCriticalMassRatio(const bool p_AccretorIsDegenerate) 
+ * double HeMS::CalculateCriticalMassRatioClaeys14(const bool p_AccretorIsDegenerate) 
  *
  * @param   [IN]    p_AccretorIsDegenerate      Boolean indicating if accretor in degenerate (true = degenerate)
  * @return                                      Critical mass ratio for unstable MT 
  */
-double HeMS::CalculateCriticalMassRatio(const bool p_AccretorIsDegenerate) const {
+double HeMS::CalculateCriticalMassRatioClaeys14(const bool p_AccretorIsDegenerate) const {
 
     double qCrit;
                                                                                                                             
@@ -377,7 +377,7 @@ double HeMS::ChooseTimestep(const double p_Time) const {
  *
  * STELLAR_TYPE ResolveEnvelopeLoss()
  *
- * @return                                      Stellar Type to which star shoule evolve after losing envelope
+ * @return                                      Stellar Type to which star should evolve after losing envelope
  */
 STELLAR_TYPE HeMS::ResolveEnvelopeLoss(bool p_NoCheck) {
 

@@ -13,10 +13,15 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <typeinfo>
+#include <typeindex>
+#include <iterator>
 
 #include <boost/algorithm/string.hpp>   // Boost string manipulation
 #include <boost/program_options.hpp>    // Boost command line options tools
 #include <boost/filesystem.hpp>         // Boost filesystem tools for handling paths etc.
+
+#include <boost/any.hpp>
 
 #include "constants.h"
 #include "typedefs.h"
@@ -35,12 +40,12 @@ const std::string NOT_PROVIDED = std::to_string(255);
 //
 // Getter functions return the value of the class member variable - the class
 // member variable is set to a value depending upon the value of the corresponding
-// option enetered by the user.
+// option entered by the user.
 // 
 // Since users now specify grid line values using options, getter functions need to
 // know which option value to return - the one specified on the commandline (if in
 // fact the option was specified on the commandline), or the one specified on the
-// grid line (if in fact the option was sepcified on the grid line).
+// grid line (if in fact the option was specified on the grid line).
 //
 // The general idea is to use the value specified by the user on the grid line (if
 // the use actually specified the option on the grid line) in preference to the
@@ -183,6 +188,8 @@ private:
 
         "add-options-to-sysparms",
 
+        "create-yaml-file",
+
         "debug-level",
         "debug-classes",
         "debug-to-file",
@@ -244,7 +251,9 @@ private:
 
         "timestep-multiplier",
 
-        "version", "v"
+        "version", "v",
+
+        "yaml-template"
     };
 
     
@@ -307,6 +316,7 @@ private:
         "common-envelope-allow-main-sequence-survive",
         "common-envelope-alpha", 
         "common-envelope-alpha-thermal",
+        "common-envelope-formalism",
         "common-envelope-lambda",
         "common-envelope-lambda-multiplier",
         "common-envelope-lambda-prescription",
@@ -412,9 +422,10 @@ private:
         "chemically-homogeneous-evolution",
         "circularise-binary-during-mass-transfer",
         "common-envelope-allow-main-sequence-survive",
+        "common-envelope-formalism",
         "common-envelope-lambda-prescription",
         "common-envelope-mass-accretion-prescription",
-
+        "create-yaml-file",
         "critical-mass-ratio-prescription",
 
         "debug-classes",
@@ -512,7 +523,9 @@ private:
 
         "use-mass-loss",
 
-        "version", "v"
+        "version", "v",
+
+        "yaml-template"
     };
     
     std::vector<std::string> m_SetExcluded = {
@@ -520,6 +533,8 @@ private:
         // trying to keep entries alphabetical so easier to find specific entries
 
         "add-options-to-sysparms",
+
+        "create-yaml-file",
 
         "debug-classes",
         "debug-level",
@@ -582,7 +597,9 @@ private:
         "store-input-files",
         "switch-log",
 
-        "version", "v"
+        "version", "v",
+
+        "yaml-template"
     };
 
 
@@ -786,7 +803,10 @@ public:
             bool                                                m_UseMassTransfer;                                              // Whether to use mass transfer (default = true)
 	        bool                                                m_CirculariseBinaryDuringMassTransfer;						    // Whether to circularise binary when it starts (default = true)
 	        bool                                                m_AngularMomentumConservationDuringCircularisation;			    // Whether to conserve angular momentum while circularising or circularise to periastron (default = false)
-            double                                              m_ConvectiveEnvelopeTemperatureThreshold;                        // The boundary between convective and radiative envelopes for HG and Giant stars
+            double                                              m_ConvectiveEnvelopeTemperatureThreshold;                       // The boundary between convective and radiative envelopes for HG and Giant stars
+        
+            bool                                                m_ExpelConvectiveEnvelopeAboveLuminosityThreshold;              // Whether to expel the convective envelope in a pulsation when log_10(L/M) reaches the threshold defined by m_LuminosityToMassThreshold
+            double                                              m_LuminosityToMassThreshold;                                    // Threshold value of log_10(L/M) above which the convective envelope is expelled in a pulsation
 	
             bool                                                m_RetainCoreMassDuringCaseAMassTransfer;                        // Whether to retain the approximate core mass of a case A donor as a minimum core at end of MS or HeMS (default = false)
         
@@ -795,7 +815,7 @@ public:
 
             ENUM_OPT<MT_ACCRETION_EFFICIENCY_PRESCRIPTION>      m_MassTransferAccretionEfficiencyPrescription;                  // Which accretion efficiency prescription
 
-            double                                              m_MassTransferFractionAccreted;                                 // In mass transfer, ammount of mass transferred that is accreted. 1 for conservative, 0 for fully-non conservative.
+            double                                              m_MassTransferFractionAccreted;                                 // In mass transfer, amount of mass transferred that is accreted. 1 for conservative, 0 for fully-non conservative.
             double                                              m_MassTransferCParameter;                                       // Detailed model parameter used in mass transfer
             double                                              m_EddingtonAccretionFactor;                                     // Multiplication factor for eddington accretion for NS & BH
                                                                                                                                 // i.e. >1 is super-eddington
@@ -859,8 +879,11 @@ public:
             double                                              m_CommonEnvelopeMassAccretionMax;
             double                                              m_CommonEnvelopeMassAccretionConstant;
 
+            // Common envelope formalism
+            ENUM_OPT<CE_FORMALISM>                              m_CommonEnvelopeFormalism;                                      // Formalism for CE evolution
+        
 	        // Common envelope lambda prescription
-	        ENUM_OPT<CE_LAMBDA_PRESCRIPTION>                    m_CommonEnvelopeLambdaPrescription;							    // Which prescription for CE lambda
+	        ENUM_OPT<CE_LAMBDA_PRESCRIPTION>                    m_CommonEnvelopeLambdaPrescription;							    // Prescription to use for CE lambda
 
 	        // Common envelope Nandez and Ivanova energy formalism
 	        bool                                                m_RevisedEnergyFormalismNandezIvanova;			                // Use the revised energy formalism from Nandez & Ivanova 2016 (default = false)
@@ -869,7 +892,7 @@ public:
 
 
             // Zetas
-            ENUM_OPT<ZETA_PRESCRIPTION>                         m_StellarZetaPrescription;                                 	    // Which prescription to use for calculating stellar zetas (default = SOBERMAN)
+            ENUM_OPT<ZETA_PRESCRIPTION>                         m_StellarZetaPrescription;                                 	    // Prescription to use for calculating stellar zetas (default = SOBERMAN)
 
 	        double                                              m_ZetaAdiabaticArbitrary;
 	        double                                              m_ZetaMainSequence;
@@ -910,12 +933,12 @@ public:
             double                                              m_RotationalFrequency1;                                         // Rotational frequency for primary (BSE)
             double                                              m_RotationalFrequency2;                                         // Rotational frequency for secondary (BSE)
 
-	        // grids
+	        // Grids
 
             std::string                                         m_GridFilename;                                                 // Grid filename
 
 
-            // debug and logging options
+            // Debug and logging options
 
             int                                                 m_DebugLevel;                                                   // Debug level - used to determine which debug statements are actually written
             std::vector<std::string>                            m_DebugClasses;                                                 // Debug classes - used to determine which debug statements are actually written
@@ -954,6 +977,12 @@ public:
             int                                                 m_HDF5ChunkSize;                                                // HDF5 file chunk size (number of dataset entries)
 
 
+            // YAML file
+
+            std::string                                         m_YAMLfilename;                                                 // filename of YAML file to be created
+            std::string                                         m_YAMLtemplate;                                                 // filename of user-supplied YAML template file
+
+
             // the boost variables map
             // this holds information on the options as specified by the user
 
@@ -984,7 +1013,7 @@ public:
 
     // complex option values are values for options that the user has supplied as ranges or sets
     //
-    // complex option valies are described by a tuple containing:
+    // complex option values are described by a tuple containing:
     //
     //     optionName       (std::string)               the name of the option
     //     complexValue     (RangeOrSetDescriptorT)     the complex option value - a RANGE or a SET
@@ -1060,60 +1089,62 @@ private:
 
     // member variables
 
-    GridfileT           m_Gridfile = {"", ERROR::EMPTY_FILENAME};
+    GridfileT                   m_Gridfile = {"", ERROR::EMPTY_FILENAME};
 
-    OptionsDescriptorT  m_CmdLine = {OPTIONS_ORIGIN::CMDLINE, {}, {}, {}, {}};
-    OptionsDescriptorT  m_GridLine = {OPTIONS_ORIGIN::GRIDFILE, {}, {}, {}, {}};
+    OptionsDescriptorT          m_CmdLine = {OPTIONS_ORIGIN::CMDLINE, {}, {}, {}, {}};
+    OptionsDescriptorT          m_GridLine = {OPTIONS_ORIGIN::GRIDFILE, {}, {}, {}, {}};
 
-    std::vector<std::tuple<std::string, std::string, std::string, std::string, TYPENAME>> m_CmdLineOptionsDetails;   // for Run_Details file
-
+    std::vector<OptionDetailsT> m_CmdLineOptionsDetails;                                                    // for Run_Details and YAML files
+    std::map<std::string, std::string> m_optionDefaults;                                                    // for Run_Details and YAML files
 
     // member functions
 
-    bool            AddOptions(OptionValues *p_Options, po::options_description *p_OptionsDescription);
-    int             AdvanceOptionVariation(OptionsDescriptorT &p_OptionsDescriptor);
+    bool                        AddOptions(OptionValues *p_Options, po::options_description *p_OptionsDescription);
+    std::vector<std::string>    AllowedOptionValues(const std::string p_OptionString);
+    std::string                 AllowedOptionValuesFormatted(const std::string p_OptionString);
+    int                         AdvanceOptionVariation(OptionsDescriptorT &p_OptionsDescriptor);
+
+    void                        BuildDefaultsMap(po::options_description *p_OptionsDescription);
 
     std::tuple<std::string, int, std::vector<std::string>> ExpandShorthandOptionValues(int p_ArgCount, char *p_ArgStrings[]);
 
-    bool            IsSupportedNumericDataType(TYPENAME p_TypeName);
+    bool                        IsSupportedNumericDataType(TYPENAME p_TypeName);
 
-    ATTR            OptionAttributes(const po::variables_map p_VM, const po::variables_map::const_iterator p_IT);
+    ATTR                        OptionAttributes(const po::variables_map p_VM, const po::variables_map::const_iterator p_IT);
 
-    PROGRAM_STATUS  ParseCommandLineOptions(int argc, char * argv[]);
-    std::string     ParseOptionValues(int p_ArgCount, char *p_ArgStrings[], OptionsDescriptorT &p_OptionsDescriptor);
+    PROGRAM_STATUS              ParseCommandLineOptions(int argc, char * argv[]);
+    std::string                 ParseOptionValues(int p_ArgCount, char *p_ArgStrings[], OptionsDescriptorT &p_OptionsDescriptor);
 
-    std::vector<std::tuple<std::string, std::string, std::string, std::string, TYPENAME>> OptionDetails(const OptionsDescriptorT &p_Options);
+    std::vector<OptionDetailsT> OptionDetails(const OptionsDescriptorT &p_Options);
 
-    int             SetRandomSeed(OptionsDescriptorT &p_OptionsDescriptor, const unsigned long int p_RandomSeed);
+    int                         SetRandomSeed(OptionsDescriptorT &p_OptionsDescriptor, const unsigned long int p_RandomSeed);
 
 public:
 
-    static Options* Instance();
+    static Options*             Instance();
 
+    int                         AdvanceCmdLineOptionValues()  { return AdvanceOptionVariation(m_CmdLine); }
+    int                         AdvanceGridLineOptionValues() { return AdvanceOptionVariation(m_GridLine); }
 
+    int                         ApplyNextGridLine();
 
-    int             AdvanceCmdLineOptionValues()  { return AdvanceOptionVariation(m_CmdLine); }
-    int             AdvanceGridLineOptionValues() { return AdvanceOptionVariation(m_GridLine); }
-    int             ApplyNextGridLine();
+    void                        CloseGridFile() { m_Gridfile.handle.close(); m_Gridfile.filename = ""; m_Gridfile.error = ERROR::EMPTY_FILENAME; }
 
-    void            CloseGridFile() { m_Gridfile.handle.close(); m_Gridfile.filename = ""; m_Gridfile.error = ERROR::EMPTY_FILENAME; }
- 
-    bool            Initialise(int p_OptionCount, char *p_OptionStrings[]);
-    bool            InitialiseEvolvingObject(const std::string p_OptionsString);
+    bool                        Initialise(int p_OptionCount, char *p_OptionStrings[]);
+    bool                        InitialiseEvolvingObject(const std::string p_OptionsString);
 
+    ERROR                       OpenGridFile(const std::string p_GridFilename);
+    int                         OptionSpecified(const std::string p_OptionString);
 
-    ERROR           OpenGridFile(const std::string p_GridFilename);
-    int             OptionSpecified(const std::string p_OptionString);
+    COMPAS_VARIABLE             OptionValue(const T_ANY_PROPERTY p_Property) const;
 
-    COMPAS_VARIABLE OptionValue(const T_ANY_PROPERTY p_Property) const;
+    void                        PrintOptionHelp(const bool p_Verbose);
 
-    void            PrintOptionHelp(const bool p_Verbose);
+    ERROR                       RewindGridFile();
 
-    ERROR           RewindGridFile();
+    ERROR                       SeekToGridFileLine(const unsigned int p_Line);
 
-    ERROR           SeekToGridFileLine(const unsigned int p_Line);
-
-    int             SetRandomSeed(const unsigned long int p_RandomSeed, const OPTIONS_ORIGIN p_OptionsSet);
+    int                         SetRandomSeed(const unsigned long int p_RandomSeed, const OPTIONS_ORIGIN p_OptionsSet);
 
 
     // getters
@@ -1140,12 +1171,13 @@ public:
 
     bool                                        CirculariseBinaryDuringMassTransfer() const                             { return OPT_VALUE("circularise-binary-during-mass-transfer", m_CirculariseBinaryDuringMassTransfer, true); }
 
-    std::vector<std::tuple<std::string, std::string, std::string, std::string, TYPENAME>> CmdLineOptionsDetails() const { return m_CmdLineOptionsDetails; }
+    std::vector<OptionDetailsT>                 CmdLineOptionsDetails() const                                           { return m_CmdLineOptionsDetails; }
 
     bool                                        CommandLineGrid() const                                                 { return m_CmdLine.complexOptionValues.size() != 0; }
     
     double                                      CommonEnvelopeAlpha() const                                             { return OPT_VALUE("common-envelope-alpha", m_CommonEnvelopeAlpha, true); }
     double                                      CommonEnvelopeAlphaThermal() const                                      { return OPT_VALUE("common-envelope-alpha-thermal", m_CommonEnvelopeAlphaThermal, true); }
+    CE_FORMALISM                                CommonEnvelopeFormalism() const                                         { return OPT_VALUE("common-envelope-formalism", m_CommonEnvelopeFormalism.type, true); }
     double                                      CommonEnvelopeLambda() const                                            { return OPT_VALUE("common-envelope-lambda", m_CommonEnvelopeLambda, true); }
     double                                      CommonEnvelopeLambdaMultiplier() const                                  { return OPT_VALUE("common-envelope-lambda-multiplier", m_CommonEnvelopeLambdaMultiplier, true); }
     bool                                        CommonEnvelopeLambdaNanjingEnhanced() const                             { return OPT_VALUE("common-envelope-lambda-nanjing-enhanced", m_CommonEnvelopeLambdaNanjingEnhanced, true); }
@@ -1180,6 +1212,7 @@ public:
     EVOLUTION_MODE                              EvolutionMode() const                                                   { return m_CmdLine.optionValues.m_EvolutionMode.type; }
     bool                                        EvolvePulsars() const                                                   { return OPT_VALUE("evolve-pulsars", m_EvolvePulsars, true); }
     bool                                        EvolveUnboundSystems() const                                            { return OPT_VALUE("evolve-unbound-systems", m_EvolveUnboundSystems, true); }
+    bool                                        ExpelConvectiveEnvelopeAboveLuminosityThreshold() const                 { return OPT_VALUE("expel-convective-envelope-above-luminosity-threshold", m_ExpelConvectiveEnvelopeAboveLuminosityThreshold, true); }
 
     bool                                        FixedRandomSeedCmdLine() const                                          { return m_CmdLine.optionValues.m_FixedRandomSeed; }
     bool                                        FixedRandomSeedGridLine() const                                         { return m_GridLine.optionValues.m_FixedRandomSeed; }
@@ -1272,6 +1305,8 @@ public:
     LOGFILETYPE                                 LogfileType() const                                                     { return m_CmdLine.optionValues.m_LogfileType.type; }
     std::string                                 LogfileTypeString() const                                               { return m_CmdLine.optionValues.m_LogfileType.typeString; }
     int                                         LogLevel() const                                                        { return m_CmdLine.optionValues.m_LogLevel; }
+    
+    double                                      LuminosityToMassThreshold() const                                       { return OPT_VALUE("luminosity-to-mass-threshold", m_LuminosityToMassThreshold, true); }
 
     double                                      LuminousBlueVariableFactor() const                                      { return OPT_VALUE("luminous-blue-variable-multiplier", m_LuminousBlueVariableFactor, true); }
     LBV_PRESCRIPTION                            LuminousBlueVariablePrescription() const                                { return OPT_VALUE("luminous-blue-variable-prescription", m_LuminousBlueVariablePrescription.type, true); }
@@ -1423,6 +1458,9 @@ public:
     bool                                        UsePulsationalPairInstability() const                                   { return OPT_VALUE("pulsational-pair-instability", m_UsePulsationalPairInstability, true); }
 
     double                                      WolfRayetFactor() const                                                 { return OPT_VALUE("wolf-rayet-multiplier", m_WolfRayetFactor, true); }
+
+    std::string                                 YAMLfilename() const                                                    { return m_CmdLine.optionValues.m_YAMLfilename; }
+    std::string                                 YAMLtemplate() const                                                    { return m_CmdLine.optionValues.m_YAMLtemplate; }
 
     double                                      ZetaRadiativeEnvelopeGiant() const                                      { return OPT_VALUE("zeta-radiative-envelope-giant", m_ZetaRadiativeEnvelopeGiant, true); }
     double                                      ZetaMainSequence() const                                                { return OPT_VALUE("zeta-main-sequence", m_ZetaMainSequence, true); }
