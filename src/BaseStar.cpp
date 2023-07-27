@@ -1269,12 +1269,23 @@ double BaseStar::CalculateZetaAdiabatic() {
     ZETA_PRESCRIPTION zetaPrescription = OPTIONS->StellarZetaPrescription();
 
     switch (zetaPrescription) {
-    
-        case ZETA_PRESCRIPTION::SOBERMAN: 
-        case ZETA_PRESCRIPTION::HURLEY:   
-        case ZETA_PRESCRIPTION::ARBITRARY:
+            
+        case ZETA_PRESCRIPTION::COMPAS:
             zetaStar = CalculateZetaConstantsByEnvelope(zetaPrescription);
             break;
+    
+        case ZETA_PRESCRIPTION::SOBERMAN:                         // SOBERMAN: Soberman, Phinney, and van den Heuvel, 1997, eq 61
+            zetaStar = CalculateZetaAdiabaticSPH(m_CoreMass);
+            break;
+
+        case ZETA_PRESCRIPTION::HURLEY:                           // HURLEY: Hurley, Tout, and Pols, 2002, eq 56
+            zetaStar = CalculateZetaAdiabaticHurley2002(m_CoreMass);
+            break;
+
+        case ZETA_PRESCRIPTION::ARBITRARY:                        // ARBITRARY: user program options thermal zeta value
+            zetaStar = OPTIONS->ZetaAdiabaticArbitrary();
+            break;
+
         default:
             m_Error = ERROR::UNKNOWN_ZETA_PRESCRIPTION;                                     // set error value
             SHOW_WARN(m_Error);                                                             // warn that an error occurred

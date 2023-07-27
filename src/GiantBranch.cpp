@@ -972,39 +972,6 @@ double GiantBranch::CalculateCriticalMassRatioHurleyHjellmingWebbink() const {
 }
 
 
-/*
- * Calculate the Adiabatic Exponent (for convective-envelope giant-like stars)
- *
- *
- * double CalculateZetaConvectiveEnvelopeGiant(ZETA_PRESCRIPTION p_ZetaPrescription) const
- *
- * @param   [IN]    p_ZetaPrescription          Prescription for computing ZetaStar
- * @return                                      Adiabatic exponent
- */
-double GiantBranch::CalculateZetaConvectiveEnvelopeGiant(ZETA_PRESCRIPTION p_ZetaPrescription) {
-    
-    double zeta = 0.0;                                            // default value
-
-    switch (p_ZetaPrescription) {                                 // which prescription?
-        case ZETA_PRESCRIPTION::SOBERMAN:                         // SOBERMAN: Soberman, Phinney, and van den Heuvel, 1997, eq 61
-            zeta = CalculateZetaAdiabaticSPH(m_CoreMass);
-            break;
-            
-        case ZETA_PRESCRIPTION::HURLEY:                          // HURLEY: Hurley, Tout, and Pols, 2002, eq 56
-            zeta = CalculateZetaAdiabaticHurley2002(m_CoreMass);
-            break;
-            
-        case ZETA_PRESCRIPTION::ARBITRARY:                       // ARBITRARY: user program options thermal zeta value
-            zeta = OPTIONS->ZetaAdiabaticArbitrary();
-            break;
-            
-        default:                                                    // unknown common envelope prescription - shouldn't happen
-            m_Error = ERROR::UNKNOWN_ZETA_PRESCRIPTION;          // set error value
-            SHOW_ERROR(m_Error);                                    // warn that an error occurred
-    }
-    
-    return zeta;
-}
 
 
 
@@ -1030,7 +997,7 @@ double GiantBranch::CalculateZetaConstantsByEnvelope(ZETA_PRESCRIPTION p_ZetaPre
             break;
             
         case ENVELOPE::CONVECTIVE:
-            zeta = CalculateZetaConvectiveEnvelopeGiant(p_ZetaPrescription);
+            zeta = CalculateZetaAdiabaticSPH(m_CoreMass);       // Use the Soberman Zeta in this case
             break;
             
         default:                                                    // shouldn't happen
