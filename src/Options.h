@@ -40,12 +40,12 @@ const std::string NOT_PROVIDED = std::to_string(255);
 //
 // Getter functions return the value of the class member variable - the class
 // member variable is set to a value depending upon the value of the corresponding
-// option enetered by the user.
+// option entered by the user.
 // 
 // Since users now specify grid line values using options, getter functions need to
 // know which option value to return - the one specified on the commandline (if in
 // fact the option was specified on the commandline), or the one specified on the
-// grid line (if in fact the option was sepcified on the grid line).
+// grid line (if in fact the option was specified on the grid line).
 //
 // The general idea is to use the value specified by the user on the grid line (if
 // the use actually specified the option on the grid line) in preference to the
@@ -804,6 +804,9 @@ public:
 	        bool                                                m_CirculariseBinaryDuringMassTransfer;						    // Whether to circularise binary when it starts (default = true)
 	        bool                                                m_AngularMomentumConservationDuringCircularisation;			    // Whether to conserve angular momentum while circularising or circularise to periastron (default = false)
             double                                              m_ConvectiveEnvelopeTemperatureThreshold;                       // The boundary between convective and radiative envelopes for HG and Giant stars
+        
+            bool                                                m_ExpelConvectiveEnvelopeAboveLuminosityThreshold;              // Whether to expel the convective envelope in a pulsation when log_10(L/M) reaches the threshold defined by m_LuminosityToMassThreshold
+            double                                              m_LuminosityToMassThreshold;                                    // Threshold value of log_10(L/M) above which the convective envelope is expelled in a pulsation
 	
             bool                                                m_RetainCoreMassDuringCaseAMassTransfer;                        // Whether to retain the approximate core mass of a case A donor as a minimum core at end of MS or HeMS (default = false)
         
@@ -812,7 +815,7 @@ public:
 
             ENUM_OPT<MT_ACCRETION_EFFICIENCY_PRESCRIPTION>      m_MassTransferAccretionEfficiencyPrescription;                  // Which accretion efficiency prescription
 
-            double                                              m_MassTransferFractionAccreted;                                 // In mass transfer, ammount of mass transferred that is accreted. 1 for conservative, 0 for fully-non conservative.
+            double                                              m_MassTransferFractionAccreted;                                 // In mass transfer, amount of mass transferred that is accreted. 1 for conservative, 0 for fully-non conservative.
             double                                              m_MassTransferCParameter;                                       // Detailed model parameter used in mass transfer
             double                                              m_EddingtonAccretionFactor;                                     // Multiplication factor for eddington accretion for NS & BH
                                                                                                                                 // i.e. >1 is super-eddington
@@ -1010,7 +1013,7 @@ public:
 
     // complex option values are values for options that the user has supplied as ranges or sets
     //
-    // complex option valies are described by a tuple containing:
+    // complex option values are described by a tuple containing:
     //
     //     optionName       (std::string)               the name of the option
     //     complexValue     (RangeOrSetDescriptorT)     the complex option value - a RANGE or a SET
@@ -1209,6 +1212,7 @@ public:
     EVOLUTION_MODE                              EvolutionMode() const                                                   { return m_CmdLine.optionValues.m_EvolutionMode.type; }
     bool                                        EvolvePulsars() const                                                   { return OPT_VALUE("evolve-pulsars", m_EvolvePulsars, true); }
     bool                                        EvolveUnboundSystems() const                                            { return OPT_VALUE("evolve-unbound-systems", m_EvolveUnboundSystems, true); }
+    bool                                        ExpelConvectiveEnvelopeAboveLuminosityThreshold() const                 { return OPT_VALUE("expel-convective-envelope-above-luminosity-threshold", m_ExpelConvectiveEnvelopeAboveLuminosityThreshold, true); }
 
     bool                                        FixedRandomSeedCmdLine() const                                          { return m_CmdLine.optionValues.m_FixedRandomSeed; }
     bool                                        FixedRandomSeedGridLine() const                                         { return m_GridLine.optionValues.m_FixedRandomSeed; }
@@ -1301,6 +1305,8 @@ public:
     LOGFILETYPE                                 LogfileType() const                                                     { return m_CmdLine.optionValues.m_LogfileType.type; }
     std::string                                 LogfileTypeString() const                                               { return m_CmdLine.optionValues.m_LogfileType.typeString; }
     int                                         LogLevel() const                                                        { return m_CmdLine.optionValues.m_LogLevel; }
+    
+    double                                      LuminosityToMassThreshold() const                                       { return OPT_VALUE("luminosity-to-mass-threshold", m_LuminosityToMassThreshold, true); }
 
     double                                      LuminousBlueVariableFactor() const                                      { return OPT_VALUE("luminous-blue-variable-multiplier", m_LuminousBlueVariableFactor, true); }
     LBV_PRESCRIPTION                            LuminousBlueVariablePrescription() const                                { return OPT_VALUE("luminous-blue-variable-prescription", m_LuminousBlueVariablePrescription.type, true); }

@@ -27,7 +27,7 @@ namespace yaml {
 //  9. Option values written by COMPAS will be the option default values unless COMPAS was run with command-line options set - if the user executed COMPAS and
 //     specified options on the command line, the user-specified values will be written to the YAML file, and those option records in the YAML file will not be
 //     commented.  This gives users the option of creating project-specific YAML files via this method.
-// 10. Options present in the template that are not valid COMPAS options will be ignored and not writte to the YAML file.
+// 10. Options present in the template that are not valid COMPAS options will be ignored and not written to the YAML file.
 // 11. Any COMPAS options that are not present in the template will be written in alphabetical order at the end of the YAML file.
 //
 // In the following example template:
@@ -90,6 +90,7 @@ namespace yaml {
             "    ### STELLAR PROPERTIES",
             "    --check-photon-tiring-limit",
             "    --use-mass-loss",
+            "    --expel-convective-envelope-above-luminosity-threshold",
             "",
             "    ### BINARY PROPERTIES",
             "    --allow-touching-at-birth                                       # record binaries that have stars touching at birth in output files",
@@ -148,6 +149,7 @@ namespace yaml {
             "    --initial-mass-min                                              # use 5.0 for DCOs [Msol]",
             "    --initial-mass-max                                              # stellar tracks extrapolated above 50 Msol (Hurley+2000) [Msol]",
             "    --initial-mass-power",
+            "    --luminosity-to-mass-threshold",
             "    --metallicity                                                   # metallicity for both SSE and BSE - Solar metallicity Asplund+2010",
             "    --metallicity-min",
             "    --metallicity-max",

@@ -146,7 +146,7 @@ void Options::OptionValues::Initialise() {
 
     // flags
 
-    m_AllowNonStrippedECSN                                          = true;
+    m_AllowNonStrippedECSN                                          = false;
     m_AllowRLOFAtBirth                                              = true;
     m_AllowTouchingAtBirth                                          = false;
 
@@ -159,7 +159,7 @@ void Options::OptionValues::Initialise() {
     m_HMXRBinaries                                                  = false;
 
     m_EvolvePulsars                                                 = false;
-	m_EvolveUnboundSystems                                          = false;
+	m_EvolveUnboundSystems                                          = true;
 
     m_DetailedOutput                                                = false;
     m_PopulationDataPrinting                                        = false;
@@ -257,7 +257,7 @@ void Options::OptionValues::Initialise() {
     m_EccentricityDistributionMax                                   = 1.0;
 
     // Kick options
-    m_KickMagnitudeDistribution.type                                = KICK_MAGNITUDE_DISTRIBUTION::MAXWELLIAN;
+    m_KickMagnitudeDistribution.type                                = KICK_MAGNITUDE_DISTRIBUTION::MULLERMANDEL;
     m_KickMagnitudeDistribution.typeString                          = KICK_MAGNITUDE_DISTRIBUTION_LABEL.at(m_KickMagnitudeDistribution.type);
     m_KickMagnitudeDistributionSigmaCCSN_NS                         = 265;
     m_KickMagnitudeDistributionSigmaCCSN_BH                         = 265;
@@ -308,7 +308,7 @@ void Options::OptionValues::Initialise() {
 
 
     // Supernova remnant mass prescription options
-    m_RemnantMassPrescription.type                                  = REMNANT_MASS_PRESCRIPTION::FRYER2012;
+    m_RemnantMassPrescription.type                                  = REMNANT_MASS_PRESCRIPTION::MULLERMANDEL;
     m_RemnantMassPrescription.typeString                            = REMNANT_MASS_PRESCRIPTION_LABEL.at(m_RemnantMassPrescription.type);
 
     m_FryerSupernovaEngine.type                                     = SN_ENGINE::DELAYED;
@@ -354,6 +354,9 @@ void Options::OptionValues::Initialise() {
     // Mass loss options
     m_UseMassLoss                                                   = true;
     m_CheckPhotonTiringLimit                                        = false;
+    
+    m_ExpelConvectiveEnvelopeAboveLuminosityThreshold               = false;
+    m_LuminosityToMassThreshold                                     = 4.2;      // Podsiadlowski, private communication
 
     m_MassLossPrescription.type                                     = MASS_LOSS_PRESCRIPTION::VINK;
     m_MassLossPrescription.typeString                               = MASS_LOSS_PRESCRIPTION_LABEL.at(m_MassLossPrescription.type);
@@ -365,14 +368,14 @@ void Options::OptionValues::Initialise() {
     m_CoolWindMassLossMultiplier                                    = 1.0;
     m_LuminousBlueVariableFactor                                    = 1.5;
     m_OverallWindMassLossMultiplier                                 = 1.0;
-    m_WolfRayetFactor                                               = 1.0;
+    m_WolfRayetFactor                                               = 0.1;
 
 
     // Mass transfer options
     m_UseMassTransfer                                               = true;
 	m_CirculariseBinaryDuringMassTransfer         	                = true;
 	m_AngularMomentumConservationDuringCircularisation              = false;
-    m_RetainCoreMassDuringCaseAMassTransfer                         = false;
+    m_RetainCoreMassDuringCaseAMassTransfer                         = true;
     m_ConvectiveEnvelopeTemperatureThreshold                        = CONVECTIVE_BOUNDARY_TEMPERATURE_BELCZYNSKI;
 
     // Case BB/BC mass transfer stability prescription
@@ -767,6 +770,11 @@ bool Options::AddOptions(OptionValues *p_Options, po::options_description *p_Opt
             po::value<bool>(&p_Options->m_EvolveUnboundSystems)->default_value(p_Options->m_EvolveUnboundSystems)->implicit_value(true),                                                          
             ("Continue evolving stars even if the binary is disrupted (default = " + std::string(p_Options->m_EvolveUnboundSystems ? "TRUE" : "FALSE") + ")").c_str()
         )
+        (
+            "expel-convective-envelope-above-luminosity-threshold",
+            po::value<bool>(&p_Options->m_ExpelConvectiveEnvelopeAboveLuminosityThreshold)->default_value(p_Options->m_ExpelConvectiveEnvelopeAboveLuminosityThreshold)->implicit_value(true),
+            ("Expel convective envelope if luminosity to mass ratio exceeds threshold given by m_LuminosityToMassThreshold  (default = " + std::string(p_Options->m_ExpelConvectiveEnvelopeAboveLuminosityThreshold ? "TRUE" : "FALSE") + ")").c_str()
+        )
 
         (
             "hmxr-binaries",
@@ -1111,7 +1119,7 @@ bool Options::AddOptions(OptionValues *p_Options, po::options_description *p_Opt
         (
             "fryer-22-fmix",                                        
             po::value<double>(&p_Options->m_Fryer22fmix)->default_value(p_Options->m_Fryer22fmix),                                                                                  
-            ("paramter describing the mixing growth time when using the 'FRYER2022' remnant mass distribution (default = " + std::to_string(p_Options->m_Fryer22fmix) + ")").c_str()
+            ("parameter describing the mixing growth time when using the 'FRYER2022' remnant mass distribution (default = " + std::to_string(p_Options->m_Fryer22fmix) + ")").c_str()
         )
         (
             "fryer-22-mcrit",                                        
@@ -1246,6 +1254,12 @@ bool Options::AddOptions(OptionValues *p_Options, po::options_description *p_Opt
             "Polar angle, in rad, of the supernova vector, for the secondary star (default = drawn from kick direction distribution)"
         )
 
+        (
+            "luminosity-to-mass-threshold",
+            po::value<double>(&p_Options->m_LuminosityToMassThreshold)->default_value(p_Options->m_LuminosityToMassThreshold),
+            ("Threshold value of log_10(L/M) above which the convective envelope is expelled in a pulsation (default = " + std::to_string(p_Options->m_LuminosityToMassThreshold) + ")").c_str()
+        )
+        
         (
             "luminous-blue-variable-multiplier",                           
             po::value<double>(&p_Options->m_LuminousBlueVariableFactor)->default_value(p_Options->m_LuminousBlueVariableFactor),                                                                  
@@ -1946,7 +1960,7 @@ std::string Options::OptionValues::SetCalculatedOptionDefaults(const BOOST_MAP p
  * this function.  This records, for each option, whether the user specified a value and, if 
  * so, the value specified by the user.  This function sanity checks the user specified values, 
  * sets the values if all pass the sanity checks, then sets the values of the options not 
- * specified by the user the the defaults specifed here.
+ * specified by the user the the defaults specified here.
  * 
  * Note this is a class OptionValues function.
  * 
@@ -2198,8 +2212,8 @@ std::string Options::OptionValues::CheckAndSetOptions() {
         COMPLAIN_IF(m_MetallicityDistributionMax < MINIMUM_METALLICITY || m_MetallicityDistributionMax > MAXIMUM_METALLICITY, "Maximum metallicity (--metallicity-max) must be between " + std::to_string(MINIMUM_METALLICITY) + " and " + std::to_string(MAXIMUM_METALLICITY));
         COMPLAIN_IF(m_MetallicityDistributionMax <= m_MetallicityDistributionMin, "Maximum metallicity (--metallicity-max) must be > Minimum metallicity (--metallicity-min)");
 
-        COMPLAIN_IF(m_MinimumMassSecondary < MINIMUM_INITIAL_MASS, "Seconday minimum mass (--minimum-secondary-mass) must be >= minimum initial mass of " + std::to_string(MINIMUM_INITIAL_MASS) + " Msol");
-        COMPLAIN_IF(m_MinimumMassSecondary > MAXIMUM_INITIAL_MASS, "Seconday minimum mass (--minimum-secondary-mass) must be <= maximum initial mass of " + std::to_string(MAXIMUM_INITIAL_MASS) + " Msol");
+        COMPLAIN_IF(m_MinimumMassSecondary < MINIMUM_INITIAL_MASS, "Secondary minimum mass (--minimum-secondary-mass) must be >= minimum initial mass of " + std::to_string(MINIMUM_INITIAL_MASS) + " Msol");
+        COMPLAIN_IF(m_MinimumMassSecondary > MAXIMUM_INITIAL_MASS, "Secondary minimum mass (--minimum-secondary-mass) must be <= maximum initial mass of " + std::to_string(MAXIMUM_INITIAL_MASS) + " Msol");
 
         if (m_NeutrinoMassLossAssumptionBH.type == NEUTRINO_MASS_LOSS_PRESCRIPTION::FIXED_MASS) {
             COMPLAIN_IF(m_NeutrinoMassLossValueBH < 0.0, "Neutrino mass loss value < 0");
@@ -2444,7 +2458,7 @@ std::string Options::AllowedOptionValuesFormatted(const std::string p_OptionStri
  *
  * Note that this function does not check whether the option string
  * pass as p_OptionString is a valid option string - it just checks
- * whether the user specfied it, either at the grid line level, or
+ * whether the user specified it, either at the grid line level, or
  * at the commandline level.
  * 
  * 
@@ -2484,7 +2498,7 @@ int Options::OptionSpecified(const std::string p_OptionString) {
 /*
  * Retrieve the attributes of an option
  *
- * The option for which the attributes are to be retreived is passed as an iterator pointing at the option in the boost
+ * The option for which the attributes are to be retrieved is passed as an iterator pointing at the option in the boost
  * variables map.  Note that this function is private to the Options class and is intended for Options internal use
  * only.  External actors should use the public function Options::OptionValue() to get option values.
  * 
@@ -2626,7 +2640,7 @@ Options::ATTR Options::OptionAttributes(const po::variables_map p_VM, const po::
             //     notes-hdrs
             // 
             // The vector of strings is just formatted as a string here - with braces
-            // sourrounding comma-separated values.
+            // surrounding comma-separated values.
             //
             // We return dateType = TYPENAME::STRING, but typeStr = "VECTOR<STRING>"
 
@@ -2794,7 +2808,7 @@ bool Options::IsSupportedNumericDataType(TYPENAME p_TypeName) {
  * 
  * The value for any omitted option values will be a string of length 1, with the char value NOT_PROVIDED (constant define in Options.h).
  * Since at this stage the option names and values are just strings that will be parsed by boost, we don't need to worry about data type - 
- * code processing the options can check for NOT_PROVIDED and deal with it then.  Since we may not know the maxmimum number of values
+ * code processing the options can check for NOT_PROVIDED and deal with it then.  Since we may not know the maximum number of values
  * expected (e.g. the number of notes-hdrs specifies the maximum number of notes expected, and we may not have that number yet), we leave
  * it to later to pad out missing values beyond the last one specified here.  e.g. a specification shuch as:
  * 
@@ -3120,7 +3134,7 @@ std::string Options::ParseOptionValues(int p_ArgCount, char *p_ArgStrings[], Opt
             po::store(parsedOptions, p_OptionsDescriptor.optionValues.m_VM);                                              // store parsed options into variable map
             po::notify(p_OptionsDescriptor.optionValues.m_VM);                                                            // populate the variables with option values
 
-            // this is our opportunity to distinguish beteen "-h" and "--help" (if specified)
+            // this is our opportunity to distinguish between "-h" and "--help" (if specified)
             for (auto& entry : parsedOptions.options) {
                 po::option_description const& opt = p_OptionsDescriptor.optionDescriptions.find(entry.string_key, false, false, false);
                 std::string originalTok = entry.original_tokens[0];
@@ -3486,7 +3500,7 @@ std::string Options::ParseOptionValues(int p_ArgCount, char *p_ArgStrings[], Opt
 
                             size_t checks[4] = {0};                                                                         // all (Boost) boolean representations
                             for (size_t ip = 0; ip < parms.size(); ip++) {                                                  // yes - for each set parameter specified
-                                int check = std::abs(utils::IsBOOL(parms[ip]));                                             // check parm for valid BOOL
+                                int check = std::abs(utils::IsBOOL(parms[ip]));                                             // check param for valid BOOL
                                 if (check == 0) break;
                                 checks[check - 1]++;
                             }

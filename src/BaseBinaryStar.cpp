@@ -289,7 +289,7 @@ void BaseBinaryStar::SetRemainingValues() {
 
         // star 1
         if (utils::Compare(m_Star1->Omega(), m_Star1->OmegaCHE()) >= 0) {                                                                               // star 1 CH?
-            if (m_Star1->StellarType() != STELLAR_TYPE::CHEMICALLY_HOMOGENEOUS) (void)m_Star1->SwitchTo(STELLAR_TYPE::CHEMICALLY_HOMOGENEOUS, true);    // yes, switch if not alread Chemically Homogeneous
+            if (m_Star1->StellarType() != STELLAR_TYPE::CHEMICALLY_HOMOGENEOUS) (void)m_Star1->SwitchTo(STELLAR_TYPE::CHEMICALLY_HOMOGENEOUS, true);    // yes, switch if not already Chemically Homogeneous
         }
         else if (m_Star1->MZAMS() <= 0.7) {                                                                                                             // no - MS - initial mass determines actual type  JR: don't use utils::Compare() here
             if (m_Star1->StellarType() != STELLAR_TYPE::MS_LTE_07) (void)m_Star1->SwitchTo(STELLAR_TYPE::MS_LTE_07, true);                              // MS <= 0.7 Msol - switch if necessary
@@ -300,7 +300,7 @@ void BaseBinaryStar::SetRemainingValues() {
 
         // star 2
         if (utils::Compare(m_Star1->Omega(), m_Star2->OmegaCHE()) >= 0) {                                                                               // star 2 CH?
-            if (m_Star2->StellarType() != STELLAR_TYPE::CHEMICALLY_HOMOGENEOUS) (void)m_Star2->SwitchTo(STELLAR_TYPE::CHEMICALLY_HOMOGENEOUS, true);    // yes, switch if not alread Chemically Homogeneous
+            if (m_Star2->StellarType() != STELLAR_TYPE::CHEMICALLY_HOMOGENEOUS) (void)m_Star2->SwitchTo(STELLAR_TYPE::CHEMICALLY_HOMOGENEOUS, true);    // yes, switch if not already Chemically Homogeneous
         }
         else if (m_Star2->MZAMS() <= 0.7) {                                                                                                             // no - MS - initial mass determines actual type  JR: don't use utils::Compare() here
             if (m_Star2->StellarType() != STELLAR_TYPE::MS_LTE_07) (void)m_Star2->SwitchTo(STELLAR_TYPE::MS_LTE_07, true);                              // MS <= 0.0 Msol - switch if necessary
@@ -712,7 +712,7 @@ COMPAS_VARIABLE BaseBinaryStar::BinaryPropertyValue(const T_ANY_PROPERTY p_Prope
  * functional return is a tuple: std::tuple<bool, COMPAS_VARIABLE_TYPE>.  This type
  * is COMPAS_VARIABLE by typedef.
  *
- * The bool returned indicates whether the property value was retireved ok: true = yes, fales = no
+ * The bool returned indicates whether the property value was retrieved ok: true = yes, fales = no
  * The COMPAS_VARIABLE_TYPE variable returned is a boost variant variable, the value of which is the
  * value of the underlying primitive variable.
  *
@@ -910,7 +910,7 @@ void BaseBinaryStar::StashRLOFProperties(const MASS_TRANSFER_TIMING p_Which) {
                              m_RLOFDetails.propsPreMT  :
                              m_RLOFDetails.propsPostMT ;
 
-    // update properites for appropriate timestep
+    // update properties for appropriate timestep
     rlofPropertiesToReset->id                          = m_ObjectId;
     rlofPropertiesToReset->mass1                       = m_Star1->Mass();
     rlofPropertiesToReset->mass2                       = m_Star2->Mass();
@@ -948,7 +948,7 @@ void BaseBinaryStar::StashBeBinaryProperties() {
     BeBinaryPropertiesT* tmp;
     tmp                             = m_BeBinaryDetails.previousProps;                                              // save pointer to existing previous props
     m_BeBinaryDetails.previousProps = m_BeBinaryDetails.currentProps;                                               // existing current props become new previous props (values will be preserved)
-    m_BeBinaryDetails.currentProps  = tmp;                                                                          // new current props points at existing prevous (values will be replaced)
+    m_BeBinaryDetails.currentProps  = tmp;                                                                          // new current props points at existing previous (values will be replaced)
 
     // now save (new) current
     m_BeBinaryDetails.currentProps->id            = m_ObjectId;                                                      // object id
@@ -1397,7 +1397,7 @@ bool BaseBinaryStar::ResolveSupernova() {
                 }
             }
 
-            // Note: There is some evidence for evolution of periapsis in mass transfering binaries (see e.g Dosopoulou & Kalogera 2016, 2018). 
+            // Note: There is some evidence for evolution of periapsis in mass transferring binaries (see e.g Dosopoulou & Kalogera 2016, 2018). 
             // This should be investigated in more depth, but until then, we assume that the periapsis *may* evolve, 
             // and accordingly randomize the angle of periapsis around the new orbital angular momentum, (i.e, Psi)
             // - RTW 15/05/20
@@ -1577,9 +1577,9 @@ void BaseBinaryStar::ResolveCommonEnvelopeEvent() {
         double radiativeIntershellMass2 = m_MassEnv2 - convectiveEnvelopeMass2;
         double endOfFirstStageMass2     = m_Mass2Final + radiativeIntershellMass2;
         
-        // Stage 1: convective envelope removal on a dynamical timescale
-        double k1            = m_Star1->IsOneOf(COMPACT_OBJECTS) ? 0.0 : (2.0 / (lambda1 * alphaCE)) * m_Star1->Mass() * convectiveEnvelopeMass1 / m_Star1->Radius();
-        double k2            = m_Star2->IsOneOf(COMPACT_OBJECTS) ? 0.0 : (2.0 / (lambda2 * alphaCE)) * m_Star2->Mass() * convectiveEnvelopeMass2 / m_Star2->Radius();
+        // Stage 1: convective envelope removal on a dynamical timescale; assumes lambda = 1.5, motivated by bottom panel of Figure 3 of Hirai & Mandel 2022, including internal energy
+        double k1            = m_Star1->IsOneOf(COMPACT_OBJECTS) ? 0.0 : (2.0 / (1.5 * alphaCE)) * m_Star1->Mass() * convectiveEnvelopeMass1 / m_Star1->Radius();
+        double k2            = m_Star2->IsOneOf(COMPACT_OBJECTS) ? 0.0 : (2.0 / (1.5 * alphaCE)) * m_Star2->Mass() * convectiveEnvelopeMass2 / m_Star2->Radius();
         double k3            = m_Star1->Mass() * m_Star2->Mass() / periastronRsol;                                      //assumes immediate circularisation at periastron at start of CE
         double k4            = (endOfFirstStageMass1 * endOfFirstStageMass2);
         double aFinalRsol    = k4 / (k1 + k2 + k3);
@@ -1587,10 +1587,10 @@ void BaseBinaryStar::ResolveCommonEnvelopeEvent() {
         
         // Stage 2: radiative envelope removal on a thermal timescale; assumed to be fully non-conservative
         if( utils::Compare(radiativeIntershellMass1, 0.0) > 0 ) {
-            m_SemiMajorAxis = CalculateMassTransferOrbit(endOfFirstStageMass1, m_Mass1Final - endOfFirstStageMass1, *m_Star2, 0.0);
+            m_SemiMajorAxis = CalculateMassTransferOrbit(endOfFirstStageMass1, -radiativeIntershellMass1, *m_Star2, 0.0);
         }
         if( utils::Compare(radiativeIntershellMass2, 0.0) > 0 ) {
-            m_SemiMajorAxis = CalculateMassTransferOrbit(endOfFirstStageMass2, m_Mass2Final - endOfFirstStageMass2, *m_Star1, 0.0);
+            m_SemiMajorAxis = CalculateMassTransferOrbit(endOfFirstStageMass2, -radiativeIntershellMass2, *m_Star1, 0.0);
         }
     }
     
@@ -1902,7 +1902,7 @@ void BaseBinaryStar::CalculateMassTransfer(const double p_Dt) {
     // just in case MT_THERMALLY_LIMITED_VARIATION::RADIUS_TO_ROCHELOBE is used; otherwise, the radius input is ignored
     double accretorRLradius = CalculateRocheLobeRadius_Static(m_Accretor->Mass(), m_Donor->Mass()) * AU_TO_RSOL * m_SemiMajorAxis * (1.0 - m_Eccentricity);
     bool donorIsHeRich = m_Donor->IsOneOf(He_RICH_TYPES); 
-    std::tie(std::ignore, m_FractionAccreted) = m_Accretor->CalculateMassAcceptanceRate(m_Donor->CalculateThermalMassLossRate(), 
+    std::tie(std::ignore, m_FractionAccreted) = m_Accretor->CalculateMassAcceptanceRate(m_Donor->CalculateThermalMassLossRate(),
                                                                                         m_Accretor->CalculateThermalMassAcceptanceRate(accretorRLradius),
                                                                                         donorIsHeRich);
 
@@ -2255,19 +2255,25 @@ void BaseBinaryStar::ResolveMassChanges() {
     m_Star2->ApplyMassTransferRejuvenationFactor();                                                     // apply age rejuvenation factor for star2
     m_Star2->UpdateAttributes(0.0, 0.0, true);
     
-    // ** JAR ** Should this be here, or at the end of the function?
-    if ((m_Star1->StellarType() != stellarType1) || (m_Star2->StellarType() != stellarType2)) {         // stellar type change?
-        (void)PrintDetailedOutput(m_Id, BSE_DETAILED_RECORD_TYPE::STELLAR_TYPE_CHANGE_DURING_MASS_RESOLUTION); // yes - print (log) detailed output
-    }
-
     // update binary
     m_SemiMajorAxis = m_SemiMajorAxisPrev + m_aMassLossDiff + m_aMassTransferDiff;
+    
+    //Envelope ejection for convective envelope stars exceeding threshold luminosity to mass ratio: assume the entire envelope was lost on timescales long relative to the orbit
+    if(m_Star1->EnvelopeJustExpelledByPulsations() || m_Star2->EnvelopeJustExpelledByPulsations()) {
+        m_SemiMajorAxis /=  (2.0 - ((m_Star1->MassPrev() + m_Star2->MassPrev()) / (m_Star1->Mass() + m_Star2->Mass())));    // update separation in response to pulsational mass loss
+        m_Star1->ResetEnvelopeExpulsationByPulsations();
+        m_Star2->ResetEnvelopeExpulsationByPulsations();
+    }
 
     // if CHE enabled, update rotational frequency for constituent stars - assume tidally locked
     if (OPTIONS->CHEMode() != CHE_MODE::NONE) m_Star1->SetOmega(OrbitalAngularVelocity());
     if (OPTIONS->CHEMode() != CHE_MODE::NONE) m_Star2->SetOmega(OrbitalAngularVelocity());
 
     CalculateEnergyAndAngularMomentum();                                                                // perform energy and angular momentum calculations
+
+    if ((m_Star1->StellarType() != stellarType1) || (m_Star2->StellarType() != stellarType2)) {         // stellar type change?
+        (void)PrintDetailedOutput(m_Id, BSE_DETAILED_RECORD_TYPE::STELLAR_TYPE_CHANGE_DURING_MASS_RESOLUTION); // yes - print (log) detailed output
+    }
 }
 
 
@@ -2310,6 +2316,9 @@ void BaseBinaryStar::EvaluateBinary(const double p_Dt) {
     else if (m_Star1->IsSNevent() || m_Star2->IsSNevent()) {
         EvaluateSupernovae();                                                                                           // evaluate supernovae (both stars) - immediate event
         (void)PrintDetailedOutput(m_Id, BSE_DETAILED_RECORD_TYPE::POST_SN);                                             // print (log) detailed output
+        if (HasOneOf({ STELLAR_TYPE::NEUTRON_STAR })) {
+            (void)PrintPulsarEvolutionParameters(PULSAR_RECORD_TYPE::DEFAULT);                                                                         // print (log) pulsar evolution parameters 
+        }
     }
     else {
         ResolveMassChanges();                                                                                           // apply mass loss and mass transfer as necessary
@@ -2328,6 +2337,9 @@ void BaseBinaryStar::EvaluateBinary(const double p_Dt) {
     if ((m_Star1->IsSNevent() || m_Star2->IsSNevent())) {
         EvaluateSupernovae();                                                                                           // evaluate supernovae (both stars) if mass changes are responsible for a supernova
         (void)PrintDetailedOutput(m_Id, BSE_DETAILED_RECORD_TYPE::POST_SN);                                             // print (log) detailed output
+        if (HasOneOf({ STELLAR_TYPE::NEUTRON_STAR })) {
+            (void)PrintPulsarEvolutionParameters(PULSAR_RECORD_TYPE::DEFAULT);                                                                         // print (log) pulsar evolution parameters 
+        }
     }
 
     // assign new values to "previous" values, for following timestep
@@ -2360,7 +2372,7 @@ void BaseBinaryStar::EvolveOneTimestepPreamble(const double p_Dt) {
 
 
 /*
- * Evolve the binary a single timestep - timestep is provided    JR: todo: fix this documetation - this is for SSE version
+ * Evolve the binary a single timestep - timestep is provided    JR: todo: fix this documentation - this is for SSE version
  *
  * Each individual star is aged for the same timestep
  *
@@ -2460,8 +2472,18 @@ EVOLUTION_STATUS BaseBinaryStar::Evolve() {
                 else if (HasStarsTouching()) {                                                                                              // binary components touching? (should usually be avoided as MT or CE or merger should happen prior to this)
                     evolutionStatus = EVOLUTION_STATUS::STARS_TOUCHING;                                                                     // yes - stop evolution
                 }
-                else if (IsUnbound() && !OPTIONS->EvolveUnboundSystems()) {                                                                 // binary is unbound and we don't want unbound systems?
-                    evolutionStatus = EVOLUTION_STATUS::UNBOUND;                                                                            // stop evolution
+                else if (IsUnbound()) {                                                                                                     // binary is unbound?
+                    m_Flags.mergesInHubbleTime = false;                                                                                     // yes - won't merge in a Hubble time
+
+                    if (IsDCO()) {                                                                                                          // DCO (has two COs)?
+                        if (m_DCOFormationTime == DEFAULT_INITIAL_DOUBLE_VALUE) {                                                           // DCO not yet evaluated
+                            m_DCOFormationTime = m_Time;                                                                                    // set the DCO formation time
+                        }
+                    }
+
+                    if (!OPTIONS->EvolveUnboundSystems() || IsDCO()) {                                                                      // should we evolve unbound systems?
+                        evolutionStatus = EVOLUTION_STATUS::UNBOUND;                                                                        // no - stop evolution
+                    }
                 }
                 
                 if (m_Error != ERROR::NONE) evolutionStatus = EVOLUTION_STATUS::BINARY_ERROR;                                               // error in binary evolution
@@ -2469,7 +2491,7 @@ EVOLUTION_STATUS BaseBinaryStar::Evolve() {
                 if (evolutionStatus == EVOLUTION_STATUS::CONTINUE) {                                                                        // continue evolution?
 
                     if (HasOneOf({ STELLAR_TYPE::NEUTRON_STAR })) {
-                        (void)PrintPulsarEvolutionParameters();                                                                             // print (log) pulsar evolution parameters 
+                        (void)PrintPulsarEvolutionParameters(PULSAR_RECORD_TYPE::POST_BINARY_TIMESTEP);                                                                             // print (log) pulsar evolution parameters 
                     }
 
                     //(void)PrintBeBinary();                                                                                                  // print (log) BeBinary properties
@@ -2488,12 +2510,18 @@ EVOLUTION_STATUS BaseBinaryStar::Evolve() {
 
                     // check for problems
                     if (evolutionStatus == EVOLUTION_STATUS::CONTINUE) {                                                                    // continue evolution?
-                             if (m_Error != ERROR::NONE)                                       evolutionStatus = EVOLUTION_STATUS::BINARY_ERROR; // error in binary evolution
-                        else if (IsWDandWD())                                                  evolutionStatus = EVOLUTION_STATUS::WD_WD;   // do not evolve double WD systems for now
-                        else if (IsDCO() && m_Time>(m_DCOFormationTime + m_TimeToCoalescence) && !IsUnbound()){
-                            evolutionStatus = EVOLUTION_STATUS::STOPPED; // evolution time exceeds DCO merger time
-                        } 
-                        else if (m_Time > OPTIONS->MaxEvolutionTime())                         evolutionStatus = EVOLUTION_STATUS::TIMES_UP;// evolution time exceeds maximum
+                        if (m_Error != ERROR::NONE) {                                                                                       // error in binary evolution?
+                            evolutionStatus = EVOLUTION_STATUS::BINARY_ERROR;                                                               // yes - stop evolution
+                        }
+                        else if (IsWDandWD()) {                                                                                             // double WD?
+                            evolutionStatus = EVOLUTION_STATUS::WD_WD;                                                                      // yes - do not evolve double WD systems for now
+                        }
+                        else if (IsDCO() && m_Time > (m_DCOFormationTime + m_TimeToCoalescence) && !IsUnbound()) {                          // evolution time exceeds DCO merger time?
+                            evolutionStatus = EVOLUTION_STATUS::STOPPED;                                                                    // yes - stop evolution
+                        }
+                        else if (m_Time > OPTIONS->MaxEvolutionTime()) {                                                                    // evolution time exceeds maximum?
+                            evolutionStatus = EVOLUTION_STATUS::TIMES_UP;                                                                   // yes - stop evolution
+                        }
                     }
                 }
             }

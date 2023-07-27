@@ -335,7 +335,8 @@ enum class DCO_RECORD_TYPE: unsigned int {                                      
 };
 
 enum class PULSAR_RECORD_TYPE: unsigned int {                                                                       // BSE_PULSAR_EVOLUTION file record type
-    DEFAULT = 1                                                                                                     // 1 - default BSE_PULSAR_EVOLUTION file record type
+    DEFAULT = 1,                                                                                                    //  1 - record describes the initial state of the binary
+    POST_BINARY_TIMESTEP                                                                                            //  3 - record was logged immediately following binary timestep (i.e. the evolution of the binary system for a single timestep)
 };
 
 enum class RLOF_RECORD_TYPE: unsigned int {                                                                         // BSE_RLOF_PARAMETERS file record type
@@ -443,7 +444,7 @@ constexpr double MULLERMANDEL_MUBH                    	= 0.8;
 constexpr double MULLERMANDEL_SIGMABH                   = 0.5;
 constexpr double MULLERMANDEL_MINNS                     = 1.13;
 constexpr double MULLERMANDEL_MAXNS                     = 2.0;
-constexpr double MULLERMANDEL_KICKNS                    = 400.0;
+constexpr double MULLERMANDEL_KICKNS                    = 520.0;                                                    // As calibrated by Kapil+ 2023
 constexpr double MULLERMANDEL_KICKBH                    = 200.0;
 constexpr double MULLERMANDEL_SIGMAKICK                 = 0.3; 
 
@@ -549,7 +550,7 @@ enum class ERROR: int {
     INVALID_TYPE_MT_MASS_RATIO,                                     // invalid stellar type for mass ratio calculation
     INVALID_TYPE_MT_THERMAL_TIMESCALE,                              // invalid stellar type for thermal timescale calculation
     INVALID_TYPE_ZETA_CALCULATION,                                  // invalid stellar type for Zeta calculation
-    INVALID_VALUE_FOR_BOOLEAN_OPTION,                               // invalid valuse specified for boolean option
+    INVALID_VALUE_FOR_BOOLEAN_OPTION,                               // invalid values specified for boolean option
     LAMBDA_NOT_POSITIVE,                                            // lambda is <= 0.0 - invalid
     LOW_TEFF_WINDS,                                                 // winds being used at low temperature
     MASS_NOT_POSITIVE_ONCE,                                         // mass is <= 0.0 - invalid
@@ -561,7 +562,7 @@ enum class ERROR: int {
     NO_LAMBDA_NANJING,                                              // Nanjing lambda calculation not supported for stellar type
     NO_REAL_ROOTS,                                                  // equation has no real roots
     NOT_INITIALISED,                                                // object not initialised
-    OPTION_NOT_SUPPORTED_IN_GRID_FILE,                              // option not suppoted in grid file
+    OPTION_NOT_SUPPORTED_IN_GRID_FILE,                              // option not supported in grid file
     OUT_OF_BOUNDS,                                                  // value out of bounds
     PROGRAM_OPTIONS_ERROR,                                          // program options error
     RADIUS_NOT_POSITIVE,                                            // radius is <= 0.0 - invalid
@@ -687,7 +688,7 @@ const COMPASUnorderedMap<ERROR, std::tuple<ERROR_SCOPE, std::string>> ERROR_CATA
     { ERROR::INVALID_TYPE_EDDINGTON_RATE,                           { ERROR_SCOPE::ALWAYS,              "Invalid stellar type for Eddington critical rate calculation" }},
     { ERROR::INVALID_TYPE_MT_MASS_RATIO,                            { ERROR_SCOPE::ALWAYS,              "Invalid stellar type for mass ratio calculation" }},
     { ERROR::INVALID_TYPE_MT_THERMAL_TIMESCALE,                     { ERROR_SCOPE::ALWAYS,              "Invalid stellar type for thermal timescale calculation" }},
-    { ERROR::INVALID_TYPE_ZETA_CALCULATION,                         { ERROR_SCOPE::ALWAYS,              "Invalid stellar tyoe for Zeta calculation" }},
+    { ERROR::INVALID_TYPE_ZETA_CALCULATION,                         { ERROR_SCOPE::ALWAYS,              "Invalid stellar type for Zeta calculation" }},
     { ERROR::INVALID_VALUE_FOR_BOOLEAN_OPTION,                      { ERROR_SCOPE::ALWAYS,              "Invalid value specified for BOOLEAN option" }},
     { ERROR::LAMBDA_NOT_POSITIVE,                                   { ERROR_SCOPE::ALWAYS,              "Lambda <= 0.0" }},
     { ERROR::LOW_TEFF_WINDS,                                        { ERROR_SCOPE::ALWAYS,              "Winds being used at low temperature" }},
@@ -882,12 +883,13 @@ const COMPASUnorderedMap<ZETA_PRESCRIPTION, std::string> ZETA_PRESCRIPTION_LABEL
 };
 
 // Critical Mass Ratio prescription
-enum class QCRIT_PRESCRIPTION: int { NONE, CLAEYS, GE20, GE20_IC};
+enum class QCRIT_PRESCRIPTION: int { NONE, CLAEYS, GE20, GE20_IC, HURLEY_HJELLMING_WEBBINK};
 const COMPASUnorderedMap<QCRIT_PRESCRIPTION, std::string> QCRIT_PRESCRIPTION_LABEL = {
     { QCRIT_PRESCRIPTION::NONE,    "NONE" },
     { QCRIT_PRESCRIPTION::CLAEYS,  "CLAEYS" },
     { QCRIT_PRESCRIPTION::GE20,    "GE20" },
     { QCRIT_PRESCRIPTION::GE20_IC, "GE20_IC" },
+    { QCRIT_PRESCRIPTION::HURLEY_HJELLMING_WEBBINK, "HURLEY_HJELLMING_WEBBINK" },
 };
 
 
@@ -1103,7 +1105,7 @@ const COMPASUnorderedMap<MT_TRACKING, std::string> MT_TRACKING_LABEL = {
 };
 
 
-// Mass tranfer timing options for writing to BSE_RLOF file
+// Mass transfer timing options for writing to BSE_RLOF file
 // Doesn't need labels...
 enum class MASS_TRANSFER_TIMING: int { PRE_MT, POST_MT };
 
@@ -1777,6 +1779,8 @@ const COMPASUnorderedMap<PROPERTY_TYPE, std::string> PROPERTY_TYPE_LABEL = {
     ORBITAL_ENERGY_PRE_SUPERNOVA,                    \
     PULSAR_MAGNETIC_FIELD,                           \
     PULSAR_SPIN_DOWN_RATE,                           \
+    PULSAR_BIRTH_PERIOD,                             \
+    PULSAR_BIRTH_SPIN_DOWN_RATE,                     \
     PULSAR_SPIN_FREQUENCY,                           \
     PULSAR_SPIN_PERIOD,                              \
     RADIAL_EXPANSION_TIMESCALE,                      \
@@ -1928,6 +1932,8 @@ const COMPASUnorderedMap<STAR_PROPERTY, std::string> STAR_PROPERTY_LABEL = {
     { STAR_PROPERTY::ORBITAL_ENERGY_PRE_SUPERNOVA,                    "ORBITAL_ENERGY_PRE_SUPERNOVA" },
     { STAR_PROPERTY::PULSAR_MAGNETIC_FIELD,                           "PULSAR_MAGNETIC_FIELD" },
     { STAR_PROPERTY::PULSAR_SPIN_DOWN_RATE,                           "PULSAR_SPIN_DOWN_RATE" },
+    { STAR_PROPERTY::PULSAR_BIRTH_PERIOD,                             "PULSAR_BIRTH_PERIOD" },
+    { STAR_PROPERTY::PULSAR_BIRTH_SPIN_DOWN_RATE,                     "PULSAR_BIRTH_SPIN_DOWN_RATE" },
     { STAR_PROPERTY::PULSAR_SPIN_FREQUENCY,                           "PULSAR_SPIN_FREQUENCY" },
     { STAR_PROPERTY::PULSAR_SPIN_PERIOD,                              "PULSAR_SPIN_PERIOD" },
     { STAR_PROPERTY::RADIAL_EXPANSION_TIMESCALE,                      "RADIAL_EXPANSION_TIMESCALE" },
@@ -2809,6 +2815,8 @@ const std::map<ANY_STAR_PROPERTY, PROPERTY_DETAILS> ANY_STAR_PROPERTY_DETAIL = {
     { ANY_STAR_PROPERTY::ORBITAL_ENERGY_PRE_SUPERNOVA,                      { TYPENAME::DOUBLE,         "Orbital_Energy<SN",    "Msol^2AU^-1",      14, 6 }},
     { ANY_STAR_PROPERTY::PULSAR_MAGNETIC_FIELD,                             { TYPENAME::DOUBLE,         "Pulsar_Mag_Field",     "Tesla",            14, 6 }},
     { ANY_STAR_PROPERTY::PULSAR_SPIN_DOWN_RATE,                             { TYPENAME::DOUBLE,         "Pulsar_Spin_Down",     "rad/s^2",          14, 6 }},
+    { ANY_STAR_PROPERTY::PULSAR_BIRTH_PERIOD,                               { TYPENAME::DOUBLE,         "Pulsar_Birth_Period",  "s",                14, 6 }},
+    { ANY_STAR_PROPERTY::PULSAR_BIRTH_SPIN_DOWN_RATE,                       { TYPENAME::DOUBLE,         "Pulsar_Birth_Spin_Down", "s/s",            14, 6 }},//Unit of period derivative is second per second. 
     { ANY_STAR_PROPERTY::PULSAR_SPIN_FREQUENCY,                             { TYPENAME::DOUBLE,         "Pulsar_Spin_Freq",     "rad/s",            14, 6 }},
     { ANY_STAR_PROPERTY::PULSAR_SPIN_PERIOD,                                { TYPENAME::DOUBLE,         "Pulsar_Spin_Period",   "ms",               14, 6 }},
     { ANY_STAR_PROPERTY::RADIAL_EXPANSION_TIMESCALE,                        { TYPENAME::DOUBLE,         "Tau_Radial",           "Myr",              16, 8 }},
@@ -3316,6 +3324,7 @@ const ANY_PROPERTY_VECTOR BSE_DETAILED_OUTPUT_REC = {
     BINARY_PROPERTY::RANDOM_SEED,
     BINARY_PROPERTY::DT,
     BINARY_PROPERTY::TIME,
+    BINARY_PROPERTY::UNBOUND,
     BINARY_PROPERTY::SEMI_MAJOR_AXIS_RSOL,
     BINARY_PROPERTY::ECCENTRICITY,
     STAR_1_PROPERTY::MZAMS,
@@ -3383,6 +3392,10 @@ const ANY_PROPERTY_VECTOR BSE_DETAILED_OUTPUT_REC = {
     STAR_2_PROPERTY::PULSAR_SPIN_FREQUENCY,
     STAR_1_PROPERTY::PULSAR_SPIN_DOWN_RATE,
     STAR_2_PROPERTY::PULSAR_SPIN_DOWN_RATE,
+    STAR_1_PROPERTY::PULSAR_BIRTH_PERIOD,
+    STAR_2_PROPERTY::PULSAR_BIRTH_PERIOD,
+    STAR_1_PROPERTY::PULSAR_BIRTH_SPIN_DOWN_RATE,
+    STAR_2_PROPERTY::PULSAR_BIRTH_SPIN_DOWN_RATE,
     STAR_1_PROPERTY::RADIAL_EXPANSION_TIMESCALE,
     STAR_2_PROPERTY::RADIAL_EXPANSION_TIMESCALE
 };
@@ -3426,6 +3439,10 @@ const ANY_PROPERTY_VECTOR BSE_PULSAR_EVOLUTION_REC = {
     STAR_2_PROPERTY::PULSAR_SPIN_FREQUENCY,
     STAR_1_PROPERTY::PULSAR_SPIN_DOWN_RATE,
     STAR_2_PROPERTY::PULSAR_SPIN_DOWN_RATE,
+    STAR_1_PROPERTY::PULSAR_BIRTH_PERIOD,
+    STAR_2_PROPERTY::PULSAR_BIRTH_PERIOD,
+    STAR_1_PROPERTY::PULSAR_BIRTH_SPIN_DOWN_RATE,
+    STAR_2_PROPERTY::PULSAR_BIRTH_SPIN_DOWN_RATE,
     BINARY_PROPERTY::TIME,
     BINARY_PROPERTY::DT
 };

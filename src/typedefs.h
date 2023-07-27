@@ -117,7 +117,7 @@ typedef struct SupernovaDetails {                           // Holds attributes,
     double           eccentricAnomaly;                      // Eccentric anomaly at instataneous time of the SN
     SNEventsT        events;                                // Record of supernova events undergone by the star
     double           fallbackFraction;                      // Fallback fraction during a supernova event
-    double           HeCoreMassAtCOFormation;               // Helium core mass of the star when it goes supernova and forms a compact objec
+    double           HeCoreMassAtCOFormation;               // Helium core mass of the star when it goes supernova and forms a compact object
     bool             isHydrogenPoor;                        // Flag to indicate if exploding star is hydrogen-poor. We consider an H-rich star all SN progenitors that have an H envelope, otherwise H-poor
     double           kickMagnitude;                         // Kick magnitude the system received during the supernova (km s^-1)
     double           kickMagnitudeRandom;                   // Random number U(0,1) for choosing the supernova kick magnitude - drawn once at star creation
@@ -135,7 +135,9 @@ typedef struct PulsarDetails {
     double magneticField;                                   // Pulsar magnetic field strength (G)
     double spinPeriod;                                      // Pulsar spin period (ms)
     double spinFrequency;                                   // Pulsar spin frequency in rads per second
-    double spinDownRate;                                    // Pulsar spin down rate (Pdot, dimensionless)
+    double spinDownRate;                                    // Pulsar spin down rate as time derivative of spin frequency (fdot, rad s^-2)
+    double birthPeriod;                                     // Pulsar birth period (s)
+    double birthSpinDownRate;                               // Pulsar birth down rate as Pdot (s s^-1)
 } PulsarDetailsT;
 
 

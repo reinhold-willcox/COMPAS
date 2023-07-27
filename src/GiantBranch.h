@@ -43,6 +43,7 @@ protected:
     static  double          CalculateCoreMass_Luminosity_Mx_Static(const DBL_VECTOR &p_GBParams);
 
             double          CalculateCriticalMassRatioClaeys14(const bool p_AccretorIsDegenerate) const; 
+            double          CalculateCriticalMassRatioHurleyHjellmingWebbink() const; 
 
             void            CalculateGBParams(const double p_Mass, DBL_VECTOR &p_GBParams);
     static  void            CalculateGBParams_Static(const double p_Mass, const double p_LogMetallicityXi, const DBL_VECTOR &p_MassCutoffs, const DBL_VECTOR &p_AnCoefficients, const DBL_VECTOR &p_BnCoefficients, DBL_VECTOR &p_GBParams);
@@ -82,7 +83,7 @@ protected:
             DBL_DBL         CalculateRemnantMassByFryer2012(const double p_Mass, const double p_COCoreMass);
             DBL_DBL         CalculateRemnantMassByFryer2022(const double p_Mass, const double p_COCoreMass);
             double          CalculateRemnantMassByMuller2016(const double p_Mass, const double p_COCoreMass);
-	        double          CalculateRemnantMassByMullerMandel(const double p_COCoreMass, const double p_HeCoreMass);
+            double          CalculateRemnantMassByMullerMandel(const double p_COCoreMass, const double p_HeCoreMass);
             double          CalculateRemnantMassBySchneider2020(const double p_COCoreMass, const bool p_useSchneiderAlt = false);
             double          CalculateRemnantMassBySchneider2020Alt(const double p_COCoreMass)               { return CalculateRemnantMassBySchneider2020(p_COCoreMass, true); }
             double          CalculateMomentOfInertia(const double p_RemnantRadius = 0.0) const              { return (0.1 * (m_Mass - m_CoreMass) * m_Radius * m_Radius) + (0.21 * m_CoreMass * p_RemnantRadius * p_RemnantRadius); } // k2 = 0.1 and k3 = 0.21 as defined in Hurley et al. 2000, after eq 109
@@ -130,7 +131,7 @@ protected:
 
             void            UpdateInitialMass() { }                                                                                                                             // NO-OP for most stellar types
     
-            void            UpdateMinimumCoreMass()  {}                                                                                                                 // NO-OP for most stellar types
+            void            UpdateMinimumCoreMass() { }                                                                                                                         // NO-OP for most stellar types
 
 };
 

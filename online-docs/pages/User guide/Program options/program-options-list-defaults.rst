@@ -121,7 +121,7 @@ Default = TRUE
 
 **--common-envelope-allow-radiative-envelope-survive** |br| 
 Allow binaries with an evolved component with a radiative envelope to survive the common envelope phase. |br|
-Deafult = FALSE
+Default = FALSE
 
 **--common-envelope-alpha** |br|
 Common Envelope efficiency alpha. |br|
@@ -283,11 +283,12 @@ Default = 1.280000
 
 **--critical-mass-ratio-prescription** |br|
 Which critical mass ratio stability prescription to use (if any).
-Options: { NONE, CLAEYS, GE20, GE20_IC } |br|
+Options: { NONE, CLAEYS, GE20, GE20_IC, HURLEY_HJELLMING_WEBBINK } |br|
 ``NONE`` defaults to the zeta prescription for stability, 
 ``CLAEYS`` uses qCrit values from Claeys et al. 2014. 
 ``GE20`` uses qCrit values from Ge et al. 2020 (adiabatic assumption). 
-``GE20_IC`` uses qCrit values from Ge et al. 2020 (isentropic envelope assumption). |br|
+``GE20_IC`` uses qCrit values from Ge et al. 2020 (isentropic envelope assumption).
+``HURLEY_HJELLMING_WEBBINK`` uses qCrit values from Hurley et al. 2002 (Hjellming & Webbink 1987 for mass transfer from a giant primary). |br|
 Warning: if running with ``--critical-mass-ratio-prescription``, zetas will not be computed, 
 so should not be trusted in the outputs. |br|
 Default = NONE
@@ -358,9 +359,12 @@ Options: { LEGACY, HURLEY, FIXED_TEMPERATURE } |br|
 ``LEGACY`` refers to the model used in Stevenson et al., 2017; ``HURLEY`` refers to the model of Hurley, Pols, Tout, 2002; and ``FIXED_TEMPERATURE`` assumes that a deep convective envelope developes only when the temperature drops below ``CONVECTIVE_BOUNDARY_TEMPERATURE`` (Klencki et al., 2020) |br|
 Default = LEGACY
 
-
 **--errors-to-file** |br|
 Write error messages to file. |br|
+Default = FALSE
+
+**--expel-convective-envelope-above-luminosity-threshold** |br|
+Expel convective envelope in a pulsation if the luminosity to mass ratio exceeds the threshold given by ``--luminosity-to-mass-threshold`` |br|
 Default = FALSE
 
 **--evolve-pulsars** |br|
@@ -385,7 +389,7 @@ Options: { DELAYED, RAPID }
 Default = DELAYED
 
 **--fryer-22-fmix** |br|
-Paramter describing the mixing growth time when using the 'FRYER2022' remnant mass distribution  :cite:`Fryer2022`. |br|
+Parameter describing the mixing growth time when using the 'FRYER2022' remnant mass distribution  :cite:`Fryer2022`. |br|
 Default = 0.5, which is closest to the 'DELAYED' remnant mass prescription from :cite:`Fryer2012`. A value of 4.0 is closest to  the 'RAPID' remnant mass prescription from :cite:`Fryer2012`. |br|
 If the FALLBACK option is used for the kicks, then the proto core masses will be determined by the fryer-supernova-engine option. |br| 
 
@@ -750,6 +754,10 @@ Options: { NONE, HURLEY, HURLEY_ADD, BELCZYNSKI } |br|
 No LBV winds for ``NONE``,  Hurley, Pols, Tout (2000) LBV winds only for ``HURLEY`` LBV stars (or in addition to other winds for ``HURLEY_ADD``, Belzcynski et al. 2010 winds for ``BELCZYNSKI`` |br|
 Default = HURLEY_ADD
 
+**--luminosity-to-mass-threshold** |br|
+Threshold log_10(Luminosity/Mass) (in solar units) above which, if the option ``expel-convective-envelope-above-luminosity-threshold`` is set to TRUE, pulsations eject the convective envelope |br|
+Default = 4.2
+
 .. _options-props-M:
 
 :ref:`Back to Top <options-props-top>`
@@ -838,7 +846,7 @@ Maximum number of timesteps to evolve binary. Evolution of the binary will stop 
 Default = 99999
 
 **--mcbur1** |br|
-Minimum core mass at base of AGB to avoid fully degnerate CO core formation (:math:`M_\odot`). |br|
+Minimum core mass at base of AGB to avoid fully degenerate CO core formation (:math:`M_\odot`). |br|
 e.g. 1.6 in :cite:`Hurley2000` presciption; 1.83 in :cite:`Fryer2012` and :doc:`Belczynski et al. (2008) <../../references>` models. |br|
 Default = 1.6
 
@@ -1221,8 +1229,9 @@ Go to :ref:`the top of this page <options-props-top>` for the full alphabetical 
 
 **Stellar evolution and winds**
 
---use-mass-loss, --check-photon-tiring-limit, --cool-wind-mass-loss-multiplier, --luminous-blue-variable-prescription, --luminous-blue-variable-multiplier, 
---mass-loss-prescription, --overall-wind-mass-loss-multiplier, --wolf-rayet-multiplier
+--use-mass-loss, --check-photon-tiring-limit, --cool-wind-mass-loss-multiplier, --luminous-blue-variable-prescription, 
+--luminous-blue-variable-multiplier, --mass-loss-prescription, --overall-wind-mass-loss-multiplier, --wolf-rayet-multiplier, 
+--expel-convective-envelope-above-luminosity-threshold, --luminosity-to-mass-threshold
 
 --chemically-homogeneous-evolution
 
