@@ -2456,6 +2456,11 @@ EVOLUTION_STATUS BaseBinaryStar::Evolve() {
                 m_Unbound       = true;                                                                                                     // yes - set the unbound flag (should already be set)
                 evolutionStatus = EVOLUTION_STATUS::UNBOUND;                                                                                // stop evolution
             }
+            // RTW addition - kill when you leave MS
+            else if (HasOneOf({ STELLAR_TYPE::HERTZSPRUNG_GAP}) || (HasOneOf( GIANTS ))) {
+                evolutionStatus = EVOLUTION_STATUS::UNBOUND;                                                                              
+                // Not really the right error, but it doesn't matter
+            }
             else {                                                                                                                          // continue evolution
 
                 (void)PrintDetailedOutput(m_Id, BSE_DETAILED_RECORD_TYPE::POST_STELLAR_TIMESTEP);                                           // print (log) detailed output
