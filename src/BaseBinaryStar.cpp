@@ -2453,6 +2453,10 @@ EVOLUTION_STATUS BaseBinaryStar::Evolve() {
                 (void)PrintRLOFParameters();                                                                                                // print (log) RLOF parameters
                 
                 // check for problems
+                // RTW - fake problem. Kill off if primary leaves MS
+                if (HasOneOf( {STELLAR_TYPE::HERTZSPRUNG_GAP})) {
+                    evolutionStatus = EVOLUTION_STATUS::BINARY_ERROR;                                                               // yes - stop evolution
+                } 
                 if (StellarMerger()) {                                                                                                      // have stars merged?
                     evolutionStatus = EVOLUTION_STATUS::STELLAR_MERGER;                                                                     // for now, stop evolution
                 }
