@@ -349,6 +349,10 @@ Default = 0.0
 Multiplication factor for Eddington accretion for NS & BH (i.e. > 1 is super-eddington and 0 is no accretion). |br|
 Default = 1.0
 
+**--enable-tides** |br|
+Enables tides. |br|
+Default = FALSE
+
 **--enable-warnings** |br|
 Display warning messages to stdout. |br|
 Default = FALSE
@@ -409,7 +413,7 @@ Default = 5.75
 :ref:`Back to Top <options-props-top>`
 
 **--grid** |br|
-Grid filename. |br|
+Grid filename. (See :doc:`Grid files <../grid-files>`) |br|
 Default = ’’ (None)
 
 **--grid-lines-to-process** |br|
@@ -1157,6 +1161,10 @@ Default = FALSE
 
 :ref:`Back to Top <options-props-top>`
 
+**--timestep-filename** |br|
+User-defined timesteps filename. (See :doc:`Timestep files <../timestep-files>`) |br|
+Default = ’’ (None)
+
 **--timestep-multiplier** |br|
 Multiplicative factor for timestep duration. |br|
 Default = 1.0
@@ -1281,7 +1289,7 @@ Go to :ref:`the top of this page <options-props-top>` for the full alphabetical 
 --mass-transfer-rejuvenation-prescription, --mass-transfer-thermal-limit-accretor, --mass-transfer-thermal-limit-C, --retain-core-mass-during-caseA-mass-transfer, 
 --stellar-zeta-prescription, --zeta-adiabatic-arbitrary, --zeta-main-sequence, --zeta-radiative-giant-star 
 
---circulariseBinaryDuringMassTransfer, --angular-momentum-conservation-during-circularisation
+--circulariseBinaryDuringMassTransfer, --angular-momentum-conservation-during-circularisation, --enable-tides
 
 --envelope-state-prescription, --common-envelope-alpha, --common-envelope-alpha-thermal, --common-envelope-formalism,
 --common-envelope-lambda-prescription, --common-envelope-lambda, 
@@ -1320,7 +1328,7 @@ Go to :ref:`the top of this page <options-props-top>` for the full alphabetical 
 **Administrative**
 
 --mode, --number-of-systems, --evolve-double-white-dwarfs, --evolve-pulsars, --evolve-unbound-systems, --maximum-evolution-time, --maximum-number-timestep-iterations,
---random-seed, --timestep-multiplier
+--random-seed, --timestep-multiplier, --timestep-filename
 
 --grid, --grid-start-line, --grid-lines-to-process
 
