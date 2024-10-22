@@ -1376,8 +1376,13 @@ double GiantBranch::CalculateRemnantMassByMaltsev2024(const double p_COCoreMass,
         return p_HeCoreMass;
         }
     else if ( utils::Compare(p_COCoreMass, M2) > 0 && utils::Compare(p_COCoreMass, M3) < 0 && utils::Compare(RAND->Random(0, 1), 0.1) <= 0 )    // Partial fallback BH formation
+        {
         //return CalculateFallbackBHMassMullerMandel(p_COCoreMass, p_HeCoreMass);
-        return 1.44;  // slightly higher mass NS
+        // add 50% fallback back on
+        double mhe = m_SupernovaDetails.HeCoreMassAtCOFormation;
+        double mns = 1.44;
+        return 1.44 + (mhe - mns)*0.5;
+        }
     //return CalculateRemnantNSMassMullerMandel(p_COCoreMass, p_HeCoreMass);
     return 1.40;  // slightly lower mass NS - just to distinguish it...
 }
