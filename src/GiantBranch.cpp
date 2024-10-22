@@ -1314,7 +1314,7 @@ double GiantBranch::CalculateRemnantMassByMaltsev2024(const double p_COCoreMass,
     double    M1, M2, M3;
 
     if (utils::Compare(p_COCoreMass, MALTSEV2024_MMIN) < 0)                                                             // NS formation regardless of metallicity and MT history
-        return CalculateRemnantNSMassMullerMandel(p_COCoreMass, p_HeCoreMass);
+        return 1.35; //CalculateRemnantNSMassMullerMandel(p_COCoreMass, p_HeCoreMass);
     
     if (utils::Compare(p_COCoreMass, MALTSEV2024_MMAX) > 0)                                                             // BH formation regardless of metallicity and MT history
         return p_HeCoreMass;
@@ -1372,7 +1372,9 @@ double GiantBranch::CalculateRemnantMassByMaltsev2024(const double p_COCoreMass,
     }
     
     if( utils::Compare(p_COCoreMass, M3) >=0 || (utils::Compare(p_COCoreMass, M1) >= 0 && utils::Compare(p_COCoreMass, M2) <= 0) )              // Complete fallback into BH
+        {                                                                                                                                                
         return p_HeCoreMass;
+        }
     else if ( utils::Compare(p_COCoreMass, M2) > 0 && utils::Compare(p_COCoreMass, M3) < 0 && utils::Compare(RAND->Random(0, 1), 0.1) <= 0 )    // Partial fallback BH formation
         //return CalculateFallbackBHMassMullerMandel(p_COCoreMass, p_HeCoreMass);
         return 1.44;  // slightly higher mass NS
