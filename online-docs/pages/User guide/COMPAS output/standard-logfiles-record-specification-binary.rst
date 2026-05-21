@@ -250,7 +250,7 @@ Binary Properties
        Refer to :doc:`../Handling errors/evolution-status-table` for possible values.
    * - Header Strings:
      - Evolution_Status
-
+  
 .. _binary-props-F:
 
 .. _binary-props-G:
@@ -292,7 +292,7 @@ Binary Properties
      - Flag to indicate if either star overflows its Roche lobe immediately following common envelope event.
    * - Header String:
      - Immediate_RLOF>CE
-
+   
 .. _binary-props-J:
 
 .. _binary-props-K:
@@ -483,7 +483,7 @@ Binary Properties
      - Flag to indicate if the binary compact remnants merge within a Hubble time.
    * - Header String:
      - Merges_Hubble_Time
-
+  
 .. _binary-props-N:
 
 .. _binary-props-O:
@@ -586,7 +586,7 @@ Binary Properties
        Will be 0.0 for unbound binaries.
    * - Header String:
      - Orbital_Velocity<SN
-
+   
 .. _binary-props-P:
 
 .. _binary-props-Q:
@@ -795,6 +795,38 @@ Binary Properties
    :header-rows: 0
    :class: aligned-text
 
+   * - :cspan:`2` **RLOF_POST_MT_STAR1_LUM**
+     -
+   * - Data type:
+     - DOUBLE
+   * - COMPAS variable:
+     - BaseBinaryStar::m_RLOFDetails.propsPostMT→luminosity1
+   * - Description:
+     - Luminosity (\ :math:`L_\odot`) of the primary immediately after RLOF.
+   * - Header String:
+     - Lum(1)>MT
+
+.. flat-table::
+   :widths: 25 75 1 1
+   :header-rows: 0
+   :class: aligned-text
+
+   * - :cspan:`2` **RLOF_POST_MT_STAR2_LUM**
+     -
+   * - Data type:
+     - DOUBLE
+   * - COMPAS variable:
+     - BaseBinaryStar::m_RLOFDetails.propsPostMT→luminosity2
+   * - Description:
+     - Luminosity (\ :math:`L_\odot`) of the secondary immediately after RLOF.
+   * - Header String:
+     - Lum(2)>MT
+
+.. flat-table::
+   :widths: 25 75 1 1
+   :header-rows: 0
+   :class: aligned-text
+
    * - :cspan:`2` **RLOF_POST_MT_STAR1_MASS**
      -
    * - Data type:
@@ -859,6 +891,38 @@ Binary Properties
    :header-rows: 0
    :class: aligned-text
 
+   * - :cspan:`2` **RLOF_POST_MT_STAR1_TEFF**
+     -
+   * - Data type:
+     - DOUBLE
+   * - COMPAS variable:
+     - BaseBinaryStar::m_RLOFDetails.propsPostMT→temperature1
+   * - Description:
+     - Effective temperature (\ :math:`K`) of the primary immediately after RLOF.
+   * - Header String:
+     - Teff(1)>MT
+
+.. flat-table::
+   :widths: 25 75 1 1
+   :header-rows: 0
+   :class: aligned-text
+
+   * - :cspan:`2` **RLOF_POST_MT_STAR2_TEFF**
+     -
+   * - Data type:
+     - DOUBLE
+   * - COMPAS variable:
+     - BaseBinaryStar::m_RLOFDetails.propsPostMT→temperature2
+   * - Description:
+     - Effective temperature (\ :math:`K`) of the secondary immediately after RLOF.
+   * - Header String:
+     - Teff(2)>MT
+
+.. flat-table::
+   :widths: 25 75 1 1
+   :header-rows: 0
+   :class: aligned-text
+
    * - :cspan:`2` **RLOF_POST_MT_STAR1_RLOF**
      -
    * - Data type:
@@ -901,7 +965,7 @@ Binary Properties
      - Stellar type (per :cite:`Hurley2000`) of the primary star immediately after RLOF.
    * - Header String:
      - Stellar_Type(1)>MT
-
+   
 `Note that this property has the same header string as RLOF_POST_MT_STAR1_STELLAR_TYPE_NAME. It is expected that one or the other is printed in any file, 
 but not both. If both are printed then the file will contain two columns with the same header string.`
 
@@ -920,7 +984,7 @@ but not both. If both are printed then the file will contain two columns with th
      - Stellar type (per :cite:`Hurley2000`) of the primary star immediately after RLOF.
    * - Header String:
      - Stellar_Type(1)>MT
-
+   
 `Note that this property has the same header string as RLOF_POST_MT_STAR1_STELLAR_TYPE. It is expected that one or the other is printed in any file, 
 but not both. If both are printed then the file will contain two columns with the same header string.`
 
@@ -939,7 +1003,7 @@ but not both. If both are printed then the file will contain two columns with th
      - Stellar type (per :cite:`Hurley2000`) of the secondary star immediately after RLOF.
    * - Header String:
      - Stellar_Type(2)>MT
-
+   
 `Note that this property has the same header string as RLOF_POST_MT_STAR2_STELLAR_TYPE_NAME. It is expected that one or the other is printed in any file, 
 but not both. If both are printed then the file will contain two columns with the same header string.`
 
@@ -958,7 +1022,7 @@ but not both. If both are printed then the file will contain two columns with th
      - Stellar type (per :cite:`Hurley2000`) of the secondary star immediately after RLOF.
    * - Header String:
      - Stellar_Type(2)>MT
-
+   
 `Note that this property has the same header string as RLOF_POST_MT_STAR2_STELLAR_TYPE. It is expected that one or the other is printed in any file, 
 but not both. If both are printed then the file will contain two columns with the same header string.`
 
@@ -1031,6 +1095,39 @@ but not both. If both are printed then the file will contain two columns with th
    :header-rows: 0
    :class: aligned-text
 
+   * - :cspan:`2` **RLOF_PRE_MT_STAR1_LUM**
+     -
+   * - Data type:
+     - DOUBLE
+   * - COMPAS variable:
+     - BaseBinaryStar::m_RLOFDetails.propsPreMT→luminosity1
+   * - Description:
+     - Luminosity (\ :math:`L_\odot`) of the primary at the onset of RLOF.
+   * - Header String:
+     - Lum(1)<MT
+
+.. flat-table::
+   :widths: 25 75 1 1
+   :header-rows: 0
+   :class: aligned-text
+
+   * - :cspan:`2` **RLOF_PRE_MT_STAR2_LUM**
+     -
+   * - Data type:
+     - DOUBLE
+   * - COMPAS variable:
+     - BaseBinaryStar::m_RLOFDetails.propsPreMT→luminosity2
+   * - Description:
+     - Luminosity (\ :math:`L_\odot`) of the secondary at the onset of RLOF.
+   * - Header String:
+     - Lum(2)<MT
+
+
+.. flat-table::
+   :widths: 25 75 1 1
+   :header-rows: 0
+   :class: aligned-text
+
    * - :cspan:`2` **RLOF_PRE_MT_STAR1_MASS**
      -
    * - Data type:
@@ -1095,6 +1192,38 @@ but not both. If both are printed then the file will contain two columns with th
    :header-rows: 0
    :class: aligned-text
 
+   * - :cspan:`2` **RLOF_PRE_MT_STAR1_TEFF**
+     -
+   * - Data type:
+     - DOUBLE
+   * - COMPAS variable:
+     - BaseBinaryStar::m_RLOFDetails.propsPreMT→temperature1
+   * - Description:
+     - Effective temperature (\ :math:`K`) of the primary at the onset of RLOF.
+   * - Header String:
+     - Teff(1)<MT
+
+.. flat-table::
+   :widths: 25 75 1 1
+   :header-rows: 0
+   :class: aligned-text
+
+   * - :cspan:`2` **RLOF_PRE_MT_STAR2_TEFF**
+     -
+   * - Data type:
+     - DOUBLE
+   * - COMPAS variable:
+     - BaseBinaryStar::m_RLOFDetails.propsPreMT→temperature2
+   * - Description:
+     - Effective temperature (\ :math:`K`) of the secondary at the onset of RLOF.
+   * - Header String:
+     - Teff(2)<MT
+
+.. flat-table::
+   :widths: 25 75 1 1
+   :header-rows: 0
+   :class: aligned-text
+
    * - :cspan:`2` **RLOF_PRE_MT_STAR1_RLOF**
      -
    * - Data type:
@@ -1137,7 +1266,7 @@ but not both. If both are printed then the file will contain two columns with th
      - Stellar type (per :cite:`Hurley2000`) of the primary star at the onset of RLOF.
    * - Header String:
      - Stellar_Type(1)<MT
-
+   
 `Note that this property has the same header string as RLOF_PRE_MT_STAR1_STELLAR_TYPE_NAME. It is expected that one or the other is printed in any file, 
 but not both. If both are printed then the file will contain two columns with the same header string.`
 
@@ -1156,7 +1285,7 @@ but not both. If both are printed then the file will contain two columns with th
      - Stellar type (per :cite:`Hurley2000`) of the primary star at the onset of RLOF.
    * - Header String:
      - Stellar_Type(1)<MT
-
+   
 `Note that this property has the same header string as RLOF_PRE_MT_STAR1_STELLAR_TYPE. It is expected that one or the other is printed in any file, 
 but not both. If both are printed then the file will contain two columns with the same header string.`
 
@@ -1175,7 +1304,7 @@ but not both. If both are printed then the file will contain two columns with th
      - Stellar type (per :cite:`Hurley2000`) of the secondary star at the onset of RLOF.
    * - Header String:
      - Stellar_Type(2)<MT
-
+   
 `Note that this property has the same header string as RLOF_PRE_MTvSTAR2_STELLAR_TYPE_NAME. It is expected that one or the other is printed in any file, 
 but not both. If both are printed then the file will contain two columns with the same header string.`
 
@@ -1194,7 +1323,7 @@ but not both. If both are printed then the file will contain two columns with th
      - Stellar type (per :cite:`Hurley2000`) of the secondary star at the onset of RLOF.
    * - Header String:
      - Stellar_Type(2)<MT
-
+   
 `Note that this property has the same header string as RLOF_PRE_MT_STAR2_STELLAR_TYPE. It is expected that one or the other is printed in any file, 
 but not both. If both are printed then the file will contain two columns with the same header string.`
 
@@ -1358,6 +1487,10 @@ but not both. If both are printed then the file will contain two columns with th
    * - Header String:
      - RocheLobe(2)<CE
 
+.. _binary-props-S:
+
+:ref:`Back to Top <binary-props-top>`
+
 .. flat-table::
    :widths: 25 75 1 1
    :header-rows: 0
@@ -1389,10 +1522,6 @@ but not both. If both are printed then the file will contain two columns with th
      - Ratio of the secondary star’s stellar radius to Roche radius (R/RL), evaluated at periapsis.
    * - Header String:
      - Radius(2)|RL
-
-.. _binary-props-S:
-
-:ref:`Back to Top <binary-props-top>`
 
 .. flat-table::
    :widths: 25 75 1 1
@@ -1441,6 +1570,23 @@ but not both. If both are printed then the file will contain two columns with th
      - Semi-major axis immediately following common envelope event (\ :math:`R_\odot`).
    * - Header String:
      - SemiMajorAxis>CE
+
+.. flat-table::
+   :widths: 25 75 1 1
+   :header-rows: 0
+   :class: aligned-text
+
+   * - :cspan:`2` **SEMI_MAJOR_AXIS_POST_STAGE_1_CE**
+     -
+   * - Data type:
+     - DOUBLE
+   * - COMPAS variable:
+     - BaseBinaryStar::m_CEDetails.postCEE.semiMajorAxisAfterStage1
+   * - Description:
+     - Semi-major axis immediately following stage 1 of a 2-stage common envelope event (zero for other common envelope prescriptions) (\ :math:`R_\odot`).
+   * - Header String:
+     - SemiMajorAxisStage1>CE
+
 
 .. flat-table::
    :widths: 25 75 1 1
@@ -1801,16 +1947,32 @@ both. If both are printed then the file will contain two columns with the same h
    :header-rows: 0
    :class: aligned-text
 
-   * - :cspan:`2` **SYNCHRONIZATION_TIMESCALE**
+   * - :cspan:`2` **SYNCHRONIZATION_TIMESCALE_1**
      -
    * - Data type:
      - DOUBLE
    * - COMPAS variable:
-     - BaseBinaryStar::m_SynchronizationTimescale
+     - BaseBinaryStar::m_SynchronizationTimescale1
    * - Description:
-     - Tidal synchronisation timescale (Myr).
+     - Tidal synchronisation timescale for the primary star (Myr).
    * - Header String:
-     - Tau_Sync
+     - Tau_Sync(1)
+  
+.. flat-table::
+   :widths: 25 75 1 1
+   :header-rows: 0
+   :class: aligned-text
+
+   * - :cspan:`2` **SYNCHRONIZATION_TIMESCALE_2**
+     -
+   * - Data type:
+     - DOUBLE
+   * - COMPAS variable:
+     - BaseBinaryStar::m_SynchronizationTimescale2
+   * - Description:
+     - Tidal synchronisation timescale for the secondary star (Myr).
+   * - Header String:
+     - Tau_Sync(2)
 
 .. flat-table::
    :widths: 25 75 1 1
@@ -1879,6 +2041,102 @@ both. If both are printed then the file will contain two columns with the same h
 .. _binary-props-T:
 
 :ref:`Back to Top <binary-props-top>`
+
+.. flat-table::
+   :widths: 25 75 1 1
+   :header-rows: 0
+   :class: aligned-text
+
+   * - :cspan:`2` **TIDAL_POTENTIAL_LOVE_NUMBER_10_1, TIDAL_POTENTIAL_LOVE_NUMBER_12_1, TIDAL_POTENTIAL_LOVE_NUMBER_22_1, TIDAL_POTENTIAL_LOVE_NUMBER_32_1**
+     -
+   * - Data type:
+     - DOUBLE
+   * - COMPAS variable:
+     - `derived from` BaseStar::CalculateImKnmTidal()
+   * - Description:
+     - l=2 components of the tidal potential Love number for the primary star, indexed by (n,m).
+   * - Header String:
+     - ImKnm1_10, ImKnm1_12, ImKnm1_22, ImKnm1_32
+
+.. flat-table::
+   :widths: 25 75 1 1
+   :header-rows: 0
+   :class: aligned-text
+
+   * - :cspan:`2` **TIDAL_POTENTIAL_LOVE_NUMBER_10_2, TIDAL_POTENTIAL_LOVE_NUMBER_12_2, TIDAL_POTENTIAL_LOVE_NUMBER_22_2, TIDAL_POTENTIAL_LOVE_NUMBER_32_2**
+     -
+   * - Data type:
+     - DOUBLE
+   * - COMPAS variable:
+     - `derived from` BaseStar::CalculateImKnmTidal()
+   * - Description:
+     - l=2 components of the tidal potential Love number for the secondary star, indexed by (n,m).
+   * - Header String:
+     - ImKnm2_10, ImKnm2_12, ImKnm2_22, ImKnm2_32
+
+.. flat-table::
+   :widths: 25 75 1 1
+   :header-rows: 0
+   :class: aligned-text
+
+   * - :cspan:`2` **TIDAL_POTENTIAL_LOVE_NUMBER_10_EQ_1, TIDAL_POTENTIAL_LOVE_NUMBER_12_EQ_1, TIDAL_POTENTIAL_LOVE_NUMBER_22_EQ_1, TIDAL_POTENTIAL_LOVE_NUMBER_32_EQ_1**
+     -
+   * - Data type:
+     - DOUBLE
+   * - COMPAS variable:
+     - `derived from` BaseStar::CalculateImKnmEquilibrium()
+   * - Description:
+     - l=2 components of the equilibrium tidal potential Love number for the primary star, indexed by (n,m).
+   * - Header String:
+     - ImKnm1_10_eq, ImKnm1_12_eq, ImKnm1_22_eq, ImKnm1_32_eq
+
+.. flat-table::
+   :widths: 25 75 1 1
+   :header-rows: 0
+   :class: aligned-text
+
+   * - :cspan:`2` **TIDAL_POTENTIAL_LOVE_NUMBER_10_EQ_2, TIDAL_POTENTIAL_LOVE_NUMBER_12_EQ_2, TIDAL_POTENTIAL_LOVE_NUMBER_22_EQ_2, TIDAL_POTENTIAL_LOVE_NUMBER_32_EQ_2**
+     -
+   * - Data type:
+     - DOUBLE
+   * - COMPAS variable:
+     - `derived from` BaseStar::CalculateImKnmEquilibrium()
+   * - Description:
+     - l=2 components of the equilibrium tidal potential Love number for the secondary star, indexed by (n,m).
+   * - Header String:
+     - ImKnm2_10_eq, ImKnm2_12_eq, ImKnm2_22_eq, ImKnm2_32_eq
+
+.. flat-table::
+   :widths: 25 75 1 1
+   :header-rows: 0
+   :class: aligned-text
+
+   * - :cspan:`2` **TIDAL_POTENTIAL_LOVE_NUMBER_10_DYN_1, TIDAL_POTENTIAL_LOVE_NUMBER_12_DYN_1, TIDAL_POTENTIAL_LOVE_NUMBER_22_DYN_1, TIDAL_POTENTIAL_LOVE_NUMBER_32_DYN_1**
+     -
+   * - Data type:
+     - DOUBLE
+   * - COMPAS variable:
+     - `derived from` BaseStar::CalculateImKnmDynamical()
+   * - Description:
+     - l=2 components of the dynamical tidal potential Love number for the primary star, indexed by (n,m).
+   * - Header String:
+     - ImKnm1_10_dyn, ImKnm1_12_dyn, ImKnm1_22_dyn, ImKnm1_32_dyn
+
+.. flat-table::
+   :widths: 25 75 1 1
+   :header-rows: 0
+   :class: aligned-text
+
+   * - :cspan:`2` **TIDAL_POTENTIAL_LOVE_NUMBER_10_DYN_2, TIDAL_POTENTIAL_LOVE_NUMBER_12_DYN_2, TIDAL_POTENTIAL_LOVE_NUMBER_22_DYN_2, TIDAL_POTENTIAL_LOVE_NUMBER_32_DYN_2**
+     -
+   * - Data type:
+     - DOUBLE
+   * - COMPAS variable:
+     - `derived from` BaseStar::CalculateImKnmDynamical()
+   * - Description:
+     - l=2 components of the dynamical tidal potential Love number for the secondary star, indexed by (n,m).
+   * - Header String:
+     - ImKnm2_10_dyn, ImKnm2_12_dyn, ImKnm2_22_dyn, ImKnm2_32_dyn
 
 .. flat-table::
    :widths: 25 75 1 1

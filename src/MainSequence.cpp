@@ -228,14 +228,14 @@ double MainSequence::CalculateGamma(const double p_Mass) const {
 #define B_GAMMA m_GammaConstants[static_cast<int>(GAMMA_CONSTANTS::B_GAMMA)]    // for convenience and readability - undefined at end of function
 #define C_GAMMA m_GammaConstants[static_cast<int>(GAMMA_CONSTANTS::C_GAMMA)]    // for convenience and readability - undefined at end of function
 
-    double gamma;
+double gamma = 0.0;                                                                                                         // default return value
 
-         if (utils::Compare(p_Mass,  1.0)          <= 0) gamma = a[76] + (a[77] * PPOW(p_Mass - a[78], a[79]));
-    else if (utils::Compare(p_Mass,  a[75])        <= 0) gamma = B_GAMMA + (a[80] - B_GAMMA) * PPOW((p_Mass - 1.0) / (a[75] - 1.0), a[81]);
-    else if (utils::Compare(p_Mass, (a[75] + 0.1)) <= 0) gamma = C_GAMMA - (10.0 * (p_Mass - a[75]) * C_GAMMA);                                                             // included = case, missing from Hurley+ 2000
-    else                                                 gamma = 0.0;           // this really is zero
+     if (utils::Compare(p_Mass,  1.0)          <= 0) gamma = a[76] + (a[77] * PPOW(std::abs(p_Mass - a[78]), a[79]));       // BSE Fortran code has abs()
+else if (utils::Compare(p_Mass,  a[75])        <= 0) gamma = B_GAMMA + (a[80] - B_GAMMA) * PPOW((p_Mass - 1.0) / (a[75] - 1.0), a[81]);
+else if (utils::Compare(p_Mass, (a[75] + 0.1)) <= 0) gamma = C_GAMMA - (10.0 * (p_Mass - a[75]) * C_GAMMA);                 // see discussion just prior to eq 23 - the end point is wrong in the arxiv version of Hurley et al. 2000 (should be 0.1, not 1.0) - confirmed in BSE Fortran code
+else                                                 gamma = 0.0;                                                           // see discussion just prior to eq 23 - confirmed in BSE Fortran code
 
-    return gamma;
+return std::max(0.0, gamma);                                                                                                // see discussion following eq 23 - confirmed in BSE Fortran code
 
 #undef C_GAMMA
 #undef B_GAMMA
@@ -289,10 +289,10 @@ double MainSequence::CalculateLuminosityOnPhase(const double p_Time, const doubl
 #define timescales(x) m_Timescales[static_cast<int>(TIMESCALE::x)]  // for convenience and readability - undefined at end of function
     
     // If BRCEK core prescription is used, return luminosity from Shikauchi et al. (2024) during core hydrogen burning (valid for MZAMS >= 15 Msol) or
-    // luminosity that smoothly connects MS and HG during MS hook (valid for MZAMS >= BRCEK_LOWER_MASS_LIMIT)
-    if ((OPTIONS->MainSequenceCoreMassPrescription() == CORE_MASS_PRESCRIPTION::BRCEK) && (utils::Compare(m_MZAMS, BRCEK_LOWER_MASS_LIMIT) >= 0)) {
-        double tMS = timescales(tMS);
-        if (utils::Compare(p_Time, 0.99 * tMS) > 0)                                                                             // star in MS hook?
+    // luminosity that smoothly connects MS and HG during MS hook (valid for MZAMS >= BRCEK_LOWER_MASS_LIMIT); do not use Shikauchi luminosity
+    // prescription during CHE
+    if ((OPTIONS->MainSequenceCoreMassPrescription() == CORE_MASS_PRESCRIPTION::BRCEK) && (utils::Compare(m_MZAMS, BRCEK_LOWER_MASS_LIMIT) >= 0) && !m_CHE) {
+        if (utils::Compare(p_Time, 0.99 * timescales(tMS)) > 0)                                                                 // star in MS hook?
             return CalculateLuminosityTransitionToHG(p_Mass, p_Time, p_LZAMS);
         else {
             if (utils::Compare(m_MZAMS, 15.0) >= 0)                                                                             // use Shikauchi luminosity if MZAMS >= 15 Msun
@@ -340,9 +340,16 @@ double MainSequence::CalculateLuminosityOnPhase(const double p_Time, const doubl
  */
 double MainSequence::CalculateLuminosityShikauchi(const double p_CoreMass, const double p_HeliumAbundanceCore) const {
     DBL_VECTOR L_COEFFICIENTS = std::get<2>(SHIKAUCHI_COEFFICIENTS);
-    double logMixingCoreMass  = std::log10(p_CoreMass);
     
-    double logL = L_COEFFICIENTS[0] * logMixingCoreMass + L_COEFFICIENTS[1] * p_HeliumAbundanceCore + L_COEFFICIENTS[2] * logMixingCoreMass * p_HeliumAbundanceCore + L_COEFFICIENTS[3] * logMixingCoreMass * logMixingCoreMass + L_COEFFICIENTS[4] * p_HeliumAbundanceCore * p_HeliumAbundanceCore + L_COEFFICIENTS[5] * logMixingCoreMass * logMixingCoreMass * logMixingCoreMass + L_COEFFICIENTS[6] * p_HeliumAbundanceCore * p_HeliumAbundanceCore * p_HeliumAbundanceCore + L_COEFFICIENTS[7] * logMixingCoreMass * logMixingCoreMass * p_HeliumAbundanceCore + L_COEFFICIENTS[8] * logMixingCoreMass * p_HeliumAbundanceCore * p_HeliumAbundanceCore + L_COEFFICIENTS[9];
+    // common factors
+    double logMixingCoreMass   = std::log10(p_CoreMass);
+    double logMixingCoreMass_2 = logMixingCoreMass * logMixingCoreMass;
+    double logMixingCoreMass_3 = logMixingCoreMass_2 * logMixingCoreMass;
+    
+    double heliumAbundanceCore_2 = p_HeliumAbundanceCore * p_HeliumAbundanceCore;
+    double heliumAbundanceCore_3 = heliumAbundanceCore_2 * p_HeliumAbundanceCore;
+    
+    double logL = L_COEFFICIENTS[0] * logMixingCoreMass + L_COEFFICIENTS[1] * p_HeliumAbundanceCore + L_COEFFICIENTS[2] * logMixingCoreMass * p_HeliumAbundanceCore + L_COEFFICIENTS[3] * logMixingCoreMass_2 + L_COEFFICIENTS[4] * heliumAbundanceCore_2 + L_COEFFICIENTS[5] * logMixingCoreMass_3 + L_COEFFICIENTS[6] * heliumAbundanceCore_3 + L_COEFFICIENTS[7] * logMixingCoreMass_2 * p_HeliumAbundanceCore + L_COEFFICIENTS[8] * logMixingCoreMass * heliumAbundanceCore_2 + L_COEFFICIENTS[9] * logMixingCoreMass_3 * logMixingCoreMass + L_COEFFICIENTS[10] * heliumAbundanceCore_3 * p_HeliumAbundanceCore + L_COEFFICIENTS[11] * logMixingCoreMass * heliumAbundanceCore_3 + L_COEFFICIENTS[12] * logMixingCoreMass_2 * heliumAbundanceCore_2 + L_COEFFICIENTS[13] * logMixingCoreMass_3 * p_HeliumAbundanceCore + L_COEFFICIENTS[14];
     
     return PPOW(10.0, logL);
 }
@@ -764,11 +771,11 @@ DBL_DBL MainSequence::CalculateMainSequenceCoreMassBrcek(const double p_Dt, cons
 
     auto fmix    = [&](double mass) { return FMIX_COEFFICIENTS[0] + FMIX_COEFFICIENTS[1] * std::exp(-mass / FMIX_COEFFICIENTS[2]); };                           // Shikauchi et al. (2024), eq (A3)
     double alpha = PPOW(10.0, std::max(-2.0, ALPHA_COEFFICIENTS[1] * m_MainSequenceCoreMass + ALPHA_COEFFICIENTS[2])) + ALPHA_COEFFICIENTS[0];                  // ibid, eq (A2)
-    double g     = -0.0044 * m_MZAMS + 0.27;                                                                                                                    // ibid, eq (A7)
+    double g     = SHIKAUCHI_DELTA_COEFFICIENTS[1] * m_MainSequenceCoreMass + SHIKAUCHI_DELTA_COEFFICIENTS[2];                                                  // ibid, eq (A7)
     
     double delta;
     if (p_MassLossRate <= 0.0)
-        delta = std::min(PPOW(10.0, -(m_HeliumAbundanceCore - m_InitialHeliumAbundance) / (1.0 - m_InitialHeliumAbundance - m_Metallicity) + g), 1.0);          // ibid, eq (A6)
+        delta = std::min(PPOW(10.0, -SHIKAUCHI_DELTA_COEFFICIENTS[0] * (m_HeliumAbundanceCore - m_InitialHeliumAbundance) / (1.0 - m_InitialHeliumAbundance - m_Metallicity) + g), 1.0);          // ibid, eq (A6)
     else
         delta = PPOW(2.0, -(m_HeliumAbundanceCore - m_InitialHeliumAbundance) / (1.0 - m_InitialHeliumAbundance - m_Metallicity));                              // updated prescription for mass gain
     
@@ -820,18 +827,30 @@ DBL_DBL MainSequence::CalculateMainSequenceCoreMassBrcek(const double p_Dt, cons
 
 
 /*
- * Calculate the initial convective core mass of a main sequence star using Equation (A3) from Shikauchi et al. (2024),
- * also used for calculating core mass after MS merger
+ * Calculate the initial convective core mass of a main sequence star at ZAMS using Equation (A3) from Shikauchi+ (2024),
+ * or after full mixing (due to merger or CHE) for an arbitrary central helium fraction using the approach
+ * described in Brcek+ (2025)
  *
- * double CalculateInitialMainSequenceCoreMass(const double p_MZAMS)
+ * double CalculateInitialMainSequenceCoreMass(const double p_Mass, const double p_HeliumAbundanceCore)
  *
- * @param   [IN]    p_MZAMS                     Mass at ZAMS or after merger in Msol
+ * @param   [IN]    p_Mass                      Mass at ZAMS, after merger or after spin down of CH star in Msol
+ * @param   [IN]    p_HeliumAbundanceCore       Central helium fraction
  * @return                                      Mass of the convective core at ZAMS or after merger in Msol
  */
-double MainSequence::CalculateInitialMainSequenceCoreMass(const double p_MZAMS) const {
-    DBL_VECTOR fmixCoefficients = std::get<1>(SHIKAUCHI_COEFFICIENTS);
-    double fmix                 = fmixCoefficients[0] + fmixCoefficients[1] * std::exp(-p_MZAMS / fmixCoefficients[2]);
-    return fmix * p_MZAMS;
+double MainSequence::CalculateInitialMainSequenceCoreMass(const double p_Mass, const double p_HeliumAbundanceCore) const {
+    
+    double fmix = 0.0;
+    // At ZAMS, use the approach from Shikauchi+ (2024)
+    if (utils::Compare(p_HeliumAbundanceCore, m_InitialHeliumAbundance) == 0) {
+        DBL_VECTOR fmixCoefficients = std::get<1>(SHIKAUCHI_COEFFICIENTS);
+        fmix                        = fmixCoefficients[0] + fmixCoefficients[1] * std::exp(-p_Mass / fmixCoefficients[2]);
+    }
+    // After full mixing not at ZAMS, use the approach from Brcek+ (2025)
+    else {
+        double h = PPOW(10.0, p_HeliumAbundanceCore * (p_HeliumAbundanceCore + 2.0) / 4.0);
+        fmix     = (BRCEK_FMIX_COEFFICIENTS[0] + BRCEK_FMIX_COEFFICIENTS[1] * std::exp(-p_Mass * h / BRCEK_FMIX_COEFFICIENTS[2])) * PPOW(1.0 - BRCEK_FMIX_COEFFICIENTS[4] / (p_Mass * h), BRCEK_FMIX_COEFFICIENTS[3]);
+    }
+    return fmix * p_Mass;
 }
 
 
@@ -853,7 +872,8 @@ void MainSequence::UpdateMainSequenceCoreMass(const double p_Dt, const double p_
     double age                  = m_Age;                                                                                                // default is no change
 
     switch (OPTIONS->MainSequenceCoreMassPrescription()) {
-        case CORE_MASS_PRESCRIPTION::ZERO: 
+        case CORE_MASS_PRESCRIPTION::HURLEY:
+            // In the Hurley et al. (2000) formalism, MS stars do not have a distinct core and core evolution is not tracked
             mainSequenceCoreMass = 0.0;
             break;
         
@@ -948,7 +968,7 @@ double MainSequence::CalculateLifetimeOnPhase(const double p_Mass, const double 
     double tHook = mu * p_TBGB;
 
     // For mass < Mhook, x > mu (i.e. for stars without a hook)
-    double x = std::max(0.95, std::min((0.95 - (0.03 * (LogMetallicityXi() + 0.30103))), 0.99));
+    double x = std::max(0.95, std::min((0.95 - (0.03 * (LogMetallicityXiHurley() + 0.30103))), 0.99));
 
     return std::max(tHook, (x * p_TBGB));
 
@@ -1136,12 +1156,14 @@ void MainSequence::UpdateAfterMerger(double p_Mass, double p_HydrogenMass) {
     m_Age = m_Tau * timescales(tMS);
     
     m_HeliumAbundanceCore   = 1.0 - m_Metallicity - p_HydrogenMass / p_Mass;
-    
     m_HydrogenAbundanceCore = 1.0 - m_Metallicity - m_HeliumAbundanceCore;
     
+    m_HeliumAbundanceSurface   = m_HeliumAbundanceCore;                                         // abundances are the same throughout the star, assuming uniform mixing after merger
+    m_HydrogenAbundanceSurface = m_HydrogenAbundanceCore;
+    
     if ((OPTIONS->MainSequenceCoreMassPrescription() == CORE_MASS_PRESCRIPTION::BRCEK) && (utils::Compare(m_MZAMS, BRCEK_LOWER_MASS_LIMIT) >= 0)) {
-        m_InitialMainSequenceCoreMass = CalculateInitialMainSequenceCoreMass(p_Mass);           // update initial mixing core mass
-        m_MainSequenceCoreMass        = m_InitialMainSequenceCoreMass;                          // update core mass
+        m_InitialMainSequenceCoreMass = CalculateInitialMainSequenceCoreMass(p_Mass, m_HeliumAbundanceCore);           // update initial mixing core mass
+        m_MainSequenceCoreMass        = m_InitialMainSequenceCoreMass;                                                 // update core mass
     }
     
     UpdateAttributesAndAgeOneTimestep(0.0, 0.0, 0.0, true);
@@ -1305,8 +1327,8 @@ double MainSequence::InterpolateGeEtAlQCrit(const QCRIT_PRESCRIPTION p_qCritPres
         double interpolatedQCritForZ = p_massTransferEfficiencyBeta * interpolatedQCritUpperEff + (1.0 - p_massTransferEfficiencyBeta) * interpolatedQCritLowerEff;                 // Don't need to use nearest neighbor for this, beta is always between 0 and 1
         qCritPerMetallicity[ii] = interpolatedQCritForZ;
     }
-    double logZlo = -3;         // log10(0.001)
-    double logZhi = LOG10_ZSOL; // log10(0.02) 
+    double logZlo = -3;                // log10(0.001)
+    double logZhi = LOG10_ZSOL_HURLEY; // log10(0.02)
     
     return qCritPerMetallicity[1] + (m_Log10Metallicity - logZhi)*(qCritPerMetallicity[1] - qCritPerMetallicity[0])/(logZhi - logZlo);
 }
@@ -1324,7 +1346,7 @@ std::tuple <DBL_VECTOR, DBL_VECTOR, DBL_VECTOR> MainSequence::InterpolateShikauc
        
     DBL_VECTOR alphaCoeff(3, 0.0);
     DBL_VECTOR fmixCoeff(3, 0.0);
-    DBL_VECTOR lCoeff(10, 0.0);
+    DBL_VECTOR lCoeff(15, 0.0);
     
     // Skip calculation if BRCEK core prescription is not used
     if (OPTIONS->MainSequenceCoreMassPrescription() != CORE_MASS_PRESCRIPTION::BRCEK)
@@ -1333,9 +1355,9 @@ std::tuple <DBL_VECTOR, DBL_VECTOR, DBL_VECTOR> MainSequence::InterpolateShikauc
     double logZ = std::log10(p_Metallicity);
 
     // Coefficients are given for these metallicities
-    double low    = std::log10(0.1 * ZSOL_ASPLUND);
-    double middle = std::log10(1.0 / 3.0 * ZSOL_ASPLUND);
-    double high   = std::log10(ZSOL_ASPLUND);
+    double low    = std::log10(0.1 * ZSOL_HURLEY);
+    double middle = std::log10(1.0 / 3.0 * ZSOL_HURLEY);
+    double high   = std::log10(ZSOL_HURLEY);
 
     // common factors
     double middle_logZ = middle - logZ;
@@ -1357,7 +1379,7 @@ std::tuple <DBL_VECTOR, DBL_VECTOR, DBL_VECTOR> MainSequence::InterpolateShikauc
             alphaCoeff[i] = (SHIKAUCHI_ALPHA_COEFFICIENTS[0][i] * middle_logZ + SHIKAUCHI_ALPHA_COEFFICIENTS[1][i] * logZ_low) / middle_low;
             fmixCoeff[i]  = (SHIKAUCHI_FMIX_COEFFICIENTS[0][i] * middle_logZ + SHIKAUCHI_FMIX_COEFFICIENTS[1][i] * logZ_low) / middle_low;
         }
-        for (size_t i = 0; i < 10; i++)
+        for (size_t i = 0; i < 15; i++)
             lCoeff[i] = (SHIKAUCHI_L_COEFFICIENTS[0][i] * middle_logZ + SHIKAUCHI_L_COEFFICIENTS[1][i] * logZ_low) / middle_low;
     }
     // Linear interpolation between metallicity middle and high
@@ -1366,7 +1388,7 @@ std::tuple <DBL_VECTOR, DBL_VECTOR, DBL_VECTOR> MainSequence::InterpolateShikauc
             alphaCoeff[i] = (SHIKAUCHI_ALPHA_COEFFICIENTS[1][i] * high_logZ + SHIKAUCHI_ALPHA_COEFFICIENTS[2][i] * logZ_middle) / high_middle;
             fmixCoeff[i]  = (SHIKAUCHI_FMIX_COEFFICIENTS[1][i] * high_logZ + SHIKAUCHI_FMIX_COEFFICIENTS[2][i] * logZ_middle) / high_middle;
         }
-        for (size_t i = 0; i < 10; i++)
+        for (size_t i = 0; i < 15; i++)
             lCoeff[i] = (SHIKAUCHI_L_COEFFICIENTS[1][i] * high_logZ + SHIKAUCHI_L_COEFFICIENTS[2][i] * logZ_middle) / high_middle;
     }
     // Linear extrapolation (constant) for metallicity equal to solar or higher

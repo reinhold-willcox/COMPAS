@@ -36,7 +36,7 @@ protected:
             double          CalculateCoreMassAtBGB(const double p_Mass, const DBL_VECTOR &p_GBParams);
     static  double          CalculateCoreMassAtBGB_Static(const double p_Mass, const DBL_VECTOR &p_MassCutoffs, const DBL_VECTOR &p_AnCoefficients, const DBL_VECTOR &p_GBParams);
             double          CalculateCoreMassAtHeIgnition(const double p_Mass) const;
-    static  double          CalculateCoreMassAtSupernova_Static(const double p_McBAGB);
+    static  double          CalculateCoreMassAtSupernova_Static(const double p_Mthreshold, const double p_McBAGB);
 
     static  double          CalculateCoreMass_Luminosity_B_Static(const double p_Mass);
     static  double          CalculateCoreMass_Luminosity_D_Static(const double p_Mass, const double p_LogMetallicityXi, const DBL_VECTOR &p_MassCutoffs);
@@ -120,8 +120,6 @@ protected:
 
             void            CalculateTimescales(const double p_Mass, DBL_VECTOR &p_Timescales);
             void            CalculateTimescales()                                                           { CalculateTimescales(m_Mass0, m_Timescales); }                     // Use class member variables
-    
-            double          CalculateZetaEquilibrium()                                                      { return 0.0; }                                                     // At lowest order, giants with a convective envelope have radii that are insensitive to mass loss (but see Hurley+ 2002, Eq. 56 and Hurley+ 2000, Eq. 47)
 
             double          CalculateZetaConstantsByEnvelope(ZETA_PRESCRIPTION p_ZetaPrescription);
             double          CalculateZetaConvectiveEnvelopeGiant(ZETA_PRESCRIPTION p_ZetaPrescription);

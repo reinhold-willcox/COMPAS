@@ -48,7 +48,7 @@ protected:
             utils::Compare(m_MZAMS, BRCEK_LOWER_MASS_LIMIT) >= 0                         &&                                                             // ZAMS mass >= BRCEK_LOWER_MASS_LIMIT?
             m_Time <= 0.0) {                                                                                                                            // star not yet aged past creation?
                                                                                                                                                         // yes - initialise
-            m_InitialMainSequenceCoreMass = MainSequence::CalculateInitialMainSequenceCoreMass(m_MZAMS);
+            m_InitialMainSequenceCoreMass = MainSequence::CalculateInitialMainSequenceCoreMass(m_MZAMS, m_InitialHeliumAbundance);
             m_MainSequenceCoreMass        = m_InitialMainSequenceCoreMass;
             m_Luminosity                  = MainSequence::CalculateLuminosityOnPhase(m_Age, m_Mass0, m_LZAMS0);
             m_Radius                      = MainSequence::CalculateRadiusOnPhase(m_Mass, m_Tau, m_RZAMS0);
@@ -60,7 +60,7 @@ protected:
     // member functions - alphabetically
 
     double      CalculateCriticalMassRatioClaeys14(const bool p_AccretorIsDegenerate) const ;
-    double      CalculateCriticalMassRatioHurleyHjellmingWebbink() const { return 0.33; }                                                               // As coded in BSE. Using the inverse owing to how qCrit is defined in COMPAS. See Hurley et al. 2002 sect. 2.6.1 for additional details.
+    double      CalculateCriticalMassRatioHurleyHjellmingWebbink() const { return HURLEY_HJELLMING_WEBBINK_QCRIT_MS_GT_07; }
     double      CalculateMassLossRateHurley();
     double      CalculateMassTransferRejuvenationFactor();
 
